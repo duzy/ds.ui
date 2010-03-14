@@ -1,0 +1,18 @@
+-*- mode: compilation; default-directory: "~/d/dsui/" -*-
+Compilation started at Mon Sep 14 11:05:36
+
+make test 
+make: Circular t/png_reader.t <- t/png_reader.t.o dependency dropped.
+make: Circular t/streambuf.t <- t/streambuf.t.o dependency dropped.
+g++ -g -ggdb -std=gnu++0x -Iinclude -I./../third/libpng-1.2.35 -I./../third/zlib-1.2.3 -I./../../open/boost_libraries    -o t/streambuf.test t/streambuf.t.o t/boost_test_stuff.o src/resource.o -L./../third/libpng-1.2.35 -L./../third/zlib-1.2.3 -L./../../open/boost_libraries/stage-debug/lib -lboost_filesystem -lboost_system -lpng -lz
+Running 2 test cases...
+libpng error: IEND: CRC error
+
+*** No errors detected
+Running 3 test cases...
+
+*** No errors detected
+
+Compilation finished at Mon Sep 14 11:05:37
+
+

@@ -1,0 +1,5 @@
+# -*- mode: makefile -*-
+#
+
+include ../custom-config
+

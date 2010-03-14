@@ -1,0 +1,65 @@
+# -*- mode: Makefile:gnu -*-
+#	by Zhan Xin-Ming
+#	
+
+TOP ?= ../..
+ifeq ($(TOP),)
+  $(error "'TOP' directory not set.")
+endif
+
+include $(TOP)/common.mk
+
+INCLUDES = \
+  -I$(TOP)/include \
+  -I$(THIRD_DIR)/libxml2-2.7.3/include \
+  -I$(THIRD_DIR)/zlib-1.2.3 \
+  -I$(THIRD_DIR)/libpng-1.2.35 \
+  -I$(BOOST_DIR)
+
+CXXFLAGS = $(COMMON_CXXFLAGS) $(INCLUDES) \
+  -DDS_TRACE_LEVEL=3 \
+  -DDS_DEBUG_LEVEL=3 \
+  -DDS_LOG_LEVEL=3 \
+
+LOADLIBES = \
+  -L$(THIRD_DIR)/libxml2-2.7.3/.libs \
+  -L$(THIRD_DIR)/zlib-1.2.3 \
+  -L$(THIRD_DIR)/libpng-1.2.35 \
+  -L$(BOOST_LIB_DIR)
+
+LDLIBS = \
+  -l$(call BOOST_LIB,program_options) \
+  -l$(call BOOST_LIB,filesystem) \
+  -l$(call BOOST_LIB,system) \
+  -lxml2 -lpng -lz
+
+libxml2_link_to_winsock = yes
+ifeq ($(libxml2_link_to_winsock),yes)
+#  LDLIBS += -lnetapi32 -lrpcrt4 -lsnmpapi -liphlpapi \
+#    -luser32 -lwsock32 -lwin32k -lws2_32 -ldnsapi -lshell32
+  LDLIBS += -lwsock32
+endif
+
+PHONY += all
+all: dsrc
+
+dsrc: dsrc.o
+	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+dsrc.o: dsrc.cpp
+
+PHONY += test
+test: test-read
+	LD_LIBRARY_PATH=~/open/boost_libraries/stage-$V/lib ./test-read
+
+test-read: test-read.o test.o
+	$(LINK.cc) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+test.cpp: dsrc test.xml
+	./dsrc -o $@ test.xml
+
+PHONY += clean
+clean:
+	@$(RM) -rvf *.o dsrc$(EXE) test-read$(EXE) test-out*.png test.cpp *~
+
+.PHONY: $(PHONY)

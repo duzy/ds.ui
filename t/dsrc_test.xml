@@ -1,0 +1,7 @@
+<!DOCTYPE ds:resource>
+<ds:resource xmlns:ds="http://www.duzysoft.com/resource" version="1.0">
+  <ds:files prefix="/">
+    <ds:file>dsrc_test_file.txt</ds:file>
+    <ds:file rename="foo.txt">dsrc_test_file.txt</ds:file>
+  </ds:files>
+</ds:resource>
