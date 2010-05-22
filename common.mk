@@ -1,5 +1,7 @@
 # -*- mode: Makefile:gnu -*-
 
+$(error this file is deprecated)
+
 V ?= debug
 ifneq ($V,debug)
   V = release
@@ -38,3 +40,4 @@ OUTBIN = $(TOP)/out/$V/bin
 
 ## Usage: $(call prepare_dir,dir)
 prepare_dir = @[ -d $1 ] || $(MKDIR) -p $1
+

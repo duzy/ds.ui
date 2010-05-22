@@ -1,21 +1,17 @@
 # -*- mode: Makefile -*-
 #
 
-## libxml2
-n := libxml2-2.7.6
-$(call check-exists, $(THIRD_DIR)/code/$n/include,\
-  libxml2 is not ready)
-# $(call check-exists, $(THIRD_DIR)/$n/.libs/libxml2.*,\
-#   libxml2 is not ready)
+$(call sm-check-not-empty, ds.third.dir.tmp)
+$(call sm-check-not-empty, ds.third.libxml)
+#$(call sm-check-not-empty, ds.third.libxml.dir.tmp)
+$(call sm-check-not-empty, ds.third.libpng)
+$(call sm-check-not-empty, ds.third.libiconv)
+$(call sm-check-not-empty, ds.third.zlib)
 
-## libpng
-$(call check-exists, $(THIRD_DIR)/code/libpng-1.2.35,\
-  libpng not found )
-
-## zlib
-$(call check-exists, $(THIRD_DIR)/code/zlib-1.2.3,\
-  zlib not fount)
-
-# ## libiconv
-# $(call check-exists, $(THIRD_DIR)/code/libiconv-1.13/include/iconv.h,\
-#   libiconv is not ready)
+$(call sm-check-exists, $(ds.third.dir)/code/$(ds.third.libxml)/include)
+#$(call sm-check-exists, $(ds.third.dir)/code/$(ds.third.libxml)/include/libxml/xmlversion.h)
+#$(call sm-check-exists, $(ds.third.libxml.dir.tmp)/include/libxml/xmlversion.h)
+$(call sm-check-exists, $(ds.third.dir.tmp)/$(ds.third.libxml)/include/libxml/xmlversion.h)
+$(call sm-check-exists, $(ds.third.dir)/code/$(ds.third.libpng))
+$(call sm-check-exists, $(ds.third.dir)/code/$(ds.third.libiconv))
+$(call sm-check-exists, $(ds.third.dir)/code/$(ds.third.zlib))

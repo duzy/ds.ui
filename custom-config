@@ -1,5 +1,6 @@
 # -*- mode: makefile -*-
 #
 
-include ../custom-config
+include ../../ds.mk
+
 

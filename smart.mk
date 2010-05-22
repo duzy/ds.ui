@@ -1,19 +1,19 @@
 #
 #
 
-$(call sm-new-module, dsui.so, dynamic)
+$(call sm-new-module, dsui.so, shared)
 
-DSUI_DIR := $(sm.module.dir)
+ds.ui.dir := $(sm.module.dir)
 
-include $(DSUI_DIR)/check-deps.mk
+include $(ds.ui.dir)/check-deps.mk
 
 sm.module.out_implib := dsui
 
-SM_COMPILE_LOG := dsui.log
+#SM_COMPILE_LOG := dsui.log
 
-sm.module.includes := \
-  $(DSUI_DIR)/include \
-  $(BOOST_DIR)
+sm.module.dirs.include := \
+  $(ds.ui.dir)/include \
+  $(ds.third.boost.dir)
 
 sm.module.sources := $(wildcard src/*.cpp)
 
