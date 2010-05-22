@@ -10,10 +10,10 @@ include $(sm.module.dir)/check-deps.mk
 sm.module.includes := \
   -I$(ds.ui.dir)/include \
   -I$(ds.third.dir.tmp)/$(ds.third.libxml)/include \
-  -I$(ds.third.dir)/code/libxml2-2.7.3/include \
-  -I$(ds.third.dir)/code/libiconv-1.13/include \
-  -I$(ds.third.dir)/code/libpng-1.2.35 \
-  -I$(ds.third.dir)/code/zlib-1.2.3 \
+  -I$(ds.third.dir)/$(ds.third.code.libxml)/include \
+  -I$(ds.third.dir)/$(ds.third.code.libiconv)/include \
+  -I$(ds.third.dir)/$(ds.third.code.libpng) \
+  -I$(ds.third.dir)/$(ds.third.code.zlib) \
   -I$(ds.third.boost.dir)
 
 sm.module.options.compile := \
@@ -41,7 +41,7 @@ libxml2_link_to_winsock = yes
 ifeq ($(libxml2_link_to_winsock),yes)
 #  LDLIBS += -lnetapi32 -lrpcrt4 -lsnmpapi -liphlpapi \
 #    -luser32 -lwsock32 -lwin32k -lws2_32 -ldnsapi -lshell32
-  sm.module.libs += -lwsock32
+  #sm.module.libs += -lwsock32
 endif
 
 sm.module.sources := dsrc.cpp

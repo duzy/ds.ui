@@ -105,7 +105,12 @@ namespace detail
   {
     result.is_valid = false;
 
+#   ifdef LIBXML_SAX1_ENABLED
     xmlDocPtr doc( xmlParseFile(filename) );
+#   else
+    xmlDocPtr doc( xmlReadFile(filename, NULL, 0) );
+#   endif
+
     if ( doc == NULL ) {
       dsD("xmlParseFile()");
       return false;
