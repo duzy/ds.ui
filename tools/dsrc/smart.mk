@@ -12,13 +12,6 @@ sm.module.dirs.include := \
   -I$(ds.third.dir.inc) \
   -I$(ds.third.boost.dir)
 
-  # -I$(ds.third.dir.tmp)/$(ds.third.libxml)/include \
-  # -I$(ds.third.dir)/$(ds.third.code.libxml)/include \
-  # -I$(ds.third.dir)/$(ds.third.code.libiconv)/include \
-  # -I$(ds.third.dir)/$(ds.third.code.libpng) \
-  # -I$(ds.third.dir)/$(ds.third.code.zlib) \
-  # -I$(ds.third.boost.dir)
-
 sm.module.options.compile := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
@@ -27,6 +20,11 @@ sm.module.options.compile := \
 sm.module.dirs.lib := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
+
+sm.module.rpath := \
+  $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
+
+$(info $(sm.module.rpath))
 
 sm.module.libs += \
   -l$(call ds.third.boost.use, program_options) \
