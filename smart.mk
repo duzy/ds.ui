@@ -4,6 +4,7 @@
 $(call sm-new-module, dsui, shared)
 
 ds.ui.dir := $(sm.module.dir)
+ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 
 include $(ds.ui.dir)/check-deps.mk
 

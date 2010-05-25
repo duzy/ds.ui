@@ -1,7 +1,7 @@
 /**
  *    Copyright 2008-03-01 DuzySoft.com, by Zhan Xin-Ming (Duzy Chan)
  *    All rights reserved by Zhan Xin-Ming (Duzy Chan)
- *    Email: <duzy@duzy.ws, duzy.chan@gmail.com>
+ *    Email: <duzy@duzy.info, duzy.chan@gmail.com>
  *
  *    $Id: debug.hpp 858 2010-01-02 06:38:53Z duzy $
  *
@@ -176,15 +176,15 @@ namespace {
 //  The default debuger 'dsD' is set to level 3
 ////////////////////////////////////////////////////////////////////////////////
 #  if ENABLE_DS_DEBUG
-#       define dsD_(msg,lv)						\
-  do {									\
-    ds_internal__debug::lock_t lk( ds_internal__debug::lock() );	\
-    std::clog								\
-      <<__FILE__<<":"							\
-      <<__LINE__<<":"							\
-      <<"debug("<<lv<<"): "<<msg					\
-      <<", in "<<__FUNCTION__						\
-      <<std::endl;							\
+#       define dsD_(msg,lv)                                         \
+  do {                                                              \
+    ds_internal__debug::lock_t lk( ds_internal__debug::lock() );    \
+    std::clog                                                       \
+      <<__FILE__<<":"                                               \
+      <<__LINE__<<":"                                               \
+      <<"debug("<<lv<<"): "<<msg                                    \
+      <<", in "<<__FUNCTION__                                       \
+      <<std::endl;                                                  \
   } while(0)
 
 #       ifndef DS_DEBUG_LEVEL
@@ -271,15 +271,15 @@ namespace {
 //  The default logger is set to level 3.
 ////////////////////////////////////////////////////////////////////////////////
 #  if ENABLE_DS_LOG
-#       define dsL_(msg,l)						\
-  do {									\
-    ds_internal__debug::lock_t lk( ds_internal__debug::lock() );	\
-    std::clog								\
-      <<__FILE__<<":"							\
-      <<__LINE__<<":"							\
-      <<"info("#l "): "<<msg						\
-      <<", in "<<__FUNCTION__						\
-      <<std::endl;							\
+#       define dsL_(msg,l)                                          \
+  do {                                                              \
+    ds_internal__debug::lock_t lk( ds_internal__debug::lock() );    \
+    std::clog                                                       \
+      <<__FILE__<<":"                                               \
+      <<__LINE__<<":"                                               \
+      <<"info("#l "): "<<msg                                        \
+      <<", in "<<__FUNCTION__                                       \
+      <<std::endl;                                                  \
   } while(0)
 #       ifndef DS_LOG_LEVEL
 #               define DS_LOG_LEVEL 0
@@ -359,16 +359,16 @@ namespace {
 //      dsI( b == true );
 ////////////////////////////////////////////////////////////////////////////////
 #  if ENABLE_DS_ASSERT
-#       define dsI_(expr,msg)						\
-  if ( !(expr) ) {							\
-    ds_internal__debug::lock_t lk( ds_internal__debug::lock() );	\
-    std::clog								\
-      <<__FILE__<<":"							\
-      <<__LINE__<<":"							\
-      <<"debug(assertion): [FAILED] "#expr				\
-      <<std::endl							\
-      <<"\t[DESCRIPTION]: "<<msg					\
-      <<std::endl;							\
+#       define dsI_(expr,msg)                                       \
+  if ( !(expr) ) {                                                  \
+    ds_internal__debug::lock_t lk( ds_internal__debug::lock() );    \
+    std::clog                                                       \
+      <<__FILE__<<":"                                               \
+      <<__LINE__<<":"                                               \
+      <<"debug(assertion): [FAILED] "#expr                          \
+      <<std::endl                                                   \
+      <<"\t[DESCRIPTION]: "<<msg                                    \
+      <<std::endl;                                                  \
   } ( BOOST_ASSERT(expr) )
 #       define dsI(expr) dsI_(expr, "(unspecified)")
 #       define dsIm(expr,msg) dsI_(expr,msg)
@@ -388,15 +388,15 @@ namespace {
 //      TODO( msg );
 ////////////////////////////////////////////////////////////////////////////////
 #  if defined(SHOW_TODO)
-#       define TODO(msg)						\
-  do {									\
+#       define TODO(msg)                                            \
+  do {                                                              \
     ds_internal__debug::lock_t lk( ds_internal__debug::lock() );	\
-    std::clog								\
-      <<__FILE__<<":"							\
-      <<__LINE__<<":"							\
-      <<"info(TODO): "<<msg						\
-      <<", in "<<__FUNCTION__						\
-      <<std::endl;							\
+    std::clog                                                       \
+      <<__FILE__<<":"                                               \
+      <<__LINE__<<":"                                               \
+      <<"info(TODO): "<<msg                                         \
+      <<", in "<<__FUNCTION__                                       \
+      <<std::endl;                                                  \
   } while( 0 )
 #  else
 #       define TODO(msg)        ((void)false);

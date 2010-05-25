@@ -24,8 +24,6 @@ sm.module.dirs.lib := \
 sm.module.rpath := \
   $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
 
-$(info $(sm.module.rpath))
-
 sm.module.libs += \
   -l$(call ds.third.boost.use, program_options) \
   -l$(call ds.third.boost.use, filesystem) \
