@@ -3,7 +3,7 @@
 #   include "item.hpp"
 #   include <streambuf>
 #   include <boost/noncopyable.hpp>
-#include <iostream>
+#   include <iostream>
 
 #   ifndef HAS_KEYWORD__nullptr
 //#	define nullptr ((void*)0)
@@ -26,13 +26,13 @@ namespace ds { namespace resource {
 
       //!< e.g.: ':/images/a.png'
       explicit streambuf( const std::string & name )
-	: std::streambuf()
-	, _item( name )
+        : std::streambuf()
+        , _item( name )
       {
-	char * const beg( const_cast<char*>(_item.begin()) );
-	char * const end( const_cast<char*>(_item.end()) );
-	setg( beg, beg, end );
-	setp( end, end ); //!< readonly
+        char * const beg( const_cast<char*>(_item.begin()) );
+        char * const end( const_cast<char*>(_item.end()) );
+        setg( beg, beg, end );
+        setp( end, end ); //!< readonly
       }
 
       bool is_valid() const { return _item.is_valid(); }
@@ -45,7 +45,7 @@ namespace ds { namespace resource {
        */
       virtual int_type underflow()
       {
-	return traits_type::eof();
+        return traits_type::eof();
       }
 
       //== Override std::streambuf behaviour. ==
@@ -53,23 +53,23 @@ namespace ds { namespace resource {
        *  Behaves according to std::streambuf::seekoff().
        */
       virtual pos_type seekoff( off_type off, std::ios_base::seekdir dir,
-				std::ios_base::openmode mode )
+                                std::ios_base::openmode mode )
       {
-	if ( !(mode & std::ios_base::in) ) {
-	  return pos_type(off_type(-1));
-	}
-	switch ( dir ) {
-	case std::ios_base::beg:
-	  setg( eback(), eback() + off, egptr() );
-	  break;
-	case std::ios_base::cur:
-	  setg( eback(), gptr() + off, egptr() );
-	  break;
-	case std::ios_base::end:
-	  setg( eback(), egptr() + off, egptr() );
-	  break;
-	}//switch
-	return pos_type(off_type( gptr() - eback() ));
+        if ( !(mode & std::ios_base::in) ) {
+          return pos_type(off_type(-1));
+        }
+        switch ( dir ) {
+        case std::ios_base::beg:
+          setg( eback(), eback() + off, egptr() );
+          break;
+        case std::ios_base::cur:
+          setg( eback(), gptr() + off, egptr() );
+          break;
+        case std::ios_base::end:
+          setg( eback(), egptr() + off, egptr() );
+          break;
+        }//switch
+        return pos_type(off_type( gptr() - eback() ));
       }
 
       //== Override std::streambuf behaviour. ==
@@ -78,9 +78,9 @@ namespace ds { namespace resource {
        */
       virtual pos_type seekpos( pos_type pos, std::ios_base::openmode mode )
       {
-	if ( !(mode & std::ios_base::in) ) return pos_type(off_type(-1));
-	if ( 0 != pos ) setg( eback(), eback() + pos, egptr() );
-	return pos_type(off_type( gptr() - eback() ));
+        if ( !(mode & std::ios_base::in) ) return pos_type(off_type(-1));
+        if ( 0 != pos ) setg( eback(), eback() + pos, egptr() );
+        return pos_type(off_type( gptr() - eback() ));
       }
 
     private:

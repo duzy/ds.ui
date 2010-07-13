@@ -7,28 +7,25 @@ include $(sm.module.dir)/check-deps.mk
 
 #SM_COMPILE_LOG := dsrc.log
 
-sm.module.includes := \
+sm.module.dirs.include := \
   -I$(ds.ui.dir)/include \
-  -I$(ds.third.dir.tmp)/$(ds.third.libxml)/include \
-  -I$(ds.third.dir)/$(ds.third.code.libxml)/include \
-  -I$(ds.third.dir)/$(ds.third.code.libiconv)/include \
-  -I$(ds.third.dir)/$(ds.third.code.libpng) \
-  -I$(ds.third.dir)/$(ds.third.code.zlib) \
+  -I$(ds.third.dir.inc) \
   -I$(ds.third.boost.dir)
+
+  # -I$(ds.third.dir.tmp)/$(ds.third.libxml)/include \
+  # -I$(ds.third.dir)/$(ds.third.code.libxml)/include \
+  # -I$(ds.third.dir)/$(ds.third.code.libiconv)/include \
+  # -I$(ds.third.dir)/$(ds.third.code.libpng) \
+  # -I$(ds.third.dir)/$(ds.third.code.zlib) \
+  # -I$(ds.third.boost.dir)
 
 sm.module.options.compile := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
 
-# sm.module.dirs.lib := \
-#   -L$(ds.third.dir)/libxml2-2.7.3/.libs \
-#   -L$(ds.third.dir)/libpng-1.2.35 \
-#   -L$(ds.third.dir)/zlib-1.2.3 \
-#   -L$(ds.third.boost.dir.lib)
-
 sm.module.dirs.lib := \
-  -L$(ds.third.dir)/out/$V/lib \
+  -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 
 sm.module.libs += \

@@ -1,6 +1,7 @@
 # -*- mode: makefile -*-
 #
 
-include ../../ds.mk
+$(call sm-check-exists, ../../ds.mk)
 
+include ../../ds.mk
 

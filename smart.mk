@@ -1,7 +1,7 @@
 #
 #
 
-$(call sm-new-module, dsui.so, shared)
+$(call sm-new-module, dsui, shared)
 
 ds.ui.dir := $(sm.module.dir)
 
@@ -19,4 +19,3 @@ sm.module.sources := $(wildcard src/*.cpp)
 
 $(call sm-build-this)
 $(call sm-load-subdirs)
-
