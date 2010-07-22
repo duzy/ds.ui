@@ -19,15 +19,48 @@ namespace ds { namespace ui {
      */
     class display : boost::noncopyable
     {
+      display();
+      ~display();
+
+      struct IMPL;
+
+      friend class window;
+
     public:
-      void add(window &);
-      void remove(window &);
-      bool has(window &);
-      int reduce_events();
+      class id
+      {
+        void * _p;
+
+        friend class display;
+
+      public:
+        id(void * = 0);
+      };
+
+      // TODO:
+      //        1) move semantic,
+      //        2) think about 'close' display
+      static display * open( id i = id() );
+
+      int width() const;
+      int height() const;
+
+      window *root() const;
+
+      void add( window *win );
+      void remove( window *win );
+      bool has( window *win );
+
+      unsigned black_pixel() const;
+      unsigned white_pixel() const;
+
+      int reduce_events( window * win );
+
+    private:
+      IMPL * _p;
     };//class display
     
   }//namespace ui
 }//namespace ds
 
 #endif//__DS_UI_DISPLAY_HPP____by_Duzy_Chan__
-

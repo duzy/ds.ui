@@ -11,31 +11,38 @@
 
 namespace ds { namespace ui {
 
-  class display;
+    class display;
 
-  class window
-  {
-  public:
-    /**
-     *  @brief Construct a trivial window.
-     */
-    window();
+    class window
+    {
+      struct IMPL;
 
-    /**
-     *  @brief Construct a window in the display 'disp' and be ready for
-     *         showing.
-     */
-    window(display & disp);
+      friend class display;
 
-    display * get_display() const;
+    public:
+      /**
+       *  @brief Construct a trivial window.
+       */
+      window();
 
-    void show();
-    void hide();
-    void close();
+      /**
+       *  @brief Construct a window in the display 'disp' and be ready for
+       *         showing.
+       */
+      window( display * disp );
 
-    void move(int x, int y);
-    void resize(int w, int h);
-  };//class window
+      display * get_display() const;
+
+      void show();
+      void hide();
+      void close();
+
+      void move( int x, int y );
+      void resize( int w, int h );
+
+    private:
+      IMPL * _p;
+    };//class window
 
   }//namespace ui
 }//namespace ds
