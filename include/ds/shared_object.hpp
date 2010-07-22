@@ -63,12 +63,6 @@ namespace ds {
     typedef boost::intrusive_ptr<DerivedClass> pointer_t;
   };//struct shared_object
 
-  template<class DerivedClass>
-  struct shared_object_ptr
-  {
-    typedef boost::intrusive_ptr<DerivedClass> type;
-  };//struct shared_object
-  
 }//namespace ds
 
 #endif//__DS_SHARED_OBJECT_HPP____by_Duzy_Chan__

@@ -7,9 +7,11 @@
  *
  **/
 #include <ds/ui/display.hpp>
+#include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
 #include <X11/Xlib.h>
 #include "display_impl.h"
+#include "screen_impl.h"
 #include "window_impl.h"
 #include <ds/debug.hpp>
 
@@ -30,6 +32,7 @@ namespace ds { namespace ui {
     void display::IMPL::dispatch( XEvent * event )
     {
       // TODO: ...
+      //std::cout << "event: " << event->type << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -45,6 +48,9 @@ namespace ds { namespace ui {
 
     display::~display()
     {
+      delete _p;
+      //dsD("display::~display()");
+      std::cout<<"display::~display()"<<std::endl;
     }
 
     display::pointer_t display::open( id i )
@@ -55,19 +61,19 @@ namespace ds { namespace ui {
       return d;
     }
 
-    
-
-    /*
-    int display::width() const
+    shared_object<screen>::pointer_t display::default_screen() const
     {
-      return XDisplayWidth( _p->xDisplay, _p->screen );
+      screen::pointer_t scr( new screen );
+      scr->_p->xScreen = XDefaultScreenOfDisplay( _p->xDisplay );
+      return scr;
     }
 
-    int display::height() const
+    shared_object<screen>::pointer_t display::get_screen( int index ) const
     {
-      return XDisplayHeight( _p->xDisplay, _p->screen );
+      screen::pointer_t scr( new screen );
+      scr->_p->xScreen = XScreenOfDisplay( _p->xDisplay, index );
+      return scr;
     }
-    */
 
     shared_object<window>::pointer_t display::root() const
     {
@@ -82,36 +88,24 @@ namespace ds { namespace ui {
       return _p->root;
     }
     
-    void display::add( window * win )
+    void display::add( const window::pointer_t & win )
     {
       XMapWindow( _p->xDisplay, win->_p->xWindow );
     }
 
-    void display::remove( window * win )
+    void display::remove( const window::pointer_t & win )
     {
       XUnmapWindow( _p->xDisplay, win->_p->xWindow );
     }
 
-    bool display::has( window * win )
+    bool display::has( const window::pointer_t & win )
     {
       // TODO: ...
       //return false;
       return true;
     }
 
-    /*
-    unsigned display::black_pixel() const
-    {
-      return XBlackPixel( _p->xDisplay, _p->screen );
-    }
-
-    unsigned display::white_pixel() const
-    {
-      return XWhitePixel( _p->xDisplay, _p->screen );
-    }
-    */
-
-    int display::reduce_events( window * win )
+    int display::reduce_events( const window::pointer_t & win )
     {
       XSync( _p->xDisplay, False );
 

@@ -30,9 +30,11 @@ namespace ds { namespace ui {
        *  @brief Construct a window in the display 'disp' and be ready for
        *         showing.
        */
-      window( display * disp );
+      window( const shared_object<display>::pointer_t & disp );
 
-      display * get_display() const;
+      ~window();
+
+      shared_object<display>::pointer_t get_display() const;
 
       void show();
       void hide();

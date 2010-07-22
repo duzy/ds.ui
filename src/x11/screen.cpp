@@ -28,7 +28,7 @@ namespace ds { namespace ui {
 
     shared_object<display>::pointer_t screen::get_display() const
     {
-      display *disp( new display );
+      display::pointer_t disp( new display );
       disp->_p->xDisplay = XDisplayOfScreen( _p->xScreen );
       disp->_p->screen = XScreenNumberOfScreen( _p->xScreen );
       return disp;

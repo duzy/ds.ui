@@ -22,18 +22,18 @@ namespace ds { namespace ui {
     {
     }
 
-    window::window( display * disp )
+    window::window( const display::pointer_t & disp )
       : _p( new IMPL(disp) )
     {
       //XCreateWindow(...);
       Display *xDisplay( disp->_p->xDisplay );
-      screen *scr = disp->default_screen();
+      screen::pointer_t scr = disp->default_screen();
       int x(0), y(0), w(400), h(300), bw(0);
-      unsigned fc = scr->black_pixel();//disp->black_pixel();
-      unsigned bc = scr->white_pixel();//disp->white_pixel();
+      unsigned fc = scr->black_pixel();
+      unsigned bc = scr->white_pixel();
 
-      window *root = disp->root();
-      dsI(root != NULL);
+      window::pointer_t root = disp->root();
+      dsI(root);
 
       Window pr = root->_p->xWindow;
       
@@ -41,7 +41,12 @@ namespace ds { namespace ui {
       disp->add( this );
     }
 
-    display * window::get_display() const
+    window::~window()
+    {
+      delete _p;
+    }
+
+    display::pointer_t window::get_display() const
     {
       return _p->disp;
     }

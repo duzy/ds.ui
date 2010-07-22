@@ -12,6 +12,11 @@ namespace ds { namespace ui {
     struct screen::IMPL
     {
       Screen *xScreen;
+
+      IMPL()
+        : xScreen( NULL )
+      {
+      }
     };//struct screen::IMPL
     
   }//namespace ui

@@ -10,12 +10,13 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/window.hpp>
 #include <cassert>
+#include <iostream>
 
 int main(int argc, char** argv)
 {
   // make a default display connection
   ds::ui::display::pointer_t disp = ds::ui::display::open();
-  ds::ui::window win( disp.get() ); // a window in the display 'disp'
+  ds::ui::window win( disp ); // a window in the display 'disp'
   //ds::ui::window win2; // a window of no display is trivial
 
   assert( disp->has(&win) );
@@ -27,5 +28,9 @@ int main(int argc, char** argv)
 
   //win2.show(); // show it since it's belong to 'disp'
   
-  return disp->reduce_events( &win );
+  std::cout << "loop..." <<std::endl;
+  int n = disp->reduce_events( &win );
+
+  std::cout << n <<std::endl;
+  return n;
 }

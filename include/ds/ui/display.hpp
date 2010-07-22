@@ -52,11 +52,11 @@ namespace ds { namespace ui {
 
       shared_object<window>::pointer_t root() const;
 
-      void add( window *win );
-      void remove( window *win );
-      bool has( window *win );
+      void add( const shared_object<window>::pointer_t& win );
+      void remove( const shared_object<window>::pointer_t& win );
+      bool has( const shared_object<window>::pointer_t& win );
 
-      int reduce_events( window * win );
+      int reduce_events( const shared_object<window>::pointer_t& win );
 
     private:
       IMPL * _p;

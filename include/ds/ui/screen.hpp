@@ -20,6 +20,7 @@ namespace ds { namespace ui {
       ~screen();
 
       struct IMPL;
+      friend class display;
 
     public:
       shared_object<display>::pointer_t get_display() const;

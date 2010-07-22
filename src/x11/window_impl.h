@@ -13,9 +13,9 @@ namespace ds { namespace ui {
     {
       Window xWindow;
 
-      display *disp;
+      display::pointer_t disp;
 
-      IMPL( display * d )
+      IMPL( const display::pointer_t & d )
         : xWindow( NULL )
         , disp( d )
       {
