@@ -12,6 +12,7 @@
 
 namespace ds { namespace ui {
 
+    class screen;
     class window;
 
     /**
@@ -24,6 +25,7 @@ namespace ds { namespace ui {
 
       struct IMPL;
 
+      friend class screen;
       friend class window;
 
     public:
@@ -42,17 +44,14 @@ namespace ds { namespace ui {
       //        2) think about 'close' display
       static display * open( id i = id() );
 
-      int width() const;
-      int height() const;
+      screen * default_screen() const;
+      screen * get_screen( int index ) const;
 
-      window *root() const;
+      window * root() const;
 
       void add( window *win );
       void remove( window *win );
       bool has( window *win );
-
-      unsigned black_pixel() const;
-      unsigned white_pixel() const;
 
       int reduce_events( window * win );
 

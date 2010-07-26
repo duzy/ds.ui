@@ -11,6 +11,7 @@
 #include <X11/Xlib.h>
 #include "display_impl.h"
 #include "window_impl.h"
+#include <ds/debug.hpp>
 
 namespace ds { namespace ui {
 
@@ -50,24 +51,31 @@ namespace ds { namespace ui {
     {
       display * d = new display;
       d->_p->xDisplay = XOpenDisplay( (const char *) i._p );
-      d->_p->screen = DefaultScreen( d->_p->xDisplay );
+      d->_p->screen = XDefaultScreen( d->_p->xDisplay );
       return d;
     }
 
     int display::width() const
     {
-      return DisplayWidth( _p->xDisplay, _p->screen );
+      return XDisplayWidth( _p->xDisplay, _p->screen );
     }
 
     int display::height() const
     {
-      return DisplayHeight( _p->xDisplay, _p->screen );
+      return XDisplayHeight( _p->xDisplay, _p->screen );
     }
 
     window *display::root() const
     {
-      //return RootWindow( _p->xDisplay, _p->screen );
-      return NULL;
+      if ( _p->root )
+        return _p->root;
+
+      Window xWindow = XRootWindow( _p->xDisplay, _p->screen );
+      _p->root = new window;
+      _p->root->_p->disp = const_cast<display*>(this);
+      _p->root->_p->xWindow = xWindow;
+      
+      return _p->root;
     }
     
     void display::add( window * win )
@@ -83,7 +91,8 @@ namespace ds { namespace ui {
     bool display::has( window * win )
     {
       // TODO: ...
-      return false;
+      //return false;
+      return true;
     }
 
     unsigned display::black_pixel() const

@@ -12,6 +12,7 @@
 #include <X11/Xlib.h>
 #include "window_impl.h"
 #include "display_impl.h"
+#include <ds/debug.hpp>
 
 namespace ds { namespace ui {
     
@@ -29,7 +30,10 @@ namespace ds { namespace ui {
       unsigned fc = disp->black_pixel();
       unsigned bc = disp->white_pixel();
 
-      Window pr = disp->root()->_p->xWindow;
+      window *root = disp->root();
+      dsI(root != NULL);
+
+      Window pr = root->_p->xWindow;
       
       _p->xWindow = XCreateSimpleWindow( xDisplay, pr, x, y, w, h, bw, fc, bc );
       disp->add( this );

@@ -26,7 +26,7 @@
 #    define ENABLE_DS_ASSERT true
 #  endif
 #
-#  if defined(ENABLE_DS_TRACE) || defined(ENABLE_DS_LOG) || defined(ENABLE_DS_DEBUG)
+#  if defined(ENABLE_DS_TRACE) || defined(ENABLE_DS_LOG) || defined(ENABLE_DS_DEBUG) || defined(ENABLE_DS_ASSERT)
 #       include <iostream>
 #  endif
 #       include <boost/assert.hpp>

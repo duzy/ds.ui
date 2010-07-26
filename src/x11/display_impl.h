@@ -14,9 +14,12 @@ namespace ds { namespace ui {
       Display * xDisplay;
       int screen;
 
+      window *root;
+
       IMPL()
         : xDisplay( NULL )
         , screen( -1 ) // TODO: is '-1' ?
+        , root( NULL )
       {
       }
 
