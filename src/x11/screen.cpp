@@ -8,8 +8,8 @@
  **/
 
 #include <ds/ui/screen.hpp>
-#include "screen_impl.hpp"
-#include "display_impl.hpp"
+#include "screen_impl.h"
+#include "display_impl.h"
 
 namespace ds { namespace ui {
 

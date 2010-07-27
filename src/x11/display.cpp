@@ -47,9 +47,9 @@ namespace ds { namespace ui {
     {
     }
 
-    display * display::open( id i )
+    display::pointer_t display::open( id i )
     {
-      display * d = new display;
+      pointer_t d( new display );
       d->_p->xDisplay = XOpenDisplay( (const char *) i._p );
       d->_p->screen = XDefaultScreen( d->_p->xDisplay );
       return d;

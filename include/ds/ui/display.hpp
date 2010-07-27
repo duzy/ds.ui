@@ -9,6 +9,7 @@
 #ifndef __DS_UI_DISPLAY_HPP____by_Duzy_Chan__
 #define __DS_UI_DISPLAY_HPP____by_Duzy_Chan__ 1
 #       include <boost/noncopyable.hpp>
+#       include <ds/shared_object.hpp>
 
 namespace ds { namespace ui {
 
@@ -18,7 +19,9 @@ namespace ds { namespace ui {
     /**
      *  @brief Windows is living in a particular display.
      */
-    class display : boost::noncopyable
+    class display
+      : boost::noncopyable
+      , public shared_object<display>
     {
       display();
       ~display();
@@ -42,7 +45,7 @@ namespace ds { namespace ui {
       // TODO:
       //        1) move semantic,
       //        2) think about 'close' display
-      static display * open( id i = id() );
+      static pointer_t open( id i = id() );
 
       screen * default_screen() const;
       screen * get_screen( int index ) const;
