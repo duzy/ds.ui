@@ -14,8 +14,8 @@
 int main(int argc, char** argv)
 {
   // make a default display connection
-  ds::ui::display *disp = ds::ui::display::open();
-  ds::ui::window win( disp ); // a window in the display 'disp'
+  ds::ui::display::pointer_t disp = ds::ui::display::open();
+  ds::ui::window win( disp.get() ); // a window in the display 'disp'
   //ds::ui::window win2; // a window of no display is trivial
 
   assert( disp->has(&win) );

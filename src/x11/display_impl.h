@@ -14,7 +14,7 @@ namespace ds { namespace ui {
       Display * xDisplay;
       int screen;
 
-      window *root;
+      window::pointer_t root;
 
       IMPL()
         : xDisplay( NULL )

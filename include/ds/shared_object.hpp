@@ -7,14 +7,16 @@
  *
  **/
 
-#ifndef __DS_UI_DISPLAY_HPP____by_Duzy_Chan__
-#define __DS_UI_DISPLAY_HPP____by_Duzy_Chan__ 1
+#ifndef __DS_SHARED_OBJECT_HPP____by_Duzy_Chan__
+#define __DS_SHARED_OBJECT_HPP____by_Duzy_Chan__ 1
 #       include <boost/smart_ptr/intrusive_ptr.hpp>
 
 namespace ds {
 
   namespace detail
   {
+    template<class DerivedClass> class shared_object_impl;
+
     template<class DerivedClass>
     inline void intrusive_ptr_add_ref( shared_object_impl<DerivedClass> * p )
     {
@@ -30,14 +32,10 @@ namespace ds {
     template<class DerivedClass>
     class shared_object_impl
     {
-      friend void intrusive_ptr_add_ref( shared_object_impl<DerivedClass> * );
-      friend void intrusive_ptr_release( shared_object_impl<DerivedClass> * );
+      template<class T> friend void intrusive_ptr_add_ref( shared_object_impl<T> * );
+      template<class T> friend void intrusive_ptr_release( shared_object_impl<T> * );
 
       int _refcount;
-
-      shared_object_impl() : _refcount(1) {}
-
-      virtual ~shared_object_impl() {}
 
       void _inref()
       {
@@ -50,6 +48,11 @@ namespace ds {
           delete this;
         }
       }
+
+    protected:
+      shared_object_impl() : _refcount(1) {}
+
+      virtual ~shared_object_impl() {}
     };//struct shared_object_impl
 
   }//namespace detail
@@ -59,7 +62,13 @@ namespace ds {
   {
     typedef boost::intrusive_ptr<DerivedClass> pointer_t;
   };//struct shared_object
+
+  template<class DerivedClass>
+  struct shared_object_ptr
+  {
+    typedef boost::intrusive_ptr<DerivedClass> type;
+  };//struct shared_object
   
 }//namespace ds
 
-#endif//__DS_UI_DISPLAY_HPP____by_Duzy_Chan__
+#endif//__DS_SHARED_OBJECT_HPP____by_Duzy_Chan__

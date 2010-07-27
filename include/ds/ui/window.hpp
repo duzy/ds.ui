@@ -8,12 +8,13 @@
  **/
 #ifndef __DS_UI_WINDOW_HPP____by_Duzy_Chan__
 #define __DS_UI_WINDOW_HPP____by_Duzy_Chan__ 1
+#       include <ds/shared_object.hpp>
 
 namespace ds { namespace ui {
 
     class display;
 
-    class window
+    class window : public shared_object<window>
     {
       struct IMPL;
 

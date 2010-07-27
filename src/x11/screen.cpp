@@ -8,6 +8,9 @@
  **/
 
 #include <ds/ui/screen.hpp>
+#include <ds/ui/display.hpp>
+#include <ds/ui/window.hpp>
+#include <X11/Xlib.h>
 #include "screen_impl.h"
 #include "display_impl.h"
 
@@ -23,7 +26,7 @@ namespace ds { namespace ui {
       delete _p;
     }
 
-    display *screen::get_display() const
+    shared_object<display>::pointer_t screen::get_display() const
     {
       display *disp( new display );
       disp->_p->xDisplay = XDisplayOfScreen( _p->xScreen );
@@ -46,9 +49,9 @@ namespace ds { namespace ui {
       return XBlackPixelOfScreen( _p->xScreen );
     }
 
-    unsigned white_pixel() const
+    unsigned screen::white_pixel() const
     {
-      return XWihtePixelOfScreen( _p->xScreen );
+      return XWhitePixelOfScreen( _p->xScreen );
     }
     
   }//namespace ui

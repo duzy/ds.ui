@@ -55,6 +55,9 @@ namespace ds { namespace ui {
       return d;
     }
 
+    
+
+    /*
     int display::width() const
     {
       return XDisplayWidth( _p->xDisplay, _p->screen );
@@ -64,8 +67,9 @@ namespace ds { namespace ui {
     {
       return XDisplayHeight( _p->xDisplay, _p->screen );
     }
+    */
 
-    window *display::root() const
+    shared_object<window>::pointer_t display::root() const
     {
       if ( _p->root )
         return _p->root;
@@ -95,6 +99,7 @@ namespace ds { namespace ui {
       return true;
     }
 
+    /*
     unsigned display::black_pixel() const
     {
       return XBlackPixel( _p->xDisplay, _p->screen );
@@ -104,6 +109,7 @@ namespace ds { namespace ui {
     {
       return XWhitePixel( _p->xDisplay, _p->screen );
     }
+    */
 
     int display::reduce_events( window * win )
     {

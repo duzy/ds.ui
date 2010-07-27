@@ -8,12 +8,13 @@
  **/
 #ifndef __DS_UI_SCREEN_HPP____by_Duzy_Chan__
 #define __DS_UI_SCREEN_HPP____by_Duzy_Chan__ 1
+#       include <ds/shared_object.hpp>
 
 namespace ds { namespace ui {
 
     class display;
     
-    class screen
+    class screen : public shared_object<screen>
     {
       screen();
       ~screen();
@@ -21,7 +22,7 @@ namespace ds { namespace ui {
       struct IMPL;
 
     public:
-      display *get_display() const;
+      shared_object<display>::pointer_t get_display() const;
 
       int width() const;
       int height() const;

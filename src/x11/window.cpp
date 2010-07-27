@@ -9,6 +9,7 @@
 
 #include <ds/ui/window.hpp>
 #include <ds/ui/display.hpp>
+#include <ds/ui/screen.hpp>
 #include <X11/Xlib.h>
 #include "window_impl.h"
 #include "display_impl.h"
@@ -26,9 +27,10 @@ namespace ds { namespace ui {
     {
       //XCreateWindow(...);
       Display *xDisplay( disp->_p->xDisplay );
+      screen *scr = disp->default_screen();
       int x(0), y(0), w(400), h(300), bw(0);
-      unsigned fc = disp->black_pixel();
-      unsigned bc = disp->white_pixel();
+      unsigned fc = scr->black_pixel();//disp->black_pixel();
+      unsigned bc = scr->white_pixel();//disp->white_pixel();
 
       window *root = disp->root();
       dsI(root != NULL);

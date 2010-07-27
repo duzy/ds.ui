@@ -47,10 +47,10 @@ namespace ds { namespace ui {
       //        2) think about 'close' display
       static pointer_t open( id i = id() );
 
-      screen * default_screen() const;
-      screen * get_screen( int index ) const;
+      shared_object<screen>::pointer_t default_screen() const;
+      shared_object<screen>::pointer_t get_screen( int index ) const;
 
-      window * root() const;
+      shared_object<window>::pointer_t root() const;
 
       void add( window *win );
       void remove( window *win );
