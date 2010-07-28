@@ -38,6 +38,13 @@ namespace ds { namespace ui {
       Window pr = root->_p->xWindow;
       
       _p->xWindow = XCreateSimpleWindow( xDisplay, pr, x, y, w, h, bw, fc, bc );
+
+      int eventMask = ExposureMask
+        | ButtonPressMask
+        | PointerMotionMask
+        ;
+      XSelectInput( _p->disp->_p->xDisplay, _p->xWindow, eventMask );
+
       disp->add( this );
     }
 
@@ -49,6 +56,15 @@ namespace ds { namespace ui {
     display::pointer_t window::get_display() const
     {
       return _p->disp;
+    }
+
+    void window::select_input(long mask)
+    {
+      // int eventMask = ExposureMask
+      //   | ButtonPressMask
+      //   | PointerMotionMask
+      //   ;
+      XSelectInput( _p->disp->_p->xDisplay, _p->xWindow, mask );
     }
 
     void window::show()

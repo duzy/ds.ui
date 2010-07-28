@@ -36,6 +36,8 @@ namespace ds { namespace ui {
 
       shared_object<display>::pointer_t get_display() const;
 
+      void select_input(long mask);
+
       void show();
       void hide();
       void close();

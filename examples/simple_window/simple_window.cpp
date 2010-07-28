@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   //win2.show(); // show it since it's belong to 'disp'
   
   std::cout << "loop..." <<std::endl;
-  int n = disp->reduce_events( &win );
+  int n = disp->reduce_events();//( &win );
 
   std::cout << n <<std::endl;
   return n;

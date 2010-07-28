@@ -105,15 +105,10 @@ namespace ds { namespace ui {
       return true;
     }
 
-    int display::reduce_events( const window::pointer_t & win )
+    //int display::reduce_events( const window::pointer_t & win )
+    int display::reduce_events()
     {
       XSync( _p->xDisplay, False );
-
-      int eventMask = ExposureMask
-        | ButtonPressMask
-        | PointerMotionMask
-        ;
-      XSelectInput( _p->xDisplay, win->_p->xWindow, eventMask );
 
       _p->loop();
 
