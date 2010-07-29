@@ -9,6 +9,7 @@
 
 #ifndef __DS_EVENT_LOOP_HPP____by_Duzy_Chan__
 #define __DS_EVENT_LOOP_HPP____by_Duzy_Chan__ 1
+#       include <boost/noncopyable.hpp>
 
 namespace ds
 {
@@ -31,10 +32,13 @@ namespace ds
    *      MyLoop()
    *        : ds::event_loop( &boost::member_from_base<ds::event_queue>::member )
    *        , _pump( &boost::member_from_base<ds::event_queue>::member )
+   *        , _pump2( &boost::member_from_base<ds::event_queue>::member )
    *      {
    *        _pump.start_pump(); // event pump and MyLoop should be running in
    *                            // different threads
    *        // or: _pump.start_pump_in_new_thread();
+   *
+   *        _pump2.start_pump();
    *      }
    *      
    *    protected:
@@ -45,6 +49,7 @@ namespace ds
    *
    *    private:
    *      MyEventPump _pump;
+   *      AnotherEventPump _pump2;
    *    };
    *
    *    void run_loop()
@@ -54,17 +59,17 @@ namespace ds
    *    }
    *  @endcode
    */
-  class event_loop
+  class event_loop : boost::noncopyable
   {
   public:
     event_loop(event_queue * q) : _queue(q) {}
 
     virtual ~event_loop() {}
 
-    void run();
+    int run();
 
   protected:
-    virtual on_event(const event &) = 0;
+    virtual void on_event(const event &) = 0;
 
   private:
     event_queue *_queue;

@@ -19,6 +19,34 @@ namespace ds { namespace ui {
 
     /**
      *  @brief Windows is living in a particular screen of a display.
+     *
+     *  @usage
+     *  @code
+     *    class MyLoop
+     *      : public ds::ui::event_loop
+     *    {
+     *    public:
+     *      MyLoop( const ds::ui::display::pointer_t & disp )
+     *        : ds::ui::event_loop( disp )
+     *      {
+     *      }
+     *
+     *    protected:
+     *      virtual void on_event( const event & evt)
+     *      {
+     *        // TODO: hack into the event loop here...
+     *        ds::ui::event_loop::on_event(evt);
+     *      }
+     *    };
+     *    
+     *    int main()
+     *    {
+     *      ds::ui::display::pointer_t disp( ds::ui::display::open() );
+     *      
+     *      MyLoop loop( disp );
+     *      return loop.run();
+     *    }
+     *  @endcode
      */
     class display
       : boost::noncopyable
