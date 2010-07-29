@@ -14,16 +14,13 @@ namespace ds { namespace ui {
       Display * xDisplay;
       int screen;
 
-      window::pointer_t root;
-
       IMPL()
         : xDisplay( NULL )
-        , screen( -1 ) // TODO: is '-1' ?
-        , root( NULL )
+        , screen( -1 ) // TODO: should be '-1' ?
       {
       }
 
-      void loop();
+      void pump_events();
       void dispatch( XEvent * event );
     };//struct display::IMPL
 

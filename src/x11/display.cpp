@@ -17,22 +17,25 @@
 
 namespace ds { namespace ui {
 
-    void display::IMPL::loop()
+    void display::IMPL::pump_events()
     {
       if ( xDisplay == NULL ) return;
       if ( screen == -1 ) return;
 
-      XEvent ev;
+      XEvent event;
+      //bzero( &event, sizeof(event) );
+
+      //while ( XPending(xDisplay) ) {
       while ( true ) {
-        XNextEvent( xDisplay, &ev );
-        dispatch( &ev );
+        XNextEvent( xDisplay, &event );
+        dispatch( &event );
       }
     }
 
     void display::IMPL::dispatch( XEvent * event )
     {
       // TODO: ...
-      //std::cout << "event: " << event->type << std::endl;
+      std::cout << "event: " << event->type << std::endl;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -48,9 +51,12 @@ namespace ds { namespace ui {
 
     display::~display()
     {
-      delete _p;
       //dsD("display::~display()");
       std::cout<<"display::~display()"<<std::endl;
+
+      if ( _p->xDisplay )
+        XCloseDisplay( _p->xDisplay );
+      delete _p;
     }
 
     display::pointer_t display::open( id i )
@@ -61,39 +67,39 @@ namespace ds { namespace ui {
       return d;
     }
 
-    shared_object<screen>::pointer_t display::default_screen() const
+    screen::pointer_t display::default_screen() const
     {
       screen::pointer_t scr( new screen );
       scr->_p->xScreen = XDefaultScreenOfDisplay( _p->xDisplay );
       return scr;
     }
 
-    shared_object<screen>::pointer_t display::get_screen( int index ) const
+    screen::pointer_t display::get_screen( int index ) const
     {
       screen::pointer_t scr( new screen );
       scr->_p->xScreen = XScreenOfDisplay( _p->xDisplay, index );
       return scr;
     }
 
-    shared_object<window>::pointer_t display::root() const
+    window::pointer_t display::default_root() const
     {
-      if ( _p->root )
-        return _p->root;
-
-      Window xWindow = XRootWindow( _p->xDisplay, _p->screen );
-      _p->root = new window;
-      _p->root->_p->disp = const_cast<display*>(this);
-      _p->root->_p->xWindow = xWindow;
-      
-      return _p->root;
+      window::pointer_t w( new window );
+      w->_p->disp = const_cast<display*>(this);
+      w->_p->xWindow = XDefaultRootWindow( _p->xDisplay );
+      return w;
     }
     
-    void display::add( const window::pointer_t & win )
+    void display::map( const window::pointer_t & win )
     {
+      if ( /*!win->_p->disp ||*/ !win->_p->xWindow ) {
+        win->_p->disp = this; // convert to display::pointer_t
+        win->_p->create();
+      }
+
       XMapWindow( _p->xDisplay, win->_p->xWindow );
     }
 
-    void display::remove( const window::pointer_t & win )
+    void display::unmap( const window::pointer_t & win )
     {
       XUnmapWindow( _p->xDisplay, win->_p->xWindow );
     }
@@ -105,14 +111,11 @@ namespace ds { namespace ui {
       return true;
     }
 
-    //int display::reduce_events( const window::pointer_t & win )
     int display::reduce_events()
     {
       XSync( _p->xDisplay, False );
 
-      _p->loop();
-
-      XCloseDisplay( _p->xDisplay );
+      _p->pump_events();
 
       return 0;
     }

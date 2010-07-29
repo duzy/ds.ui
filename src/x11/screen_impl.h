@@ -13,6 +13,8 @@ namespace ds { namespace ui {
     {
       Screen *xScreen;
 
+      // TODO: keep a display::pointer_t here
+
       IMPL()
         : xScreen( NULL )
       {

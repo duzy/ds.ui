@@ -20,6 +20,9 @@ namespace ds { namespace ui {
         , disp( d )
       {
       }
+
+      void create();
+      void destroy();
     };//struct window::IMPL
     
   }//namespace ui

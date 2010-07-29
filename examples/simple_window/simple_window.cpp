@@ -8,6 +8,7 @@
  **/
 
 #include <ds/ui/display.hpp>
+#include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
 #include <cassert>
 #include <iostream>
@@ -16,20 +17,21 @@ int main(int argc, char** argv)
 {
   // make a default display connection
   ds::ui::display::pointer_t disp = ds::ui::display::open();
-  ds::ui::window win( disp ); // a window in the display 'disp'
-  //ds::ui::window win2; // a window of no display is trivial
+  ds::ui::screen::pointer_t scrn = disp->default_screen();
 
-  assert( disp->has(&win) );
-  
-  win.show();
+  ds::ui::window win1( disp ); // a window in the display 'disp'
+  assert( disp->has(&win1) );
 
-  //disp->add( &win2 );
-  //assert( disp->has(&win2) );
+  win1.show();
 
-  //win2.show(); // show it since it's belong to 'disp'
+  ds::ui::window win2; // a window of no display is trivial
+  disp->map( &win2 );
+  assert( disp->has(&win2) );
+
+  win2.show(); // show it since it's belong to 'disp'
   
   std::cout << "loop..." <<std::endl;
-  int n = disp->reduce_events();//( &win );
+  int n = disp->reduce_events();
 
   std::cout << n <<std::endl;
   return n;

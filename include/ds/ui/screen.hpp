@@ -13,6 +13,7 @@
 namespace ds { namespace ui {
 
     class display;
+    class window;
     
     class screen : public shared_object<screen>
     {
@@ -24,6 +25,8 @@ namespace ds { namespace ui {
 
     public:
       shared_object<display>::pointer_t get_display() const;
+
+      shared_object<window>::pointer_t root() const;
 
       int width() const;
       int height() const;

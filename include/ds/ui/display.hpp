@@ -50,13 +50,12 @@ namespace ds { namespace ui {
       shared_object<screen>::pointer_t default_screen() const;
       shared_object<screen>::pointer_t get_screen( int index ) const;
 
-      shared_object<window>::pointer_t root() const;
+      shared_object<window>::pointer_t default_root() const;
 
-      void add( const shared_object<window>::pointer_t& win );
-      void remove( const shared_object<window>::pointer_t& win );
+      void map( const shared_object<window>::pointer_t& win );
+      void unmap( const shared_object<window>::pointer_t& win );
       bool has( const shared_object<window>::pointer_t& win );
 
-      //int reduce_events( const shared_object<window>::pointer_t& win );
       int reduce_events();
 
     private:

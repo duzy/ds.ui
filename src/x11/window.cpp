@@ -16,6 +16,62 @@
 #include <ds/debug.hpp>
 
 namespace ds { namespace ui {
+
+    void window::IMPL::create()
+    {
+      dsI( !xWindow );
+      dsI( disp );
+
+      int x(0), y(0), w(400), h(300), bw(0);
+
+      screen::pointer_t scrn = disp->default_screen();
+      unsigned fc = scrn->black_pixel();
+      unsigned bc = scrn->white_pixel();
+
+      window::pointer_t root = scrn->root();
+      dsI(root);
+
+      Window pr = root->_p->xWindow;
+      register Display *xDisplay( disp->_p->xDisplay );
+
+      //XCreateWindow(...);
+      xWindow = XCreateSimpleWindow( xDisplay, pr, x, y, w, h, bw, fc, bc );
+
+      int eventMask
+        = KeyPressMask
+        | KeyReleaseMask
+        | ButtonPressMask
+        | ButtonReleaseMask
+        | EnterWindowMask
+        | LeaveWindowMask
+        | PointerMotionMask
+        //| PointerMotionHintMask
+        | Button1MotionMask
+        | Button2MotionMask
+        | Button3MotionMask
+        | Button4MotionMask
+        | ButtonMotionMask
+        //| KeymapStateMask
+        | ExposureMask
+        | VisibilityChangeMask
+        | StructureNotifyMask
+        | ResizeRedirectMask
+        | SubstructureNotifyMask
+        | SubstructureRedirectMask
+        | FocusChangeMask
+        | PropertyChangeMask
+        | ColormapChangeMask
+        | OwnerGrabButtonMask
+        ;
+      XSelectInput( xDisplay, xWindow, eventMask );
+    }
+
+    void window::IMPL::destroy()
+    {
+      XDestroyWindow( disp->_p->xDisplay, xWindow );
+    }
+
+    //////////////////////////////////////////////////////////////////////
     
     window::window()
       : _p( new IMPL(NULL) )
@@ -25,31 +81,14 @@ namespace ds { namespace ui {
     window::window( const display::pointer_t & disp )
       : _p( new IMPL(disp) )
     {
-      //XCreateWindow(...);
-      Display *xDisplay( disp->_p->xDisplay );
-      screen::pointer_t scr = disp->default_screen();
-      int x(0), y(0), w(400), h(300), bw(0);
-      unsigned fc = scr->black_pixel();
-      unsigned bc = scr->white_pixel();
-
-      window::pointer_t root = disp->root();
-      dsI(root);
-
-      Window pr = root->_p->xWindow;
-      
-      _p->xWindow = XCreateSimpleWindow( xDisplay, pr, x, y, w, h, bw, fc, bc );
-
-      int eventMask = ExposureMask
-        | ButtonPressMask
-        | PointerMotionMask
-        ;
-      XSelectInput( _p->disp->_p->xDisplay, _p->xWindow, eventMask );
-
-      disp->add( this );
+      _p->create();
+      disp->map( this );
     }
 
     window::~window()
     {
+      _p->destroy();
+      _p->disp.reset( NULL );
       delete _p;
     }
 
@@ -60,10 +99,6 @@ namespace ds { namespace ui {
 
     void window::select_input(long mask)
     {
-      // int eventMask = ExposureMask
-      //   | ButtonPressMask
-      //   | PointerMotionMask
-      //   ;
       XSelectInput( _p->disp->_p->xDisplay, _p->xWindow, mask );
     }
 

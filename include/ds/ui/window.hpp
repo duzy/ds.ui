@@ -13,12 +13,14 @@
 namespace ds { namespace ui {
 
     class display;
+    class screen;
 
     class window : public shared_object<window>
     {
       struct IMPL;
 
       friend class display;
+      friend class screen;
 
     public:
       /**
@@ -30,7 +32,7 @@ namespace ds { namespace ui {
        *  @brief Construct a window in the display 'disp' and be ready for
        *         showing.
        */
-      window( const shared_object<display>::pointer_t & disp );
+      explicit window( const shared_object<display>::pointer_t & disp );
 
       ~window();
 

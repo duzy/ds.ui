@@ -13,6 +13,7 @@
 #include <X11/Xlib.h>
 #include "screen_impl.h"
 #include "display_impl.h"
+#include "window_impl.h"
 
 namespace ds { namespace ui {
 
@@ -32,6 +33,14 @@ namespace ds { namespace ui {
       disp->_p->xDisplay = XDisplayOfScreen( _p->xScreen );
       disp->_p->screen = XScreenNumberOfScreen( _p->xScreen );
       return disp;
+    }
+
+    window::pointer_t screen::root() const
+    {
+      window::pointer_t w( new window );
+      w->_p->disp = get_display();
+      w->_p->xWindow = XRootWindowOfScreen( _p->xScreen );
+      return w;
     }
 
     int screen::width() const
