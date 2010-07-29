@@ -7,6 +7,17 @@
  *
  **/
 
+#include <ds/ui/display.hpp>
+#include <ds/ui/screen.hpp>
+#include <ds/ui/window.hpp>
+#include <ds/ui/events.hpp>
+#include <ds/event_queue.hpp>
+#include <X11/Xlib.h>
+#include "display_impl.h"
+#include "screen_impl.h"
+#include "window_impl.h"
+#include <ds/debug.hpp>
+
 namespace ds { namespace ui {
 
     void display::IMPL::push_event( event_queue *eq, XEvent * event )

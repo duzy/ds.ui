@@ -18,8 +18,6 @@
 #include "window_impl.h"
 #include <ds/debug.hpp>
 
-#include "display_events.ipp"
-
 namespace ds { namespace ui {
 
     void display::IMPL::init( display *disp, const char * name )
