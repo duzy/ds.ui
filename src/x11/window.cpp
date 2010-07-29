@@ -15,6 +15,8 @@
 #include "display_impl.h"
 #include <ds/debug.hpp>
 
+#include <iostream>
+
 namespace ds { namespace ui {
 
     void window::IMPL::create()
@@ -90,6 +92,8 @@ namespace ds { namespace ui {
 
     window::~window()
     {
+      std::clog<<"window::~window: "<<this<<std::endl;
+
       _p->destroy();
       _p->disp.reset( NULL );
       delete _p;

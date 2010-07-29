@@ -12,13 +12,13 @@ namespace ds { namespace ui {
     struct display::IMPL
     {
       Display * xDisplay;
-      int screen;
+      //int screen;
 
       Atom WM_DELETE_WINDOW;
 
       IMPL()
         : xDisplay( NULL )
-        , screen( -1 ) // TODO: should be '-1' ?
+          //, screen( -1 ) // TODO: should be '-1' ?
         , WM_DELETE_WINDOW( 0 )
       {
       }

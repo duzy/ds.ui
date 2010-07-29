@@ -56,7 +56,7 @@ namespace ds { namespace ui {
       // see SDL/src/video/x11/SDL_x11events.c
 
       if ( xDisplay == NULL ) return;
-      if ( screen == -1 ) return;
+      //if ( screen == -1 ) return;
 
       XEvent event;
       //bzero( &event, sizeof(event) );
@@ -89,6 +89,8 @@ namespace ds { namespace ui {
         }
         break;
       }
+
+      //TODO: send events to my event_queue
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -116,7 +118,7 @@ namespace ds { namespace ui {
     {
       pointer_t d( new display );
       d->_p->xDisplay = XOpenDisplay( (const char *) i._p );
-      d->_p->screen = XDefaultScreen( d->_p->xDisplay );
+      //d->_p->screen = XDefaultScreen( d->_p->xDisplay );
       d->_p->init_atoms();
       return d;
     }

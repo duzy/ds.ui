@@ -14,6 +14,7 @@ namespace ds
 {
   struct event
   {
+    int type;
   };//struct event
 }
 

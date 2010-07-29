@@ -15,7 +15,9 @@ sm.module.dirs.include := \
   $(ds.ui.dir)/include \
   $(ds.third.boost.dir)
 
-sm.module.sources := $(wildcard src/*.cpp)
+sm.module.sources := \
+  $(wildcard src/*.cpp) \
+  $(wildcard src/events/*.cpp)
 
 ifeq ($(sm.os.name),linux)
   sm.module.sources += $(wildcard src/x11/*.cpp)
@@ -23,6 +25,10 @@ ifeq ($(sm.os.name),linux)
 else
 ifeq ($(sm.os.name),win32)
   sm.module.sources += $(wildcard src/win32/*.cpp)
+else
+ifeq ($(sm.os.name),mac)
+  sm.module.sources += $(wildcard src/cocoa/*.cpp)
+endif#mac
 endif#win32
 endif#linux
 

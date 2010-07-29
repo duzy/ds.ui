@@ -13,24 +13,62 @@
 namespace ds
 {
   struct event;
+  class event_queue;
 
   /**
    *  @brief Event loop in a thread.
+   *
+   *  @usage
+   *  @code
+   *  
+   *    TODO: check the usage of boost::member_from_base
+   *    
+   *    class MyLoop
+   *      : boost::member_from_base<ds::event_queue>
+   *      , ds::event_loop
+   *    {
+   *    public:
+   *      MyLoop()
+   *        : ds::event_loop( &boost::member_from_base<ds::event_queue>::member )
+   *        , _pump( &boost::member_from_base<ds::event_queue>::member )
+   *      {
+   *        _pump.start_pump(); // event pump and MyLoop should be running in
+   *                            // different threads
+   *        // or: _pump.start_pump_in_new_thread();
+   *      }
+   *      
+   *    protected:
+   *      virtual on_event(const event &)
+   *      {
+   *            // dispatch events here...
+   *      }
+   *
+   *    private:
+   *      MyEventPump _pump;
+   *    };
+   *
+   *    void run_loop()
+   *    {
+   *      MyLoop loop;
+   *      loop.run(); // run the event loop in the current thread
+   *    }
+   *  @endcode
    */
-  struct event_loop
+  class event_loop
   {
-    void run();
+  public:
+    event_loop(event_queue * q) : _queue(q) {}
 
-    void post(const event &);
-    void post_and_wait(const event &);
+    virtual ~event_loop() {}
+
+    void run();
 
   protected:
     virtual on_event(const event &) = 0;
 
   private:
-    bool wait_for_events();
-    void get_next(event &);
-  };//struct event_loop
+    event_queue *_queue;
+  };//class event_loop
 
 }//namespace ds
 

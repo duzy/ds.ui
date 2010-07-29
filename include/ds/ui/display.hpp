@@ -10,6 +10,7 @@
 #define __DS_UI_DISPLAY_HPP____by_Duzy_Chan__ 1
 #       include <boost/noncopyable.hpp>
 #       include <ds/shared_object.hpp>
+#       include <ds/event_pump.hpp>
 
 namespace ds { namespace ui {
 
@@ -17,11 +18,12 @@ namespace ds { namespace ui {
     class window;
 
     /**
-     *  @brief Windows is living in a particular display.
+     *  @brief Windows is living in a particular screen of a display.
      */
     class display
       : boost::noncopyable
       , public shared_object<display>
+      , public event_pump
     {
       display();
       ~display();
@@ -56,7 +58,10 @@ namespace ds { namespace ui {
       void unmap( const shared_object<window>::pointer_t& win );
       bool has( const shared_object<window>::pointer_t& win );
 
-      int reduce_events();
+    protected:
+      virtual void pump_events(); //! must be thread safe
+                                  //! must be the same thread as invoking 'open'
+                                  //! must be the same thread as invoking 'start_pump'
 
     private:
       IMPL * _p;

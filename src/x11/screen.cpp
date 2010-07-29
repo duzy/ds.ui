@@ -15,6 +15,8 @@
 #include "display_impl.h"
 #include "window_impl.h"
 
+#include <iostream>
+
 namespace ds { namespace ui {
 
     screen::screen()
@@ -24,6 +26,7 @@ namespace ds { namespace ui {
 
     screen::~screen()
     {
+      std::clog<<"screen::~screen: "<<this<<std::endl;
       delete _p;
     }
 
@@ -31,7 +34,7 @@ namespace ds { namespace ui {
     {
       display::pointer_t disp( new display );
       disp->_p->xDisplay = XDisplayOfScreen( _p->xScreen );
-      disp->_p->screen = XScreenNumberOfScreen( _p->xScreen );
+      //disp->_p->screen = XScreenNumberOfScreen( _p->xScreen );
       return disp;
     }
 
