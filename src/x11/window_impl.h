@@ -13,7 +13,9 @@ namespace ds { namespace ui {
     {
       Window xWindow;
 
-      display::pointer_t disp;
+      display::pointer_t disp; // TODO: a window should not keep a display::pointer_t
+
+      // TODO: should keep a reference to the screen
 
       IMPL( const display::pointer_t & d )
         : xWindow( NULL )

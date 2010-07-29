@@ -17,7 +17,7 @@ namespace ds {
   {
     // TODO: event loop implentation... handles QUIT event
     event * evt = NULL;
-    while (_queue->is_active()) {
+    while ( _queue->is_active() ) {
       // TODO: should pump events at this point?
       //         e.g. this->pump_events()
       //       SDL does pumping events before wait(SDL_WaitEventTimeOut)
@@ -28,14 +28,15 @@ namespace ds {
         continue;
       }
 
-      if (evt->type == event::quit::TypeValue) {
-        return 0;
-      }
+      bool quit( event::quit::is(evt) );
 
       this->on_event(*evt);
 
       delete evt; // TODO: avoid using 'event *' and this delete command
       //_queue->revoke_event(evt);
+      evt = NULL;
+
+      if ( quit ) return 0; // TODO: deactive the event queue
     }
     return -1;
   }

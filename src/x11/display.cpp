@@ -58,7 +58,6 @@ namespace ds { namespace ui {
       // see SDL/src/video/x11/SDL_x11events.c
 
       if ( xDisplay == NULL ) return;
-      //if ( screen == -1 ) return;
 
       XEvent event;
       //bzero( &event, sizeof(event) );
@@ -77,20 +76,25 @@ namespace ds { namespace ui {
         return;
       }
 
+      // TODO: deal with multiple windows, quit only if all windows closed 
+
       // TODO: push parsed-event into the event_queue
       //        eq->push( ... )
-      dsD("event: "<<event->type);
-      eq->push(new ds::event::test);
+      //dsD("event: "<<event->type);
 
       switch (event->type) {
       case ClientMessage:
         if (event->xclient.format == 32 &&
             event->xclient.data.l[0] == WM_DELETE_WINDOW) {
-          std::cout<<"WM_DELETE_WINDOW"<<std::endl;
-          //Window w = event->xclient->window;
-          Window w = event->xany.window;
+          dsD("WM_DELETE_WINDOW");
+          Window w = event->xany.window; //event->xclient->window;
           // TODO: destroy window
+          eq->push(new ds::event::quit); // TODO: only sent quit if no windows
         }
+        break;
+
+      default:
+        eq->push(new ds::event::test);
         break;
       }
     }
@@ -105,12 +109,12 @@ namespace ds { namespace ui {
       : event_pump( get_event_queue() )
       , _p( new IMPL )
     {
-      dsD("display::display: "<<this);
+      dsD("display: "<<this);
     }
 
     display::~display()
     {
-      dsD("display::~display: "<<this);
+      dsD("display: "<<this);
 
       if ( _p->xDisplay )
         XCloseDisplay( _p->xDisplay );
@@ -128,21 +132,21 @@ namespace ds { namespace ui {
 
     screen::pointer_t display::default_screen() const
     {
-      screen::pointer_t scr( new screen );
+      screen::pointer_t scr( new screen ); // TODO: avoid making a new instance of screen
       scr->_p->xScreen = XDefaultScreenOfDisplay( _p->xDisplay );
       return scr;
     }
 
     screen::pointer_t display::get_screen( int index ) const
     {
-      screen::pointer_t scr( new screen );
+      screen::pointer_t scr( new screen ); // TODO: avoid making a new instance of screen
       scr->_p->xScreen = XScreenOfDisplay( _p->xDisplay, index );
       return scr;
     }
 
     window::pointer_t display::default_root() const
     {
-      window::pointer_t w( new window );
+      window::pointer_t w( new window ); // TODO: avoid making a new instance of window
       w->_p->disp = const_cast<display*>(this);
       w->_p->xWindow = XDefaultRootWindow( _p->xDisplay );
       return w;

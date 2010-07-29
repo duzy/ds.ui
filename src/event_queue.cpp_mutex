@@ -1,0 +1,157 @@
+/**                                                                 -*- c++ -*-
+ *    Copyright 2010-08-02 DuzySoft.com, by Zhan Xin-Ming (Duzy Chan)
+ *    All rights reserved by Zhan Xin-Ming (Duzy Chan)
+ *    Email: <duzy@duzy.info, duzy.chan@gmail.com>
+ *
+ *    $Id$
+ *
+ **/
+
+#include <ds/event.hpp>
+#include <ds/event_queue.hpp>
+#include <deque>
+//#include <ext/new_allocator.h>
+//#include <ext/pool_allocator.h>
+#include <ext/bitmap_allocator.h>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/xtime.hpp>
+
+namespace ds {
+
+  struct event_queue::IMPL
+  {
+    //typedef __gnu_cxx::new_allocator<event*> allocator_t;
+    typedef __gnu_cxx::bitmap_allocator<event*> allocator_t;
+    typedef std::deque<event*, allocator_t> queue_t;
+    typedef boost::mutex mutex_t;
+
+    enum { MaxEvents = 128 };
+
+    mutex_t _mutex;
+    queue_t _events;
+
+    int _isActive : 1; // QUIT event will unset this flag
+
+    IMPL()
+      : _mutex()
+      , _events()
+      , _isActive(1)
+    {
+      
+    }
+  };//struct event_queue::IMPL
+
+  //////////////////////////////////////////////////////////////////////
+
+  event_queue::event_queue()
+    : _p( new IMPL )
+  {
+  }
+
+  event_queue::~event_queue()
+  {
+    delete _p;
+  }
+
+  bool event_queue::has_events(uint32_t minType, uint32_t maxType) const
+  {
+    IMPL::mutex_t::scoped_lock l( _p->_mutex );
+    IMPL::queue_t::const_iterator it( _p->_events.begin() );
+    for(; it != _p->_events.end(); ++it) {
+      if (minType <= (*it)->type && (*it)->type <= maxType) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void event_queue::flush(uint32_t minType, uint32_t maxType)
+  {
+    IMPL::mutex_t::scoped_lock l( _p->_mutex );
+    IMPL::queue_t::iterator it( _p->_events.begin() );
+    for(; it != _p->_events.end();) {
+      if (minType <= (*it)->type && (*it)->type <= maxType) {
+        it = _p->_events.erase(it);
+        continue;
+      }
+      ++it;
+    }
+  }
+
+  event * event_queue::poll()
+  {
+    boost::this_thread::disable_interruption noDisturb;
+    IMPL::mutex_t::scoped_lock l( _p->_mutex );
+    if ( _p->_events.empty() ) return 0;
+    event * evt( _p->_events.front() );
+    _p->_events.pop_front();
+    return evt;
+  }
+
+  /**
+   *  This wait() uses the same policy as SDL_WaitEventTimeout in SDL_events.c,
+   *  this policy will allows the subsequenced calls like this in the same
+   *  thread:
+   *    @code
+   *            // in thread#1
+   *            queue->push(new event::test);
+   *            ...
+   *            
+   *            // in thread#1 also
+   *            event *e = queue->wait(); // block until events income
+   *    @endcode
+   **/
+  event * event_queue::wait(int timeout)
+  {
+    // 1 millisecond = 1000 microseconds
+    // 1 microsecond = 1000 nanoseconds
+    // 1 nanosecond  = 1000 picoseconds
+    boost::system_time t1 = boost::get_system_time();
+    do {
+      if ( event * evt = poll() ) return evt;
+      if ( 0 == timeout ) return NULL;
+      if ( timeout < 0 ) return NULL;
+      if ( 0 < timeout ) {
+        boost::system_time t2 = boost::get_system_time();
+        if (timeout <= (t2 - t1).total_milliseconds()) return NULL;
+
+        t2 += boost::posix_time::milliseconds( 10 );
+        boost::this_thread::sleep( t2 );
+      }
+    } while(true);
+  }
+
+  event_queue::PushResult event_queue::push(event *evt)
+  {
+    boost::this_thread::disable_interruption noDisturb;
+    IMPL::mutex_t::scoped_lock l( _p->_mutex );
+    // TODO: handle with PushFiltered, PushError
+    if ( IMPL::MaxEvents <= _p->_events.size() ) return PushFull;
+    _p->_events.push_back( evt );
+    return PushOk;
+  }
+
+  void event_queue::set_filter(const filter_t & f)
+  {
+    // TODO: ...
+  }
+
+  event_queue::filter_t event_queue::get_filter() const
+  {
+    // TODO: ...
+    return event_queue::filter_t(0);
+  }
+
+  int event_queue::filter_events()
+  {
+    // TODO: ...
+    return 0;
+  }
+
+  bool event_queue::is_active() const
+  {
+    return bool( _p->_isActive );
+  }
+
+}//namespace ds

@@ -90,7 +90,7 @@ namespace ds { namespace ui {
 
     window::~window()
     {
-      dsD("window::~window: "<<this);
+      dsD("window: "<<this);
 
       _p->destroy();
       _p->disp.reset( NULL );

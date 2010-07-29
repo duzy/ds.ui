@@ -32,11 +32,14 @@ namespace ds
   {
     enum { TypeValue = TV };
     sub() : event( TypeValue ) {}
+
+    static inline bool is( int t ) { return t == TypeValue; }
+    static inline bool is( const event * e ) { return e->type == TypeValue; }
   };
 
-  struct event::quit : event::sub<quit, 1> {};
-  struct event::custom : event::sub<custom, 2> {};
-  struct event::test : event::sub<test, 3> {};
+  struct event::quit : event::sub<quit, 0> {};
+  struct event::custom : event::sub<custom, 1> {};
+  struct event::test : event::sub<test, 2> {};
 }//namespace ds
 
 #endif//__DS_EVENT_HPP____by_Duzy_Chan__

@@ -22,6 +22,9 @@ namespace ds
 
   /**
    *  @brief Provide functions for a thread-safe event queue.
+   *
+   *  TODO: enable two policies for threading(event_queue.cpp_mutex,
+   *        event_queue.cpp_condition)
    */
   class event_queue : boost::noncopyable // TODO: should be shared_object ??
   {

@@ -16,7 +16,6 @@ namespace ds { namespace ui {
       : ds::event_loop( get_event_queue() )
       , _display( disp )
     {
-      //disp->start_pump();
     }
 
     event_loop::~event_loop()
@@ -25,13 +24,19 @@ namespace ds { namespace ui {
 
     void event_loop::should_pump_events()
     {
-      // TODO: pump events from the display
-      _display->pump();
+      /**
+       *  Pump events out of the display will actually push the events into
+       *  the event queue, since at this point it's in the same thread as the
+       *  event loop(see ds::event_loop::run), it must be safe to 'wait'
+       *  messages.
+       */
+      _display->pump(); // Pump some events
     }
 
     void event_loop::on_event(const ds::event & evt)
     {
       // TODO: dispatch UI events
+      // TODO: close _display on quit event
       dsD("event: "<<evt.type);
       ds::event_loop::on_event(evt);
     }

@@ -16,6 +16,8 @@ namespace ds { namespace ui {
 
       Atom WM_DELETE_WINDOW;
 
+      // TODO: keeps all created windows
+
       IMPL()
         : xDisplay( NULL )
           //, screen( -1 ) // TODO: should be '-1' ?
