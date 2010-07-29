@@ -184,8 +184,6 @@ namespace ds { namespace ui {
 
     void display::pump_events()
     {
-      //XSync( _p->_xdisp, False );
-
       _p->pump_events( event_pump::get_queue() );
     }
     

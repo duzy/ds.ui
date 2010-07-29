@@ -39,14 +39,14 @@ sm.module.libs += \
 #  -l$(call ds.third.boost.use, system) \
 
 ifeq ($(sm.os.name),linux)
-  sm.module.sources += $(wildcard src/x11/*.cpp)
+  sm.module.sources += $(wildcard src/ui/x11/*.cpp)
   sm.module.libs += X11
 else
 ifeq ($(sm.os.name),win32)
-  sm.module.sources += $(wildcard src/win32/*.cpp)
+  sm.module.sources += $(wildcard src/ui/win32/*.cpp)
 else
 ifeq ($(sm.os.name),mac)
-  sm.module.sources += $(wildcard src/cocoa/*.cpp)
+  sm.module.sources += $(wildcard src/ui/cocoa/*.cpp)
 endif#mac
 endif#win32
 endif#linux
