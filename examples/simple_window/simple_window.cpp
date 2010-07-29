@@ -28,7 +28,7 @@ namespace cycle
 
   struct so_1 : ds::shared_object<so_1>
   {
-    ds::shared_object<so_2>::pointer_t _2;
+    ds::shared_object<so_2>::pointer _2;
 
     so_1() { ++object_count_1; }
     ~so_1() { --object_count_1; }
@@ -36,8 +36,8 @@ namespace cycle
 
   struct so_2 : ds::shared_object<so_2>
   {
-    ds::shared_object<so_1>::pointer_t _1;
-    ds::shared_object<so_3>::pointer_t _3;
+    ds::shared_object<so_1>::pointer _1;
+    ds::shared_object<so_3>::pointer _3;
 
     so_2() { ++object_count_2; }
     ~so_2() { --object_count_2; }
@@ -45,8 +45,8 @@ namespace cycle
 
   struct so_3 : ds::shared_object<so_3>
   {
-    ds::shared_object<so_1>::pointer_t _1;
-    ds::shared_object<so_4>::pointer_t _4;
+    ds::shared_object<so_1>::pointer _1;
+    ds::shared_object<so_4>::pointer _4;
 
     so_3() { ++object_count_3; }
     ~so_3() { --object_count_3; }
@@ -54,7 +54,7 @@ namespace cycle
 
   struct so_4 : ds::shared_object<so_4>
   {
-    ds::shared_object<so_1>::pointer_t _1;
+    ds::shared_object<so_1>::pointer _1;
 
     so_4() { ++object_count_4; }
     ~so_4() { --object_count_4; }
@@ -63,7 +63,7 @@ namespace cycle
 
 struct so_test : ds::shared_object<so_test> {};
 
-static void test_so_f( so_test::pointer_t p, int n )
+static void test_so_f( so_test::pointer p, int n )
 {
   dsI( 0 < p->refcount() );
   dsI( p->refcount() == n + 1 );
@@ -74,23 +74,23 @@ static void test_shared_object()
   so_test *p( new so_test );
   dsI( p->refcount() == 0 );
 
-  so_test::pointer_t sp( p );
+  so_test::pointer sp( p );
   dsI( p->refcount() == 1 );
   dsI( p->refcount() == sp->refcount() );
 
-  so_test::pointer_t sp2( p );
+  so_test::pointer sp2( p );
   dsI( p->refcount() == 2 );
   dsI( p->refcount() == sp2->refcount() );
   dsI( sp->refcount() == sp2->refcount() );
 
   {
-    so_test::pointer_t sp3( p );
+    so_test::pointer sp3( p );
     dsI( p->refcount() == 3 );
   }
   dsI( p->refcount() == 2 );
 
   {
-    so_test::pointer_t sp4( sp );
+    so_test::pointer sp4( sp );
     dsI( p->refcount() == 3 );
   }
   dsI( p->refcount() == 2 );
@@ -102,17 +102,17 @@ static void test_shared_object()
   so_test so;
   dsI( so.refcount() == 0 );
   {
-    so_test::pointer_t p( &so );
+    so_test::pointer p( &so );
     dsI( so.refcount() == 1 );
     dsI( p->refcount() == 1 );
   }
   */
 
   {
-    cycle::so_1::pointer_t _1( new cycle::so_1 );
-    cycle::so_2::pointer_t _2( new cycle::so_2 );
-    cycle::so_3::pointer_t _3( new cycle::so_3 );
-    cycle::so_4::pointer_t _4( new cycle::so_4 );
+    cycle::so_1::pointer _1( new cycle::so_1 );
+    cycle::so_2::pointer _2( new cycle::so_2 );
+    cycle::so_3::pointer _3( new cycle::so_3 );
+    cycle::so_4::pointer _4( new cycle::so_4 );
     
     /* Cycle Leak 1 */
     //_1->_2 = _2;
@@ -140,20 +140,20 @@ int main(int argc, char** argv)
   test_shared_object();
 
   // make a default display connection
-  ds::ui::display::pointer_t disp = ds::ui::display::open();
+  ds::ui::display::pointer disp = ds::ui::display::open();
   dsL("display-refs: "<<disp->refcount());
 
-  ds::ui::screen::pointer_t scrn = disp->default_screen();
+  ds::ui::screen::pointer scrn = disp->default_screen();
   dsL("screen-refs: "<<scrn->refcount());
 
   //ds::ui::window win1( disp ); // a window in the display 'disp'
-  ds::ui::window::pointer_t win1( new ds::ui::window(disp) );
+  ds::ui::window::pointer win1( new ds::ui::window(disp) );
   assert( disp->has(win1) );
 
   win1->show();
 
   //ds::ui::window win2; // a window of no display is trivial
-  ds::ui::window::pointer_t win2( new ds::ui::window );
+  ds::ui::window::pointer win2( new ds::ui::window );
   disp->map( win2 );
   assert( disp->has(win2) );
 

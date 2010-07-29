@@ -39,7 +39,7 @@ namespace ds { namespace ui {
         return;
       }
 
-      window::pointer_t win( wit->second );
+      window::pointer win( wit->second );
       dsI( win );
 
       // TODO: push parsed-event into the event_queue

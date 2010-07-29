@@ -15,7 +15,7 @@ namespace ds { namespace ui {
 
       display * _disp; // Never hold a display::pointer_t here(cycle leak)!
 
-      window::pointer_t _root;
+      window::pointer _root;
 
       IMPL()
         : _xscrn( NULL )

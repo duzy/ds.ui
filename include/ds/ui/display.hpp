@@ -27,7 +27,7 @@ namespace ds { namespace ui {
      *      : public ds::ui::event_loop
      *    {
      *    public:
-     *      MyLoop( const ds::ui::display::pointer_t & disp )
+     *      MyLoop( const ds::ui::display::pointer & disp )
      *        : ds::ui::event_loop( disp )
      *      {
      *      }
@@ -42,7 +42,7 @@ namespace ds { namespace ui {
      *    
      *    int main()
      *    {
-     *      ds::ui::display::pointer_t disp( ds::ui::display::open() );
+     *      ds::ui::display::pointer disp( ds::ui::display::open() );
      *      
      *      MyLoop loop( disp );
      *      return loop.run();
@@ -77,18 +77,18 @@ namespace ds { namespace ui {
       // TODO:
       //        1) move semantic,
       //        2) think about 'close' display
-      static pointer_t open( id i = id() );
+      static pointer open( id i = id() );
 
-      shared_object<screen>::pointer_t default_screen() const;
-      shared_object<screen>::pointer_t get_screen( int index ) const;
+      shared_object<screen>::pointer default_screen() const;
+      shared_object<screen>::pointer get_screen( int index ) const;
       int default_screen_number() const;
       int screen_count() const;
 
-      shared_object<window>::pointer_t default_root() const;
+      shared_object<window>::pointer default_root() const;
 
-      void map( const shared_object<window>::pointer_t& win );
-      void unmap( const shared_object<window>::pointer_t& win );
-      bool has( const shared_object<window>::pointer_t& win );
+      void map( const shared_object<window>::pointer& win );
+      void unmap( const shared_object<window>::pointer& win );
+      bool has( const shared_object<window>::pointer& win );
 
     protected:
       void start( event_queue * q ) { this->set_queue( q ); }

@@ -73,7 +73,7 @@ namespace ds {
     /**
      *  Must be used to wrap raw pointers returned by 'new'. 
      */
-    typedef boost::intrusive_ptr<DerivedClass> pointer_t;
+    typedef boost::intrusive_ptr<DerivedClass> pointer;
   };//struct shared_object
 
 }//namespace ds

@@ -27,9 +27,9 @@ namespace ds { namespace ui {
       int scrnCount( XScreenCount( _xdisp ) );
       dsI( 0 < scrnCount );
 
-      _scrns = new screen::pointer_t [scrnCount];
+      _scrns = new screen::pointer [scrnCount];
       for ( int n = 0; n < scrnCount; ++n ) {
-        screen::pointer_t s( new screen );
+        screen::pointer s( new screen );
         s->_p->_xscrn = XScreenOfDisplay( _xdisp, n );
         s->_p->_disp = disp;
         _scrns[n] = s;
@@ -117,14 +117,14 @@ namespace ds { namespace ui {
       delete _p;
     }
 
-    display::pointer_t display::open( id i )
+    display::pointer display::open( id i )
     {
-      pointer_t d( new display );
+      pointer d( new display );
       d->_p->init( d.get(), (const char *) i._p );
       return d;
     }
 
-    screen::pointer_t display::get_screen( int n ) const
+    screen::pointer display::get_screen( int n ) const
     {
       dsI( 0 <= n && n < screen_count() );
       dsI( _p->_scrns );
@@ -141,30 +141,30 @@ namespace ds { namespace ui {
       return XScreenCount( _p->_xdisp );
     }
 
-    window::pointer_t display::default_root() const
+    window::pointer display::default_root() const
     {
-      window::pointer_t w( new window ); // TODO: avoid making a new instance of window
+      window::pointer w( new window ); // TODO: avoid making a new instance of window
       w->_p->_disp = const_cast<display*>(this);
       w->_p->_xwin = XDefaultRootWindow( _p->_xdisp );
       return w;
     }
     
-    void display::map( const window::pointer_t & win )
+    void display::map( const window::pointer & win )
     {
       if ( /*!win->_p->_disp ||*/ !win->_p->_xwin ) {
-        win->_p->_disp = this; // implicitly convert to display::pointer_t
+        win->_p->_disp = this; // implicitly convert to display::pointer
         win->_p->create( win );
       }
 
       XMapWindow( _p->_xdisp, win->_p->_xwin );
     }
 
-    void display::unmap( const window::pointer_t & win )
+    void display::unmap( const window::pointer & win )
     {
       XUnmapWindow( _p->_xdisp, win->_p->_xwin );
     }
 
-    bool display::has( const window::pointer_t & win )
+    bool display::has( const window::pointer & win )
     {
       // TODO: ...
       //return false;

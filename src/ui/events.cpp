@@ -6,7 +6,7 @@
 
 namespace ds { namespace ui {
 
-    event_loop::event_loop(const display::pointer_t & disp)
+    event_loop::event_loop(const display::pointer & disp)
       : boost::base_from_member<event_queue>()
       , ds::event_loop( &(boost::base_from_member<event_queue>::member) )
       , _display( disp )

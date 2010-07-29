@@ -24,9 +24,9 @@ namespace ds { namespace ui {
       friend class display;
 
     public:
-      shared_object<display>::pointer_t get_display() const;
+      shared_object<display>::pointer get_display() const;
 
-      shared_object<window>::pointer_t root() const;
+      shared_object<window>::pointer root() const;
 
       int width() const;
       int height() const;

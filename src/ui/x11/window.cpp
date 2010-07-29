@@ -17,18 +17,18 @@
 
 namespace ds { namespace ui {
 
-    void window::IMPL::create( const window::pointer_t & win )
+    void window::IMPL::create( const window::pointer & win )
     {
       dsI( !_xwin );
       dsI( _disp );
 
       int x(0), y(0), w(400), h(300), bw(0);
 
-      screen::pointer_t scrn = _disp->default_screen();
+      screen::pointer scrn = _disp->default_screen();
       unsigned fc = scrn->black_pixel();
       unsigned bc = scrn->white_pixel();
 
-      window::pointer_t root = scrn->root();
+      window::pointer root = scrn->root();
       dsI(root);
 
       Window pr = root->_p->_xwin;
@@ -86,7 +86,7 @@ namespace ds { namespace ui {
       dsL4("window: "<<this<<"->"<<_p->_xwin);
     }
 
-    window::window( const display::pointer_t & disp )
+    window::window( const display::pointer & disp )
       : _p( new IMPL(disp.get()) )
     {
       _p->create( this );
@@ -103,7 +103,7 @@ namespace ds { namespace ui {
       delete _p;
     }
 
-    display::pointer_t window::get_display() const
+    display::pointer window::get_display() const
     {
       return _p->_disp;
     }

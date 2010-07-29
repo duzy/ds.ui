@@ -181,7 +181,7 @@ namespace ds { namespace ui {
       , public ds::event_loop
     {
     public:
-      event_loop(const shared_object<display>::pointer_t &);
+      event_loop(const shared_object<display>::pointer &);
       
       virtual ~event_loop();
 
@@ -190,7 +190,7 @@ namespace ds { namespace ui {
       virtual void on_event(const ds::event &);
 
     private:
-      shared_object<display>::pointer_t _display;
+      shared_object<display>::pointer _display;
     };//class event_loop
 
   }//namespace ui

@@ -15,7 +15,7 @@
 
 namespace ds { namespace ui {
 
-    screen::pointer_t display::default_screen() const
+    screen::pointer display::default_screen() const
     {
       //int n( default_screen_number() );
       //dsI( 0 <= n && n < screen_count() );

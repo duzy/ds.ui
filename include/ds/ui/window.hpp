@@ -32,11 +32,11 @@ namespace ds { namespace ui {
        *  @brief Construct a window in the display 'disp' and be ready for
        *         showing.
        */
-      explicit window( const shared_object<display>::pointer_t & disp );
+      explicit window( const shared_object<display>::pointer & disp );
 
       ~window();
 
-      shared_object<display>::pointer_t get_display() const;
+      shared_object<display>::pointer get_display() const;
 
       void select_input(long mask);
 

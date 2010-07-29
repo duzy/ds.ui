@@ -21,7 +21,7 @@ namespace ds { namespace ui {
       {
       }
 
-      void create( const window::pointer_t & );
+      void create( const window::pointer & );
       void destroy();
     };//struct window::IMPL
     
