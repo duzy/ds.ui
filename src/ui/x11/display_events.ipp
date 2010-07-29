@@ -1,5 +1,5 @@
 /**
- *    Copyright 2010-07-25 DuzySoft.com, by Zhan Xin-Ming (Duzy Chan)
+ *    Copyright 2010-08-06 DuzySoft.com, by Zhan Xin-Ming (Duzy Chan)
  *    All rights reserved by Zhan Xin-Ming (Duzy Chan)
  *    Email: <duzy@duzy.info, duzy.chan@gmail.com>
  *
@@ -38,31 +38,56 @@ namespace ds { namespace ui {
         // Should be used for debug reasons.
         break;
 
-      case UnmapNotify: {
-        // TODO: window hidden
-        // TODO: window minimized
+      case MapNotify: {
+        event::window::shown *evt1( new event::window::shown );
+        event::window::restored *evt2( new event::window::restored );
+        eq->push( evt1 );
+        eq->push( evt2 );
       } break;
 
-      case MapNotify: {
-        // TODO: window shown
-        // TODO: window restored
+      case UnmapNotify: {
+        event::window::hidden *evt1( new event::window::hidden );
+        event::window::minimized *evt2( new event::window::minimized );
+        eq->push( evt1 );
+        eq->push( evt2 );
       } break;
 
       case Expose: {
-        // TODO: ...
+        event::window::exposed *evt( new event::window::exposed );
+        evt->param1 = event->xexpose.x;
+        evt->param2 = event->xexpose.y;
+        evt->param3 = event->xexpose.width;
+        evt->param4 = event->xexpose.height;
+        eq->push( evt );
       } break;
 
       case ConfigureNotify: {
-        // TODO: window moved: event->xconfigure.x, event->xconfigure.y
-        // TODO: window resized: event->xconfigure.width, event->xconfigure.height
+        event::window::moved *evt1( new event::window::moved );
+        event::window::resized *evt2( new event::window::resized );
+        evt1->param1 = event->xconfigure.x;
+        evt1->param2 = event->xconfigure.y;
+        evt2->param3 = event->xconfigure.width;
+        evt2->param4 = event->xconfigure.height;
+        eq->push( evt1 );
+        eq->push( evt2 );
       } break;
 
       case KeyPress: {
-        // TODO: ...
+        event::keyboard *evtPress( new event::keyboard );
+        evtPress->is_pressed = 1;
+        evtPress->is_repeat = 0;
+        evtPress->code = event->xkey.keycode; // TODO: layout[event->xkey.keycode]
+        eq->push( evtPress );
+
+        // TODO: convert key into text, send text_input
       } break;
 
       case KeyRelease: {
-        // TODO: ...
+        event::keyboard *evt( new event::keyboard );
+        evt->is_pressed = 0;
+        evt->is_repeat = 0;
+        evt->code = event->xkey.keycode; // TODO: layout[event->xkey.keycode]
+        eq->push( evt );
       } break;
 
       case KeymapNotify: { /* Generated upon EnterWindow and FocusIn */
@@ -74,19 +99,29 @@ namespace ds { namespace ui {
       } break;
 
       case EnterNotify: {
-        // TODO: ...
+        event::window::enter *evt( new event::window::enter );
+        evt->param1 = event->xcrossing.x;
+        evt->param2 = event->xcrossing.y;
+        eq->push( evt );
       } break;
 
       case LeaveNotify: {
-        // TODO: ...
+        event::window::leave *evt( new event::window::leave );
+        evt->param1 = event->xcrossing.x;
+        evt->param2 = event->xcrossing.y;
+        eq->push( evt );
       } break;
 
       case FocusIn: {
-        // TODO: ...
+        event::window::focus *evt( new event::window::focus );
+        evt->param1 = 1;
+        eq->push( evt );
       } break;
 
       case FocusOut: {
-        // TODO: ...
+        event::window::focus *evt( new event::window::focus );
+        evt->param1 = 0;
+        eq->push( evt );
       } break;
 
       case MotionNotify: {
@@ -115,7 +150,10 @@ namespace ds { namespace ui {
           /** Window closed */
 
           dsE("WM_DELETE_WINDOW");
-          win->close();
+          //win->close();
+          event::window::close * evt(new event::window::close);
+          evt->win = win.get();
+          eq->push( evt );
         }
         break;
 

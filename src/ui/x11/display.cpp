@@ -126,15 +126,6 @@ namespace ds { namespace ui {
       return d;
     }
 
-    screen::pointer_t display::default_screen() const
-    {
-      //int n( default_screen_number() );
-      //dsI( 0 <= n && n < screen_count() );
-      //dsI( _scrns );
-      //return _scrns[n];
-      return get_screen( default_screen_number() );
-    }
-
     screen::pointer_t display::get_screen( int n ) const
     {
       dsI( 0 <= n && n < screen_count() );
