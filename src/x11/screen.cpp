@@ -21,12 +21,12 @@ namespace ds { namespace ui {
     screen::screen()
       : _p( new IMPL )
     {
-      dsD("screen: "<<this<<"->"<<_p->_xscrn);
+      dsL("screen: "<<this<<"->"<<_p->_xscrn);
     }
 
     screen::~screen()
     {
-      dsD("screen: "<<this<<"->"<<_p->_xscrn);
+      dsL("screen: "<<this<<"->"<<_p->_xscrn);
       delete _p;
     }
 

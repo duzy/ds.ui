@@ -22,7 +22,8 @@ sm.module.dirs.include := \
 
 sm.module.sources := \
   $(wildcard src/*.cpp) \
-  $(wildcard src/events/*.cpp)
+  $(wildcard src/ui/*.cpp)
+  $(wildcard src/ui/events/*.cpp)
 
 sm.module.dirs.lib := \
   -L$(ds.third.dir.lib) \

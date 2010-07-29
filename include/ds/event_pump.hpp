@@ -22,7 +22,7 @@ namespace ds {
   public:
     virtual ~event_pump() {}
 
-    void start_pump();
+    //void start_pump();
 
     void pump();
 
@@ -34,6 +34,7 @@ namespace ds {
      */
     virtual void pump_events() = 0;
 
+    void set_queue(event_queue *q) { _queue = q; }
     event_queue *get_queue() const { return _queue; }
 
   private:

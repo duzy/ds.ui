@@ -83,7 +83,7 @@ namespace ds { namespace ui {
     window::window()
       : _p( new IMPL(NULL) )
     {
-      dsD4("window: "<<this<<"->"<<_p->_xwin);
+      dsL4("window: "<<this<<"->"<<_p->_xwin);
     }
 
     window::window( const display::pointer_t & disp )
@@ -91,12 +91,12 @@ namespace ds { namespace ui {
     {
       _p->create( this );
       disp->map( this );
-      dsD4("window: "<<this<<"->"<<_p->_xwin);
+      dsL4("window: "<<this<<"->"<<_p->_xwin);
     }
 
     window::~window()
     {
-      dsD4("window: "<<this<<"->"<<_p->_xwin);
+      dsL4("window: "<<this<<"->"<<_p->_xwin);
 
       _p->destroy();
       _p->_disp = NULL;

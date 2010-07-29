@@ -24,7 +24,7 @@ namespace ds { namespace ui {
           //dsD("property: "<<name);
           return;
         }
-        dsD("no window: "<<event->xany.window<<" for "<<event->type);
+        dsE("no window: "<<event->xany.window<<" for "<<event->type);
         return;
       }
 
@@ -114,7 +114,7 @@ namespace ds { namespace ui {
             event->xclient.data.l[0] == WM_DELETE_WINDOW) {
           /** Window closed */
 
-          dsD("WM_DELETE_WINDOW");
+          dsE("WM_DELETE_WINDOW");
           win->close();
         }
         break;
@@ -124,8 +124,9 @@ namespace ds { namespace ui {
       } break;
 
       case DestroyNotify: {
+        // TODO: should notify the window of the destroy event
         win->_p->_xwin = NULL;
-        //win->_p->_disp = NULL;
+        win->_p->_disp = NULL;
         _winmap.erase( wit->first );
         if ( _winmap.empty() ) {
           eq->push(new ds::event::quit);

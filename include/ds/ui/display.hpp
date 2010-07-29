@@ -16,6 +16,7 @@ namespace ds { namespace ui {
 
     class screen;
     class window;
+    class event_loop;
 
     /**
      *  @brief Windows is living in a particular screen of a display.
@@ -60,6 +61,7 @@ namespace ds { namespace ui {
 
       friend class screen;
       friend class window;
+      friend class event_loop;
 
     public:
       class id
@@ -89,9 +91,12 @@ namespace ds { namespace ui {
       bool has( const shared_object<window>::pointer_t& win );
 
     protected:
+      void start( event_queue * q ) { this->set_queue( q ); }
+
       virtual void pump_events(); //! must be thread safe
                                   //! must be the same thread as invoking 'open'
                                   //! must be the same thread as invoking 'start_pump'
+
 
     private:
       IMPL * _p;

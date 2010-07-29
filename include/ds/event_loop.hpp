@@ -25,14 +25,14 @@ namespace ds
    *    TODO: check the usage of boost::member_from_base
    *    
    *    class MyLoop
-   *      : boost::member_from_base<ds::event_queue>
+   *      : boost::base_from_member<ds::event_queue>
    *      , ds::event_loop
    *    {
    *    public:
    *      MyLoop()
-   *        : ds::event_loop( &boost::member_from_base<ds::event_queue>::member )
-   *        , _pump( &boost::member_from_base<ds::event_queue>::member )
-   *        , _pump2( &boost::member_from_base<ds::event_queue>::member )
+   *        : ds::event_loop( &boost::base_from_member<ds::event_queue>::member )
+   *        , _pump( &boost::base_from_member<ds::event_queue>::member )
+   *        , _pump2( &boost::base_from_member<ds::event_queue>::member )
    *      {
    *        _pump.start_pump(); // event pump and MyLoop should be running in
    *                            // different threads
@@ -62,7 +62,7 @@ namespace ds
   class event_loop : boost::noncopyable
   {
   public:
-    event_loop(event_queue * q) : _queue(q) {}
+    explicit event_loop(event_queue * q) : _queue(q) {}
 
     virtual ~event_loop() {}
 

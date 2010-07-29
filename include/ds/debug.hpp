@@ -167,16 +167,16 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 //      Debuger
 //  There are six level debug message, higher level means more debug outputs:
-//  * dsD0
-//  * dsD1
-//  * dsD2
-//  * dsD3
-//  * dsD4
-//  * dsD5
-//  The default debuger 'dsD' is set to level 3
+//  * dsE0
+//  * dsE1
+//  * dsE2
+//  * dsE3
+//  * dsE4
+//  * dsE5
+//  The default debuger 'dsE' is set to level 3
 ////////////////////////////////////////////////////////////////////////////////
 #  if ENABLE_DS_DEBUG
-#       define dsD_(msg,lv)                                         \
+#       define dsE_(msg,lv)                                         \
   do {                                                              \
     ds_internal__debug::lock_t lk( ds_internal__debug::lock() );    \
     std::clog                                                       \
@@ -190,71 +190,71 @@ namespace {
 #       ifndef DS_DEBUG_LEVEL
 #               define DS_DEBUG_LEVEL 0
 #       endif
-#       define dsD0(msg) ((void)false)
-#       define dsD1(msg) ((void)false)
-#       define dsD2(msg) ((void)false)
-#       define dsD3(msg) ((void)false)
-#       define dsD4(msg) ((void)false)
-#       define dsD5(msg) ((void)false)
-#       define dsD0if(cond,msg) ((void)false)
-#       define dsD1if(cond,msg) ((void)false)
-#       define dsD2if(cond,msg) ((void)false)
-#       define dsD3if(cond,msg) ((void)false)
-#       define dsD4if(cond,msg) ((void)false)
-#       define dsD5if(cond,msg) ((void)false)
+#       define dsE0(msg) ((void)false)
+#       define dsE1(msg) ((void)false)
+#       define dsE2(msg) ((void)false)
+#       define dsE3(msg) ((void)false)
+#       define dsE4(msg) ((void)false)
+#       define dsE5(msg) ((void)false)
+#       define dsE0if(cond,msg) ((void)false)
+#       define dsE1if(cond,msg) ((void)false)
+#       define dsE2if(cond,msg) ((void)false)
+#       define dsE3if(cond,msg) ((void)false)
+#       define dsE4if(cond,msg) ((void)false)
+#       define dsE5if(cond,msg) ((void)false)
 #       if 5 <= DS_DEBUG_LEVEL
-#               undef  dsD5
-#               undef  dsD5if
-#               define dsD5(msg) dsD_(msg,5)
-#               define dsD5if(cond,msg) if (cond) { dsD5(msg); }
+#               undef  dsE5
+#               undef  dsE5if
+#               define dsE5(msg) dsE_(msg,5)
+#               define dsE5if(cond,msg) if (cond) { dsE5(msg); }
 #       endif
 #       if 4 <= DS_DEBUG_LEVEL
-#               undef  dsD4
-#               undef  dsD4if
-#               define dsD4(msg) dsD_(msg,4)
-#               define dsD4if(cond,msg) if (cond) { dsD4(msg); }
+#               undef  dsE4
+#               undef  dsE4if
+#               define dsE4(msg) dsE_(msg,4)
+#               define dsE4if(cond,msg) if (cond) { dsE4(msg); }
 #       endif
 #       if 3 <= DS_DEBUG_LEVEL
-#               undef  dsD3
-#               undef  dsD3if
-#               define dsD3(msg) dsD_(msg,3)
-#               define dsD3if(cond,msg) if (cond) { dsD3(msg); }
+#               undef  dsE3
+#               undef  dsE3if
+#               define dsE3(msg) dsE_(msg,3)
+#               define dsE3if(cond,msg) if (cond) { dsE3(msg); }
 #       endif
 #       if 2 <= DS_DEBUG_LEVEL
-#               undef  dsD2
-#               undef  dsD2if
-#               define dsD2(msg) dsD_(msg,2)
-#               define dsD2if(cond,msg) if (cond) { dsD2(msg); }
+#               undef  dsE2
+#               undef  dsE2if
+#               define dsE2(msg) dsE_(msg,2)
+#               define dsE2if(cond,msg) if (cond) { dsE2(msg); }
 #       endif
 #       if 1 <= DS_DEBUG_LEVEL
-#               undef  dsD1
-#               undef  dsD1if
-#               define dsD1(msg) dsD_(msg,1)
-#               define dsD1if(cond,msg) if (cond) { dsD1(msg); }
+#               undef  dsE1
+#               undef  dsE1if
+#               define dsE1(msg) dsE_(msg,1)
+#               define dsE1if(cond,msg) if (cond) { dsE1(msg); }
 #       endif
 #       if 0 == DS_DEBUG_LEVEL
-#               undef  dsD0
-#               undef  dsD0if
-#               define dsD0(msg) dsD_(msg,0)
-#               define dsD0if(cond,msg) if (cond) { dsD0(msg); }
+#               undef  dsE0
+#               undef  dsE0if
+#               define dsE0(msg) dsE_(msg,0)
+#               define dsE0if(cond,msg) if (cond) { dsE0(msg); }
 #       endif
-#       define dsD(msg) dsD3(msg)
-#       define dsDif(cond,msg) if (cond) { dsD(msg); }
+#       define dsE(msg) dsE3(msg)
+#       define dsEif(cond,msg) if (cond) { dsE(msg); }
 #  else
-#       define dsD(msg) ((void)false)
-#       define dsD0(msg) ((void)false)
-#       define dsD1(msg) ((void)false)
-#       define dsD2(msg) ((void)false)
-#       define dsD3(msg) ((void)false)
-#       define dsD4(msg) ((void)false)
-#       define dsD5(msg) ((void)false)
-#       define dsDif(cond,msg) ((void)false)
-#       define dsD0if(cond,msg) ((void)false)
-#       define dsD1if(cond,msg) ((void)false)
-#       define dsD2if(cond,msg) ((void)false)
-#       define dsD3if(cond,msg) ((void)false)
-#       define dsD4if(cond,msg) ((void)false)
-#       define dsD5if(cond,msg) ((void)false)
+#       define dsE(msg) ((void)false)
+#       define dsE0(msg) ((void)false)
+#       define dsE1(msg) ((void)false)
+#       define dsE2(msg) ((void)false)
+#       define dsE3(msg) ((void)false)
+#       define dsE4(msg) ((void)false)
+#       define dsE5(msg) ((void)false)
+#       define dsEif(cond,msg) ((void)false)
+#       define dsE0if(cond,msg) ((void)false)
+#       define dsE1if(cond,msg) ((void)false)
+#       define dsE2if(cond,msg) ((void)false)
+#       define dsE3if(cond,msg) ((void)false)
+#       define dsE4if(cond,msg) ((void)false)
+#       define dsE5if(cond,msg) ((void)false)
 #  endif
 //______________________________________________________________________________
 

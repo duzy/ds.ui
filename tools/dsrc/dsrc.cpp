@@ -68,12 +68,12 @@ namespace detail
     while( cur ) {
       if ( xmlIsBlankNode(cur) ) { cur = cur->next; continue; }
       if ( cur->ns != ns ) {
-        dsD("node '"<<cur->name<<"' of the wrong namespace, ignored");
+        dsE("node '"<<cur->name<<"' of the wrong namespace, ignored");
         continue;
       }
       if ( is_node(cur, "file") ) {
         xmlChar *str( xmlNodeListGetString(doc, cur->xmlChildrenNode, 1) );
-        if ( str == NULL ) { dsD("file: empty file name."); continue; }
+        if ( str == NULL ) { dsE("file: empty file name."); continue; }
 
         fs::path p( result.path / (const char*)str );
         if ( !fs::exists( p ) ) {
@@ -112,20 +112,20 @@ namespace detail
 #   endif
 
     if ( doc == NULL ) {
-      dsD("xmlParseFile()");
+      dsE("xmlParseFile()");
       return false;
     }
 
     xmlNodePtr cur( xmlDocGetRootElement( doc ) );
     if ( cur == NULL ) {
-      dsD("xmlDocGetRootElement()");
+      dsE("xmlDocGetRootElement()");
       return false;
     }
     
     xmlNsPtr ns( xmlSearchNsByHref(doc, cur, (const xmlChar*)DSRC_NS) );
     if ( ns == NULL ) {
       xmlFreeDoc( doc );
-      dsD("xmlSearchNsByHref(" DSRC_NS ")");
+      dsE("xmlSearchNsByHref(" DSRC_NS ")");
       std::clog<< "resource: Invalid namespace, should be '"DSRC_NS"'"
                << std::endl;
       return false;
@@ -133,7 +133,7 @@ namespace detail
 
     if ( !is_node(cur, "resource") ) {
       xmlFreeDoc( doc );
-      dsD("root node != 'resource'");
+      dsE("root node != 'resource'");
       return false;
     }
 
@@ -141,7 +141,7 @@ namespace detail
     {
       xmlChar *sVer( xmlGetProp(cur, (const xmlChar*)"version") );
       if ( sVer == NULL ) {
-        dsD("resource: No 'version' attribute.");
+        dsE("resource: No 'version' attribute.");
       }
       else {
         result.version = (const char*)sVer;
@@ -158,7 +158,7 @@ namespace detail
       }
       if ( is_node(cur, "files") ) {
         if ( !parse_node_files( result, doc, ns, cur ) )
-          { dsD("fail parse_node_files()"); return false; }
+          { dsE("fail parse_node_files()"); return false; }
       }
       cur = cur->next;
     }//!< for-each( child node )
@@ -203,7 +203,7 @@ namespace detail
       }
       return 1;
     }
-    dsD("can't dump byte: '"<<std::hex<<(unsigned)b<<"'");
+    dsE("can't dump byte: '"<<std::hex<<(unsigned)b<<"'");
     return 0;
   }//dump_byte()
 
@@ -270,7 +270,7 @@ namespace detail
 
     //std::ifstream ifs( fn.name.c_str(), std::ios::binary );
     std::ifstream ifs( (path/fn.name).file_string().c_str(), std::ios::binary );
-    if ( !ifs ) { dsD("can't open '"<<fn.name<<"' for input."); return 0; }
+    if ( !ifs ) { dsE("can't open '"<<fn.name<<"' for input."); return 0; }
 
     ifs.seekg( 0, std::ios::end );
     int fileLen( rec.size = ifs.tellg() );
@@ -278,7 +278,7 @@ namespace detail
     {
       int n( dump_int( o, fileLen ) );
       if ( n != sizeof(fileLen) ) {
-        dsD("dump_int(): "<<n);
+        dsE("dump_int(): "<<n);
         return 0;
       }
       len += n;
@@ -315,7 +315,7 @@ namespace detail
   static bool generate_resource_source( resource & res, const std::string & out )
   {
     std::ofstream ofs( out.c_str() );
-    if ( !ofs ) { dsD("can't open "<<out<<" for output"); return false; }
+    if ( !ofs ) { dsE("can't open "<<out<<" for output"); return false; }
 
     std::string varName( get_var_name(out) );
 
@@ -530,11 +530,11 @@ int main( int ac, char** av )
   res.path = inPath.parent_path();
 
   if ( !detail::parse_resource_file( res, in.c_str() ) ) {
-    dsD("parse 'test.xml' error");
+    dsE("parse 'test.xml' error");
     goto cleanup;
   }
   if ( !detail::generate_resource_source( res, out ) ) {
-    dsD("error: generate resource source");
+    dsE("error: generate resource source");
     goto cleanup;
   }
 

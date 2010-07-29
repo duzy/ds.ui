@@ -78,7 +78,10 @@ namespace ds { namespace ui {
     void display::IMPL::pump_events( event_queue * eq )
     {
       // see SDL/src/video/x11/SDL_x11events.c
-
+      if ( eq == NULL ) {
+        dsE("event_queue unset, should call display::start first");
+        return;
+      }
       if ( _xdisp == NULL ) return;
 
       XEvent event;
@@ -97,15 +100,15 @@ namespace ds { namespace ui {
     //////////////////////////////////////////////////////////////////////
 
     display::display()
-      : event_pump( get_event_queue() )
+      : event_pump( NULL )
       , _p( new IMPL )
     {
-      dsD("display: "<<this<<"->"<<_p->_xdisp);
+      dsL("display: "<<this<<"->"<<_p->_xdisp);
     }
 
     display::~display()
     {
-      dsD("display: "<<this<<"->"<<_p->_xdisp);
+      dsL("display: "<<this<<"->"<<_p->_xdisp);
 
       if ( _p->_xdisp ) {
         XCloseDisplay( _p->_xdisp );

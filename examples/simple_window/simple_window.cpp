@@ -141,10 +141,10 @@ int main(int argc, char** argv)
 
   // make a default display connection
   ds::ui::display::pointer_t disp = ds::ui::display::open();
-  dsD("display-refs: "<<disp->refcount());
+  dsL("display-refs: "<<disp->refcount());
 
   ds::ui::screen::pointer_t scrn = disp->default_screen();
-  dsD("screen-refs: "<<scrn->refcount());
+  dsL("screen-refs: "<<scrn->refcount());
 
   //ds::ui::window win1( disp ); // a window in the display 'disp'
   ds::ui::window::pointer_t win1( new ds::ui::window(disp) );
@@ -159,15 +159,15 @@ int main(int argc, char** argv)
 
   win2->show(); // show it since it's belong to 'disp'
 
-  dsD("display-refs: "<<disp->refcount());
+  dsL("display-refs: "<<disp->refcount());
 
   int n;
   {
     ds::ui::event_loop loop( disp );
-    dsD("display-refs: "<<disp->refcount());
+    dsL("display-refs: "<<disp->refcount());
     n = loop.run();
   }
 
-  dsD("display-refs: "<<disp->refcount());
+  dsL("display-refs: "<<disp->refcount());
   return n;
 }

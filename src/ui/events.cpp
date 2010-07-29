@@ -6,17 +6,13 @@
 
 namespace ds { namespace ui {
 
-    event_queue * get_event_queue()
-    {
-      static event_queue q;
-      return &q;
-    }
-
     event_loop::event_loop(const display::pointer_t & disp)
-      : ds::event_loop( get_event_queue() )
+      : boost::base_from_member<event_queue>()
+      , ds::event_loop( &(boost::base_from_member<event_queue>::member) )
       , _display( disp )
     {
       //dsD("loop: "<<this);
+      disp->start( &(boost::base_from_member<event_queue>::member) );
     }
 
     event_loop::~event_loop()

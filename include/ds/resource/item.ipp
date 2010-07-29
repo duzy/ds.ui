@@ -53,19 +53,19 @@ namespace ds { namespace resource {
     bool register_compiled_resource( const item::byte_t * const d, std::size_t sz )
     {
       if ( sz < 16 ) {
-        dsD("compiled resource data too short: "<<sz);
+        dsE("compiled resource data too short: "<<sz);
         return false;
       }
 
       int version( *reinterpret_cast<const int*>(d) );
       if ( version != compiled_resource_version_1 ) {
-        dsD("bad version: "<<version);
+        dsE("bad version: "<<version);
         return false;
       }
 
       int indexOffset( *reinterpret_cast<const int*>(d + sz - sizeof(int)) );
       if ( sz <= (indexOffset + sizeof(int)) ) {
-        dsD("index offset out of range: "<<indexOffset<<", size="<<sz);
+        dsE("index offset out of range: "<<indexOffset<<", size="<<sz);
         return false;
       }
       dsL("index offset: "<<indexOffset);
@@ -73,7 +73,7 @@ namespace ds { namespace resource {
       const item::byte_t * p( d + indexOffset );
       int count( *reinterpret_cast<const int*>(p) ); p += sizeof(int);
       if ( sz <= count ) {
-        dsD("invalid index size: "<<count);
+        dsE("invalid index size: "<<count);
         return false;
       }
       dsL("number of lists: "<<count);
@@ -85,7 +85,7 @@ namespace ds { namespace resource {
       for(int n=0; n < count; ++n) {
         int len( *reinterpret_cast<const int*>(p) ); p += sizeof(int);
         if ( sz <= len ) {
-          dsD("invalid string size: "<<len);
+          dsE("invalid string size: "<<len);
           return false;
         }
 
@@ -113,19 +113,19 @@ namespace ds { namespace resource {
                 pp += sizeof(int) + nameLen + 1/* '\0' */;
                 break;
               default:
-                dsD("unknown item type: "<<int(itemType));
+                dsE("unknown item type: "<<int(itemType));
                 return false;
               }
             } while ( item::byte_t(item_type_link) == itemType );
           }
           else {
-            dsD("unknown item type: "<<int(itemType));
+            dsE("unknown item type: "<<int(itemType));
             return false;
           }
 
           dataLen = ( *reinterpret_cast<const int*>(pp) ); pp += sizeof(int);
           if ( !register_resource( prefix + name, pp, dataLen ) ) {
-            dsD("can't register_resource(): "<<prefix<<","<<name);
+            dsE("can't register_resource(): "<<prefix<<","<<name);
             return false;
           }
           dsL("item: "<<prefix<<name<<", length="<<dataLen);
