@@ -2,6 +2,11 @@
 
 $(call sm-new-module, simple_window, executable)
 
+sm.module.options.compile := \
+  -DDS_TRACE_LEVEL=3 \
+  -DDS_DEBUG_LEVEL=3 \
+  -DDS_LOG_LEVEL=3 \
+
 sm.module.dirs.include := \
   -I$(ds.ui.dir)/include \
   -I$(ds.third.dir.inc) \

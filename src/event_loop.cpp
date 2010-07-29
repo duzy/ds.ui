@@ -22,7 +22,6 @@ namespace ds {
        */
       this->loop_in();
 
-      //if (!(evt = _queue->wait())) {
       if (!(evt = _queue->wait(10))) {
         // TODO: no event or got error?
         continue;

@@ -7,24 +7,29 @@
  *
  **/
 
+#include <map>
+
 namespace ds { namespace ui {
 
     struct display::IMPL
     {
-      Display * xDisplay;
-      //int screen;
+      typedef std::map<Window, window::pointer_t> window_map_t;
+
+      Display * _xdisp;
+      screen::pointer_t * _scrns;
+      window_map_t _winmap;
 
       Atom WM_DELETE_WINDOW;
 
-      // TODO: keeps all created windows
-
       IMPL()
-        : xDisplay( NULL )
-          //, screen( -1 ) // TODO: should be '-1' ?
+        : _xdisp( NULL )
+        , _scrns( NULL )
+        , _winmap()
         , WM_DELETE_WINDOW( 0 )
       {
       }
 
+      void init( display *disp, const char * name );
       void init_atoms();
 
       bool pending();

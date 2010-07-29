@@ -79,6 +79,8 @@ namespace ds { namespace ui {
 
       shared_object<screen>::pointer_t default_screen() const;
       shared_object<screen>::pointer_t get_screen( int index ) const;
+      int default_screen_number() const;
+      int screen_count() const;
 
       shared_object<window>::pointer_t default_root() const;
 

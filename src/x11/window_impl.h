@@ -11,19 +11,17 @@ namespace ds { namespace ui {
     
     struct window::IMPL
     {
-      Window xWindow;
+      Window _xwin;
 
-      display::pointer_t disp; // TODO: a window should not keep a display::pointer_t
+      display * _disp; // Never hold a display::pointer_t(will leak)!
 
-      // TODO: should keep a reference to the screen
-
-      IMPL( const display::pointer_t & d )
-        : xWindow( NULL )
-        , disp( d )
+      IMPL( display * d )
+        : _xwin( NULL )
+        , _disp( d )
       {
       }
 
-      void create();
+      void create( const window::pointer_t & );
       void destroy();
     };//struct window::IMPL
     

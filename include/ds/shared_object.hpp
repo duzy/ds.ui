@@ -39,27 +39,40 @@ namespace ds {
 
       void _inref()
       {
-        ++_refcount;
+        //if ( _refcount < 0 ) _refcount = 1;
+        //else
+          ++_refcount;
       }
 
       void _deref()
       {
+        //if ( _refcount < 0 ) return;
         if ( --_refcount == 0 ) {
           delete this;
         }
       }
 
     protected:
-      shared_object_impl() : _refcount(1) {}
+      //shared_object_impl() : _refcount( -1 ) {}
+      shared_object_impl() : _refcount( 0 ) {}
 
       virtual ~shared_object_impl() {}
+
+    public:
+      int refcount() const { return _refcount < 0 ? 0 : _refcount; }
     };//struct shared_object_impl
 
   }//namespace detail
 
+  /**
+   *  @brief Shared object with smart pointer.
+   */
   template<class DerivedClass>
   struct shared_object : public detail::shared_object_impl<DerivedClass>
   {
+    /**
+     *  Must be used to wrap raw pointers returned by 'new'. 
+     */
     typedef boost::intrusive_ptr<DerivedClass> pointer_t;
   };//struct shared_object
 

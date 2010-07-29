@@ -26,7 +26,7 @@ namespace ds {
     typedef std::deque<event*, allocator_t> queue_t;
     typedef boost::mutex mutex_t;
 
-    enum { MaxEvents = 128 };
+    enum { MaxEvents = MAX_EVENTS };
 
     mutex_t _mutex;
     queue_t _events;

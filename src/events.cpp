@@ -16,10 +16,12 @@ namespace ds { namespace ui {
       : ds::event_loop( get_event_queue() )
       , _display( disp )
     {
+      //dsD("loop: "<<this);
     }
 
     event_loop::~event_loop()
     {
+      //dsD("loop: "<<this);
     }
 
     void event_loop::loop_in()
@@ -37,7 +39,7 @@ namespace ds { namespace ui {
     {
       // TODO: dispatch UI events
       // TODO: close _display on quit event
-      dsD("event: "<<evt.type);
+      //dsD("event: "<<evt.type);
       ds::event_loop::on_event(evt);
     }
     

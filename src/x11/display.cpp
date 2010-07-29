@@ -18,11 +18,33 @@
 #include "window_impl.h"
 #include <ds/debug.hpp>
 
+#include "display_events.ipp"
+
 namespace ds { namespace ui {
+
+    void display::IMPL::init( display *disp, const char * name )
+    {
+      _xdisp = XOpenDisplay( name );
+
+      int scrnCount( XScreenCount( _xdisp ) );
+      dsI( 0 < scrnCount );
+
+      _scrns = new screen::pointer_t [scrnCount];
+      for ( int n = 0; n < scrnCount; ++n ) {
+        screen::pointer_t s( new screen );
+        s->_p->_xscrn = XScreenOfDisplay( _xdisp, n );
+        s->_p->_disp = disp;
+        _scrns[n] = s;
+      }
+
+      _winmap.clear();
+
+      init_atoms();
+    }
 
     void display::IMPL::init_atoms()
     {
-#define GET_ATOM(X) X = XInternAtom( xDisplay, #X, False )
+#define GET_ATOM(X) X = XInternAtom( _xdisp, #X, False )
 
       GET_ATOM(WM_DELETE_WINDOW);
 
@@ -31,8 +53,8 @@ namespace ds { namespace ui {
 
     bool display::IMPL::pending()
     {
-      XFlush(xDisplay);
-      if (XEventsQueued(xDisplay, QueuedAlready)) {
+      XFlush(_xdisp);
+      if (XEventsQueued(_xdisp, QueuedAlready)) {
         return true;
       }
 
@@ -42,11 +64,11 @@ namespace ds { namespace ui {
         int fd;
         fd_set fdset;
         
-        fd = XConnectionNumber(xDisplay);
+        fd = XConnectionNumber(_xdisp);
         FD_ZERO(&fdset);
         FD_SET(fd, &fdset);
         if (select(fd + 1, &fdset, NULL, NULL, &zeroTv) == 1) {
-          return (XPending(xDisplay));
+          return (XPending(_xdisp));
         }
       }
 
@@ -57,45 +79,14 @@ namespace ds { namespace ui {
     {
       // see SDL/src/video/x11/SDL_x11events.c
 
-      if ( xDisplay == NULL ) return;
+      if ( _xdisp == NULL ) return;
 
       XEvent event;
       //bzero( &event, sizeof(event) );
 
       while ( pending() ) {
-        XNextEvent( xDisplay, &event );
+        XNextEvent( _xdisp, &event );
         push_event( eq, &event );
-      }
-    }
-
-    void display::IMPL::push_event( event_queue *eq, XEvent * event )
-    {
-      /* filter events catchs XIM events and sends them to the correct
-         handler */
-      if ( XFilterEvent(event, None) == True ) {
-        return;
-      }
-
-      // TODO: deal with multiple windows, quit only if all windows closed 
-
-      // TODO: push parsed-event into the event_queue
-      //        eq->push( ... )
-      //dsD("event: "<<event->type);
-
-      switch (event->type) {
-      case ClientMessage:
-        if (event->xclient.format == 32 &&
-            event->xclient.data.l[0] == WM_DELETE_WINDOW) {
-          dsD("WM_DELETE_WINDOW");
-          Window w = event->xany.window; //event->xclient->window;
-          // TODO: destroy window
-          eq->push(new ds::event::quit); // TODO: only sent quit if no windows
-        }
-        break;
-
-      default:
-        eq->push(new ds::event::test);
-        break;
       }
     }
 
@@ -109,62 +100,76 @@ namespace ds { namespace ui {
       : event_pump( get_event_queue() )
       , _p( new IMPL )
     {
-      dsD("display: "<<this);
+      dsD("display: "<<this<<"->"<<_p->_xdisp);
     }
 
     display::~display()
     {
-      dsD("display: "<<this);
+      dsD("display: "<<this<<"->"<<_p->_xdisp);
 
-      if ( _p->xDisplay )
-        XCloseDisplay( _p->xDisplay );
+      if ( _p->_xdisp ) {
+        XCloseDisplay( _p->_xdisp );
+        _p->_winmap.clear();
+      }
+
+      delete [] _p->_scrns;
       delete _p;
     }
 
     display::pointer_t display::open( id i )
     {
       pointer_t d( new display );
-      d->_p->xDisplay = XOpenDisplay( (const char *) i._p );
-      //d->_p->screen = XDefaultScreen( d->_p->xDisplay );
-      d->_p->init_atoms();
+      d->_p->init( d.get(), (const char *) i._p );
       return d;
     }
 
     screen::pointer_t display::default_screen() const
     {
-      screen::pointer_t scr( new screen ); // TODO: avoid making a new instance of screen
-      scr->_p->xScreen = XDefaultScreenOfDisplay( _p->xDisplay );
-      return scr;
+      //int n( default_screen_number() );
+      //dsI( 0 <= n && n < screen_count() );
+      //dsI( _scrns );
+      //return _scrns[n];
+      return get_screen( default_screen_number() );
     }
 
-    screen::pointer_t display::get_screen( int index ) const
+    screen::pointer_t display::get_screen( int n ) const
     {
-      screen::pointer_t scr( new screen ); // TODO: avoid making a new instance of screen
-      scr->_p->xScreen = XScreenOfDisplay( _p->xDisplay, index );
-      return scr;
+      dsI( 0 <= n && n < screen_count() );
+      dsI( _p->_scrns );
+      return _p->_scrns[n];
+    }
+
+    int display::default_screen_number() const
+    {
+      return XDefaultScreen( _p->_xdisp );
+    }
+
+    int display::screen_count() const
+    {
+      return XScreenCount( _p->_xdisp );
     }
 
     window::pointer_t display::default_root() const
     {
       window::pointer_t w( new window ); // TODO: avoid making a new instance of window
-      w->_p->disp = const_cast<display*>(this);
-      w->_p->xWindow = XDefaultRootWindow( _p->xDisplay );
+      w->_p->_disp = const_cast<display*>(this);
+      w->_p->_xwin = XDefaultRootWindow( _p->_xdisp );
       return w;
     }
     
     void display::map( const window::pointer_t & win )
     {
-      if ( /*!win->_p->disp ||*/ !win->_p->xWindow ) {
-        win->_p->disp = this; // convert to display::pointer_t
-        win->_p->create();
+      if ( /*!win->_p->_disp ||*/ !win->_p->_xwin ) {
+        win->_p->_disp = this; // implicitly convert to display::pointer_t
+        win->_p->create( win );
       }
 
-      XMapWindow( _p->xDisplay, win->_p->xWindow );
+      XMapWindow( _p->_xdisp, win->_p->_xwin );
     }
 
     void display::unmap( const window::pointer_t & win )
     {
-      XUnmapWindow( _p->xDisplay, win->_p->xWindow );
+      XUnmapWindow( _p->_xdisp, win->_p->_xwin );
     }
 
     bool display::has( const window::pointer_t & win )
@@ -176,7 +181,7 @@ namespace ds { namespace ui {
 
     void display::pump_events()
     {
-      //XSync( _p->xDisplay, False );
+      //XSync( _p->_xdisp, False );
 
       _p->pump_events( event_pump::get_queue() );
     }

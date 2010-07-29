@@ -17,28 +17,30 @@
 
 namespace ds { namespace ui {
 
-    void window::IMPL::create()
+    void window::IMPL::create( const window::pointer_t & win )
     {
-      dsI( !xWindow );
-      dsI( disp );
+      dsI( !_xwin );
+      dsI( _disp );
 
       int x(0), y(0), w(400), h(300), bw(0);
 
-      screen::pointer_t scrn = disp->default_screen();
+      screen::pointer_t scrn = _disp->default_screen();
       unsigned fc = scrn->black_pixel();
       unsigned bc = scrn->white_pixel();
 
       window::pointer_t root = scrn->root();
       dsI(root);
 
-      Window pr = root->_p->xWindow;
-      register Display *xDisplay( disp->_p->xDisplay );
+      Window pr = root->_p->_xwin;
+      register Display *xDisplay( _disp->_p->_xdisp );
 
       //XCreateWindow(...);
-      xWindow = XCreateSimpleWindow( xDisplay, pr, x, y, w, h, bw, fc, bc );
+      _xwin = XCreateSimpleWindow( xDisplay, pr, x, y, w, h, bw, fc, bc );
+
+      _disp->_p->_winmap.insert( std::make_pair( _xwin, win ) );
 
       /* Allow window to be deleted by the window manager */
-      XSetWMProtocols( xDisplay, xWindow, &disp->_p->WM_DELETE_WINDOW, 1 );
+      XSetWMProtocols( xDisplay, _xwin, &_disp->_p->WM_DELETE_WINDOW, 1 );
 
       int eventMask
         = KeyPressMask
@@ -66,12 +68,14 @@ namespace ds { namespace ui {
         | ColormapChangeMask
         | OwnerGrabButtonMask
         ;
-      XSelectInput( xDisplay, xWindow, eventMask );
+      XSelectInput( xDisplay, _xwin, eventMask );
     }
 
     void window::IMPL::destroy()
     {
-      XDestroyWindow( disp->_p->xDisplay, xWindow );
+      if ( _xwin ) {
+        XDestroyWindow( _disp->_p->_xdisp, _xwin );
+      }
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -79,32 +83,39 @@ namespace ds { namespace ui {
     window::window()
       : _p( new IMPL(NULL) )
     {
+      dsD4("window: "<<this<<"->"<<_p->_xwin);
     }
 
     window::window( const display::pointer_t & disp )
-      : _p( new IMPL(disp) )
+      : _p( new IMPL(disp.get()) )
     {
-      _p->create();
+      _p->create( this );
       disp->map( this );
+      dsD4("window: "<<this<<"->"<<_p->_xwin);
     }
 
     window::~window()
     {
-      dsD("window: "<<this);
+      dsD4("window: "<<this<<"->"<<_p->_xwin);
 
       _p->destroy();
-      _p->disp.reset( NULL );
+      _p->_disp = NULL;
       delete _p;
     }
 
     display::pointer_t window::get_display() const
     {
-      return _p->disp;
+      return _p->_disp;
     }
 
     void window::select_input(long mask)
     {
-      XSelectInput( _p->disp->_p->xDisplay, _p->xWindow, mask );
+      XSelectInput( _p->_disp->_p->_xdisp, _p->_xwin, mask );
+    }
+
+    void window::destroy()
+    {
+      _p->destroy();
     }
 
     void window::show()
@@ -118,6 +129,7 @@ namespace ds { namespace ui {
 
     void window::close()
     {
+      destroy(); // TODO: should be destroyed?
     }
 
     void window::move( int x, int y )

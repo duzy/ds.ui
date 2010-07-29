@@ -7,6 +7,7 @@
  *
  **/
 
+#define MAX_EVENTS 128
 #if false
 #  include "event_queue.cpp_mutex"
 #else

@@ -11,12 +11,16 @@ namespace ds { namespace ui {
 
     struct screen::IMPL
     {
-      Screen *xScreen;
+      Screen *_xscrn;
 
-      // TODO: keep a reference to the display here
+      display * _disp; // Never hold a display::pointer_t here(cycle leak)!
+
+      window::pointer_t _root;
 
       IMPL()
-        : xScreen( NULL )
+        : _xscrn( NULL )
+        , _disp( NULL )
+        , _root( NULL )
       {
       }
     };//struct screen::IMPL

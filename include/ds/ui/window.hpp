@@ -40,6 +40,8 @@ namespace ds { namespace ui {
 
       void select_input(long mask);
 
+      void destroy();
+
       void show();
       void hide();
       void close();

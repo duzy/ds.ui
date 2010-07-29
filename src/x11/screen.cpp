@@ -21,48 +21,52 @@ namespace ds { namespace ui {
     screen::screen()
       : _p( new IMPL )
     {
+      dsD("screen: "<<this<<"->"<<_p->_xscrn);
     }
 
     screen::~screen()
     {
-      dsD("screen: "<<this);
+      dsD("screen: "<<this<<"->"<<_p->_xscrn);
       delete _p;
     }
 
     shared_object<display>::pointer_t screen::get_display() const
     {
-      display::pointer_t disp( new display ); // TODO: avoid making a new instance of the display
-      disp->_p->xDisplay = XDisplayOfScreen( _p->xScreen );
-      //disp->_p->screen = XScreenNumberOfScreen( _p->xScreen );
-      return disp;
+      //display::pointer_t disp( new display ); // TODO: avoid making a new instance of the display
+      //disp->_p->_xdisp = XDisplayOfScreen( _p->_xscrn );
+      ////disp->_p->screen = XScreenNumberOfScreen( _p->_xscrn );
+      //return disp;
+      return _p->_disp; // implicitly conversion
     }
 
     window::pointer_t screen::root() const
     {
-      window::pointer_t w( new window );
-      w->_p->disp = get_display();
-      w->_p->xWindow = XRootWindowOfScreen( _p->xScreen );
-      return w;
+      if ( !_p->_root ) {
+        _p->_root.reset( new window );
+        _p->_root->_p->_disp = get_display().get();
+        _p->_root->_p->_xwin = XRootWindowOfScreen( _p->_xscrn );
+      }
+      return _p->_root;
     }
 
     int screen::width() const
     {
-      return XWidthOfScreen( _p->xScreen );
+      return XWidthOfScreen( _p->_xscrn );
     }
 
     int screen::height() const
     {
-      return XHeightOfScreen( _p->xScreen );
+      return XHeightOfScreen( _p->_xscrn );
     }
 
     unsigned screen::black_pixel() const
     {
-      return XBlackPixelOfScreen( _p->xScreen );
+      return XBlackPixelOfScreen( _p->_xscrn );
     }
 
     unsigned screen::white_pixel() const
     {
-      return XWhitePixelOfScreen( _p->xScreen );
+      return XWhitePixelOfScreen( _p->_xscrn );
     }
     
   }//namespace ui
