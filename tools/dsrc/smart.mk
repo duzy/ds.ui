@@ -7,17 +7,17 @@ include $(sm.module.dir)/check-deps.mk
 
 #SM_COMPILE_LOG := dsrc.log
 
-sm.module.dirs.include := \
+sm.module.includes := \
   -I$(ds.ui.dir)/include \
   -I$(ds.third.dir.inc) \
   -I$(ds.third.boost.dir)
 
-sm.module.options.compile := \
+sm.module.compile.options := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
 
-sm.module.dirs.lib := \
+sm.module.libdirs := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 

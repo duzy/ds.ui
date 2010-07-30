@@ -52,6 +52,8 @@ namespace ds { namespace ui {
       case MapNotify: {
         event::window::shown *evt1( new event::window::shown );
         event::window::restored *evt2( new event::window::restored );
+        evt1->win = win.get();
+        evt2->win = win.get();
         eq->push( evt1 );
         eq->push( evt2 );
       } break;
@@ -59,12 +61,15 @@ namespace ds { namespace ui {
       case UnmapNotify: {
         event::window::hidden *evt1( new event::window::hidden );
         event::window::minimized *evt2( new event::window::minimized );
+        evt1->win = win.get();
+        evt2->win = win.get();
         eq->push( evt1 );
         eq->push( evt2 );
       } break;
 
       case Expose: {
         event::window::exposed *evt( new event::window::exposed );
+        evt->win = win.get();
         evt->param1 = event->xexpose.x;
         evt->param2 = event->xexpose.y;
         evt->param3 = event->xexpose.width;
@@ -75,8 +80,10 @@ namespace ds { namespace ui {
       case ConfigureNotify: {
         event::window::moved *evt1( new event::window::moved );
         event::window::resized *evt2( new event::window::resized );
+        evt1->win = win.get();
         evt1->param1 = event->xconfigure.x;
         evt1->param2 = event->xconfigure.y;
+        evt2->win = win.get();
         evt2->param3 = event->xconfigure.width;
         evt2->param4 = event->xconfigure.height;
         eq->push( evt1 );
@@ -84,17 +91,19 @@ namespace ds { namespace ui {
       } break;
 
       case KeyPress: {
-        event::keyboard *evtPress( new event::keyboard );
-        evtPress->is_pressed = 1;
-        evtPress->is_repeat = 0;
-        evtPress->code = event->xkey.keycode; // TODO: layout[event->xkey.keycode]
-        eq->push( evtPress );
+        event::keyboard *evt( new event::keyboard );
+        evt->window = win.get();
+        evt->is_pressed = 1;
+        evt->is_repeat = 0;
+        evt->code = event->xkey.keycode; // TODO: layout[event->xkey.keycode]
+        eq->push( evt );
 
         // TODO: convert key into text, send text_input
       } break;
 
       case KeyRelease: {
         event::keyboard *evt( new event::keyboard );
+        evt->window = win.get();
         evt->is_pressed = 0;
         evt->is_repeat = 0;
         evt->code = event->xkey.keycode; // TODO: layout[event->xkey.keycode]
@@ -111,6 +120,7 @@ namespace ds { namespace ui {
 
       case EnterNotify: {
         event::window::enter *evt( new event::window::enter );
+        evt->win = win.get();
         evt->param1 = event->xcrossing.x;
         evt->param2 = event->xcrossing.y;
         eq->push( evt );
@@ -118,6 +128,7 @@ namespace ds { namespace ui {
 
       case LeaveNotify: {
         event::window::leave *evt( new event::window::leave );
+        evt->win = win.get();
         evt->param1 = event->xcrossing.x;
         evt->param2 = event->xcrossing.y;
         eq->push( evt );
@@ -125,12 +136,14 @@ namespace ds { namespace ui {
 
       case FocusIn: {
         event::window::focus *evt( new event::window::focus );
+        evt->win = win.get();
         evt->param1 = 1;
         eq->push( evt );
       } break;
 
       case FocusOut: {
         event::window::focus *evt( new event::window::focus );
+        evt->win = win.get();
         evt->param1 = 0;
         eq->push( evt );
       } break;
@@ -161,7 +174,7 @@ namespace ds { namespace ui {
           /** Window closed */
 
           dsE("WM_DELETE_WINDOW");
-          //win->close();
+
           event::window::close * evt(new event::window::close);
           evt->win = win.get();
           eq->push( evt );

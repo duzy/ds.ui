@@ -8,7 +8,7 @@ ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 
 include $(ds.ui.dir)/check-deps.mk
 
-sm.module.options.compile := \
+sm.module.compile.options := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
@@ -16,16 +16,16 @@ sm.module.options.compile := \
 #sm.log.filename := dsui.log
 sm.module.out_implib := dsui
 
-sm.module.dirs.include := \
+sm.module.includes := \
   $(ds.ui.dir)/include \
   $(ds.third.boost.dir)
 
 sm.module.sources := \
   $(wildcard src/*.cpp) \
-  $(wildcard src/ui/*.cpp)
+  $(wildcard src/ui/*.cpp) \
   $(wildcard src/ui/events/*.cpp)
 
-sm.module.dirs.lib := \
+sm.module.libdirs := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 

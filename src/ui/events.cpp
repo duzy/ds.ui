@@ -1,10 +1,21 @@
-#include <ds/event.hpp>
+/**
+ *    Copyright 2010-08 DuzySoft.com, by Zhan Xin-Ming (Duzy Chan)
+ *    All rights reserved by Zhan Xin-Ming (Duzy Chan)
+ *    Email: <duzy@duzy.info, duzy.chan@gmail.com>
+ *
+ *    $Id$
+ *
+ **/
+
 #include <ds/ui/events.hpp>
 #include <ds/ui/display.hpp>
 #include <ds/event_queue.hpp>
 #include <ds/debug.hpp>
 
 namespace ds { namespace ui {
+
+    bool handle_window_event( const display::pointer &, const ds::event & );
+    bool handle_keyboard_event( const display::pointer &, const ds::event & );
 
     event_loop::event_loop(const display::pointer & disp)
       : boost::base_from_member<event_queue>()
@@ -36,7 +47,32 @@ namespace ds { namespace ui {
       // TODO: dispatch UI events
       // TODO: close _display on quit event
       //dsD("event: "<<evt.type);
-      ds::event_loop::on_event(evt);
+      switch (evt.type) {
+      case event::window::TypeValue:
+        handle_window_event(_display, evt);
+        break;
+      case event::keyboard::TypeValue:
+        handle_keyboard_event(_display, evt);
+        break;
+      case event::text_input::TypeValue:
+        // TODO: ...
+        break;
+      case event::text_composing::TypeValue:
+        // TODO: ...
+        break;
+      case event::mouse_motion::TypeValue:
+        // TODO: ...
+        break;
+      case event::mouse_button::TypeValue:
+        // TODO: ...
+        break;
+      case event::mouse_wheel::TypeValue:
+        // TODO: ...
+        break;
+      default:
+        ds::event_loop::on_event(evt);
+        break;
+      }
     }
     
   }//namespace ui

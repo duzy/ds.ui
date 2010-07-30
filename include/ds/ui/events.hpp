@@ -56,9 +56,10 @@ namespace ds { namespace ui {
         struct close;
       };
 
-      template<class Action, int ActionValue>
+      template<class Action, int AV>
       struct window::act : window
       {
+        enum { ActionValue = AV };
         act() : window(ActionValue) {}
       };
       
@@ -127,6 +128,7 @@ namespace ds { namespace ui {
 
       struct keyboard : ds::event::sub<keyboard, TypeValueStart + 2>
       {
+        ui::window * window;
         uint8_t is_pressed : 1;
         uint8_t is_repeat : 1;
         uint32_t code;
