@@ -15,16 +15,32 @@
 namespace ds { namespace graphics {
 
     struct image;
+    struct color;
+    struct point;
+    struct segment;
+    struct line;
+    struct polygon;
+    struct box;
+    struct linestring;
 
     class canvas : boost::noncopyable
     {
     public:
       canvas( image & );
 
-      void clip( const irect & );
+      bool clip( const box & );
+      bool clip( const polygon & );
 
-      void render( ... );
-      void stroke( ... );
+      void render( const color & );
+      void render( const image & );
+      void render( const polygon & );
+      void render( const box & );
+
+      void stroke( const point & );
+      void stroke( const segment & );
+      void stroke( const line & );
+      void stroke( const polygon & );
+      void stroke( const box & );
 
     private:
       image * _image;

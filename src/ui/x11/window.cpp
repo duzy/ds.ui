@@ -293,7 +293,7 @@ namespace ds { namespace ui {
       }
 
       if (0 < copyCount) {
-        //XFlushGC( _p->_gc );
+        //XFlushGC( xdisp, _p->_gc );
         XSync( xdisp, False );
       }
     }
