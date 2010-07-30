@@ -35,8 +35,8 @@ namespace ds { namespace ui {
         }
       }
 
-      bool useDirectColorVisual = false;
       int depth = scrn->depth();
+      bool useDirectColorVisual = false;
       if ((useDirectColorVisual &&
            XMatchVisualInfo(xdisp, screen, depth, DirectColor, &_visual)) ||
           XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_visual) ||
@@ -45,7 +45,7 @@ namespace ds { namespace ui {
           )
         return;
 
-      std::memset( &_visual, 0, sizeof() );
+      std::memset( &_visual, 0, sizeof(_visual) );
     }
 
     void window::IMPL::create( const window::pointer & win )
@@ -169,15 +169,29 @@ namespace ds { namespace ui {
 
     void window::on_exposed( const event::window::exposed & a )
     {
-      dsL("winact: "<<a.win);
+      if (_p->_ximage.width <= 0 || _p->_ximage.height <= 0) {
+        dsE("Invalid buffer image size");
+        return;
+      }
+      if (_p->_ximage.data==NULL) {
+        dsE("Uninitialized buffer image of size: "
+            <<_p->_ximage.width<<"x"<<_p->_ximage.height);
+        return;
+      }
 
       ds::graphics::rect const dr( a.x(), a.y(), a.width(), a.height() );
 
-      ds::graphics::image img( _p->_drawable );
+      ds::graphics::image img( _p->_ximage.width,
+                               _p->_ximage.height,
+                               _p->_ximage.bits_per_pixel,
+                               _p->_ximage.data );
+
       ds::graphics::canvas canvas( img );
       canvas.clip( dr );
 
       this->on_render( canvas );
+
+      XDisplay xdisp = _disp->_p->_xdisp;
 
       int copyCount = 0;
       ds::graphics::rect r;
@@ -190,7 +204,7 @@ namespace ds { namespace ui {
                      r.x, r.y, r.w, r.h,
                      r.x, r.y );
           */
-          XPutImage( _disp->_p->_xdisp, _p->_xwin, _p->_gc, _p->_image,
+          XPutImage( xdisp, _p->_xwin, _p->_gc, _p->_image,
                      r.x, r.y, r.x, r.y, r.w, r.h );
         }
       }
@@ -198,8 +212,7 @@ namespace ds { namespace ui {
       _p->_dirtyRects.clear();
 
       if (0 < copyCount) {
-        // clear dirty rects
-        XSync( _disp->_p->_xdisp, False );
+        XSync( xdisp, False );
       }
     }
 

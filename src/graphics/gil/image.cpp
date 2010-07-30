@@ -8,31 +8,31 @@
  **/
 
 #include <ds/debug.hpp>
-#include <ds/graphics/detail/image.hpp>
+#include <ds/graphics/gil/image.hpp>
+#include <boost/gil/image.hpp>
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 //#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
 //#include <boost/gil/extension/io/tiff_dynamic_io.hpp>
 
-namespace ds { namespace graphics {
-    namespace detail
-    {
+namespace ds { namespace graphics { namespace gil {
 
-      image::image()
-        : _anyImage()
+      image::image() : any_image_t()
       {
       }
 
       bool image::load_png( const std::string & file )
       {
         try {
-          png_read_image( file, _anyImage );
+          //png_read_image( file, *reinterpret_cast<any_image_t*>(this) );
+          //png_read_image( file, *this );
+          png_read_image( file, any() );
           return true;
         }
         catch( std::exception const & e ) {
-          dsD("can't load PNG image: "<<file<<"("<<e.what()<<")");
+          dsE("can't load PNG image: "<<file<<"("<<e.what()<<")");
         }
         catch( ... ) {
-          dsD("can't load PNG image: "<<file);
+          dsE("can't load PNG image: "<<file);
         }
         return false;
       }
@@ -49,6 +49,6 @@ namespace ds { namespace graphics {
         return false;
       }
 
-    }//namespace detail
+    }//namespace gil
   }//namespace graphics
 }//namespace ds

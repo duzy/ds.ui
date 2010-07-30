@@ -1,5 +1,5 @@
-#ifndef __DS_GRAPHICS_DETAIL_PNG_READER__HPP____by_Duzy_Chan__
-#define __DS_GRAPHICS_DETAIL_PNG_READER__HPP____by_Duzy_Chan__ 1
+#ifndef __DS_GRAPHICS_GIL_PNG_READER__HPP____by_Duzy_Chan__
+#define __DS_GRAPHICS_GIL_PNG_READER__HPP____by_Duzy_Chan__ 1
 #	include <ds/debug.hpp>
 #	include <cstdio> //!< for fopen, fclose in gil/extension/io on MinGW
 #	include <boost/gil/extension/io/dynamic_io.hpp>
@@ -10,13 +10,17 @@ extern "C" {
 #	include <png.h>
 }
 
-namespace ds { namespace graphics {
-    namespace detail
-    {
+namespace ds { namespace graphics { namespace gil {
+
+      /**
+       *  @brief Read PNG image from std::istream
+       */
       struct png_reader
       {
         png_reader( std::istream & is )
-          : _png(NULL), _info(NULL), _is(&is)
+          : _png(NULL)
+          , _info(NULL)
+          , _is(is)
         {
           const std::size_t sigSize( boost::gil::detail::PNG_BYTES_TO_CHECK );
           char buf[ sigSize ];
@@ -43,7 +47,6 @@ namespace ds { namespace graphics {
           png_read_info(_png,_info);
           if (boost::gil::little_endian() && png_get_bit_depth(_png,_info)>8)
             png_set_swap(_png);
-	  
         }
 
         virtual ~png_reader()
@@ -112,16 +115,17 @@ namespace ds { namespace graphics {
         static void read_data(png_structp ptr, png_bytep out, png_size_t sz)
         {
           png_reader *that((png_reader*)png_get_io_ptr(ptr));
-          that->_is->read((char*)out, sz);
+          that->_is.read((char*)out, sz);
         }
 
       protected:
         png_structp _png;
         png_infop _info;
-        std::istream *_is;
+        std::istream & _is;
       };//struct png_reader
-    }//namespace detail
+
+    }//namespace gil
   }//namespace graphics
 }//namespace ds
 
-#endif//__DS_GRAPHICS_DETAIL_PNG_READER__HPP____by_Duzy_Chan__
+#endif//__DS_GRAPHICS_GIL_PNG_READER__HPP____by_Duzy_Chan__

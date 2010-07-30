@@ -22,6 +22,8 @@ sm.module.includes := \
 
 sm.module.sources := \
   $(wildcard src/*.cpp) \
+  $(wildcard src/graphics/*.cpp) \
+  $(wildcard src/graphics/gil/*.cpp) \
   $(wildcard src/ui/*.cpp) \
   $(wildcard src/ui/events/*.cpp)
 
@@ -34,7 +36,7 @@ sm.module.libdirs := \
 
 sm.module.libs += \
   -l$(call ds.third.boost.use, thread) \
-  -lpthread
+  -lpthread -lpng
 
 #  -l$(call ds.third.boost.use, system) \
 

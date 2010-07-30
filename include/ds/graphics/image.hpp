@@ -12,14 +12,16 @@
 
 namespace ds { namespace graphics {
 
-    namespace detail
+    namespace gil
     {
-      struct image; //== Forward declaration ==
-    }//namespace detail
+      struct image; // Forward declaration
+    }//namespace gil
 
     struct image
     {
       image();
+      image( int w, int h, int bitsPerPixel, uint8_t * data );
+
       virtual ~image();
 
       /**
@@ -42,7 +44,7 @@ namespace ds { namespace graphics {
       #endif
 
     private:
-      detail::image * _d;
+      gil::image * _d;
     };//struct image
 
   }//namespace graphics

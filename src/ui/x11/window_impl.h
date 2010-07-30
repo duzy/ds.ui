@@ -19,8 +19,7 @@ namespace ds { namespace ui {
       Window _xwin; // Window and Pixmap are Drawable
 
       XVisualInfo _visual;
-      XImage _image; 
-      Drawable _drawable; // Pixmap, Window, etc...
+      XImage _ximage; 
       GC _gc;
 
       __gnu_cxx::slist<ds::graphics::rect> _dirtyRects;
@@ -29,13 +28,13 @@ namespace ds { namespace ui {
         : _disp( d )
         , _xwin( NULL )
         , _visual()
-        , _image()
+        , _ximage()
         , _drawable( NULL )
         , _gc( NULL )
         , _dirtyRects()
       {
         std::memset( &_visual, 0, sizeof(_visual) );
-        std::memset( &_image, 0, sizeof(_image) );
+        std::memset( &_ximage, 0, sizeof(_ximage) );
       }
 
       void get_visual( const screen::pointer & scrn );

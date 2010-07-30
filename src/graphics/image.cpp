@@ -9,14 +9,19 @@
 
 #include <string>
 #include <ds/graphics/image.hpp>
-#include <ds/graphics/detail/image.ipp>
+#include <ds/graphics/gil/image.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <ds/debug.hpp>
 
 namespace ds { namespace graphics {
 
     image::image()
-      : _d( new detail::image )
+      : _d( new gil::image )
+    {
+    }
+
+    image::image( int w, int h, int bitsPerPixel, uint8_t * data )
     {
     }
 
@@ -40,7 +45,7 @@ namespace ds { namespace graphics {
       //TODO: using boost::filesystem::path?
 
       if ( file.empty() ) {
-        dsD("empty image file name");
+        dsE("empty image file name");
         return false;
       }
 
