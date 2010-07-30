@@ -18,6 +18,15 @@
 
 namespace ds { namespace ui {
 
+    void display::IMPL::init_atoms()
+    {
+#define GET_ATOM(X) X = XInternAtom( xDisplay, #X, False )
+
+      GET_ATOM(WM_DELETE_WINDOW);
+
+#undef GET_ATOM
+    }
+
     bool display::IMPL::pending()
     {
       XFlush(xDisplay);
@@ -26,7 +35,7 @@ namespace ds { namespace ui {
       }
 
       /* More drastic measures are required -- see if X is ready to talk */
-      {                                                                        
+      {
         static struct timeval zeroTv;        /* static == 0 */
         int fd;
         fd_set fdset;
@@ -61,8 +70,25 @@ namespace ds { namespace ui {
 
     void display::IMPL::dispatch( XEvent * event )
     {
-      // TODO: ...
-      std::cout << "event: " << event->type << std::endl;
+      //std::cout << "event: " << event->type << std::endl;
+
+      /* filter events catchs XIM events and sends them to the correct
+         handler */
+      if ( XFilterEvent(event, None) == True ) {
+        return;
+      }
+
+      switch (event->type) {
+      case ClientMessage:
+        if (event->xclient.format == 32 &&
+            event->xclient.data.l[0] == WM_DELETE_WINDOW) {
+          std::cout<<"WM_DELETE_WINDOW"<<std::endl;
+          //Window w = event->xclient->window;
+          Window w = event->xany.window;
+          // TODO: destroy window
+        }
+        break;
+      }
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -91,6 +117,7 @@ namespace ds { namespace ui {
       pointer_t d( new display );
       d->_p->xDisplay = XOpenDisplay( (const char *) i._p );
       d->_p->screen = XDefaultScreen( d->_p->xDisplay );
+      d->_p->init_atoms();
       return d;
     }
 

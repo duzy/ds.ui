@@ -37,6 +37,9 @@ namespace ds { namespace ui {
       //XCreateWindow(...);
       xWindow = XCreateSimpleWindow( xDisplay, pr, x, y, w, h, bw, fc, bc );
 
+      /* Allow window to be deleted by the window manager */
+      XSetWMProtocols( xDisplay, xWindow, &disp->_p->WM_DELETE_WINDOW, 1 );
+
       int eventMask
         = KeyPressMask
         | KeyReleaseMask
