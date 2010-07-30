@@ -69,7 +69,7 @@ namespace ds { namespace ui {
 
       void do_close();
 
-      virtual void on_render( ds::canvas & canvas );
+      virtual void on_render( ds::graphics::canvas & canvas );
 
     private:
       IMPL * _p;
