@@ -23,8 +23,8 @@ ifeq ($(sm.os.name),linux)
 else
 ifeq ($(sm.os.name),win32)
   sm.module.sources += $(wildcard src/win32/*.cpp)
-endif
-endif
+endif#win32
+endif#linux
 
 $(call sm-build-this)
 $(call sm-load-subdirs)

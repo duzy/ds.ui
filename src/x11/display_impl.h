@@ -20,6 +20,7 @@ namespace ds { namespace ui {
       {
       }
 
+      bool pending();
       void pump_events();
       void dispatch( XEvent * event );
     };//struct display::IMPL

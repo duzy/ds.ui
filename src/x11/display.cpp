@@ -10,6 +10,7 @@
 #include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
 #include <X11/Xlib.h>
+#include <sys/types.h>
 #include "display_impl.h"
 #include "screen_impl.h"
 #include "window_impl.h"
@@ -17,16 +18,42 @@
 
 namespace ds { namespace ui {
 
+    bool display::IMPL::pending()
+    {
+      XFlush(xDisplay);
+      if (XEventsQueued(xDisplay, QueuedAlready)) {
+        return true;
+      }
+
+      /* More drastic measures are required -- see if X is ready to talk */
+      {                                                                        
+        static struct timeval zeroTv;        /* static == 0 */
+        int fd;
+        fd_set fdset;
+        
+        fd = XConnectionNumber(xDisplay);
+        FD_ZERO(&fdset);
+        FD_SET(fd, &fdset);
+        if (select(fd + 1, &fdset, NULL, NULL, &zeroTv) == 1) {
+          return (XPending(xDisplay));
+        }
+      }
+
+      return false;
+    }
+
     void display::IMPL::pump_events()
     {
+      // see SDL/src/video/x11/SDL_x11events.c
+
       if ( xDisplay == NULL ) return;
       if ( screen == -1 ) return;
 
       XEvent event;
       //bzero( &event, sizeof(event) );
 
-      //while ( XPending(xDisplay) ) {
-      while ( true ) {
+      while ( true )
+      while ( pending() ) {
         XNextEvent( xDisplay, &event );
         dispatch( &event );
       }
@@ -113,7 +140,7 @@ namespace ds { namespace ui {
 
     int display::reduce_events()
     {
-      XSync( _p->xDisplay, False );
+      //XSync( _p->xDisplay, False );
 
       _p->pump_events();
 
