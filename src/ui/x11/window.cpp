@@ -120,22 +120,10 @@ namespace ds { namespace ui {
 
     void window::show()
     {
-      
     }
 
     void window::hide()
     {
-    }
-
-    void window::close()
-    {
-      /**
-       *  1): send close event (to perform on_close)
-       *  2): perform close
-       */
-      event::window::close evt;
-      evt.win = this;
-      this->on_close( evt );
     }
 
     void window::move( int x, int y )
@@ -146,71 +134,41 @@ namespace ds { namespace ui {
     {
     }
 
-    void window::on_shown( const event::window::shown & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_hidden( const event::window::hidden & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
     void window::on_exposed( const event::window::exposed & a )
     {
       dsL("winact: "<<a.win);
+
+      ds::graphics::rect const dr( a.x(), a.y(), a.width(), a.height() );
+
+      ds::graphics::image img( _p->_drawable );
+      ds::graphics::canvas canvas( img );
+      canvas.clip( dr );
+
+      this->on_render( canvas );
+
+      int copyCount = 0;
+      ds::graphics::rect r;
+      std::slist<ds::graphics::rect>::const_iterator it;
+      for (it = _p->_dirtyRects.begin(); it != _p->_dirtyRects.end(); ++it) {
+        if ( (r = it->intersect(dr)).is_valid() ) {
+          ++copyCount;
+          /*
+          XCopyArea( _disp->_p->_xdisp, _p->_drawable, _p->_xwin, _p->_gc,
+                     r.x, r.y, r.w, r.h,
+                     r.x, r.y );
+          */
+          XPutImage( _disp->_p->_xdisp, _p->_xwin, _p->_gc, _p->_image,
+                     r.x, r.y, r.x, r.y, r.w, r.h );
+        }
+      }
+
+      _p->_dirtyRects.clear();
+
+      if (0 < copyCount) {
+        // clear dirty rects
+        XSync( _disp->_p->_xdisp, False );
+      }
     }
 
-    void window::on_moved( const event::window::moved & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_resized( const event::window::resized & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_minimized( const event::window::minimized & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_maximized( const event::window::maximized & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_restored( const event::window::restored & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_enter( const event::window::enter & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_leave( const event::window::leave & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_focus( const event::window::focus & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-
-    void window::on_close( const event::window::close & a )
-    {
-      dsL("winact: "<<a.win);
-      do_close(); // Don't call 'close()'!
-    }
-
-    void window::do_close()
-    {
-      destroy(); // TODO: should be destroyed?
-    }
-    
   }// namespace ui
 }//namespace ds

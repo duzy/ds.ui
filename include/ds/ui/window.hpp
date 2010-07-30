@@ -10,9 +10,10 @@
 #define __DS_UI_WINDOW_HPP____by_Duzy_Chan__ 1
 #       include <ds/shared_object.hpp>
 #       include <ds/ui/events.hpp>
+#       include <ds/ui/view.hpp>
 
 namespace ds { namespace graphics {
-    struct canvas;
+    class canvas;
   }//namespace graphics
 }//namespace ds
 
@@ -22,6 +23,7 @@ namespace ds { namespace ui {
     class screen;
 
     class window : public shared_object<window>
+                 , public view
     {
       struct IMPL;
 

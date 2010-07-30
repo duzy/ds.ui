@@ -12,11 +12,12 @@
 
 namespace ds { namespace graphics {
 
-    struct canvas
+    class canvas
     {
+    public:
       void render( ... );
       void stroke( ... );
-    };//struct canvas
+    };//class canvas
     
   }//namespace graphics
 }//namespace ds

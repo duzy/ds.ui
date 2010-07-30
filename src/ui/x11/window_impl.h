@@ -11,13 +11,22 @@ namespace ds { namespace ui {
     
     struct window::IMPL
     {
-      Window _xwin;
-
       display * _disp; // Never hold a display::pointer_t(will leak)!
 
+      Window _xwin; // Window and Pixmap are Drawable
+
+      XImage _image; 
+      Drawable _drawable; // Pixmap, Window, etc...
+      GC _gc;
+
+      std::slist<ds::graphics::rect> _dirtyRects;
+
       IMPL( display * d )
-        : _xwin( NULL )
-        , _disp( d )
+        : _disp( d )
+        , _xwin( NULL )
+        , _drawable( NULL )
+        , _gc( NULL )
+        , _dirtyRects()
       {
       }
 
