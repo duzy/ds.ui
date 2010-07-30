@@ -51,6 +51,9 @@ namespace ds { namespace graphics { namespace gil {
       {
         image();
 
+        template<typename T>
+        image(const T & o) : any_image_t(o) {}
+
         const any_image_t & any() const { return *this; }
         any_image_t & any() { return *this; }
 

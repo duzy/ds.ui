@@ -10,6 +10,7 @@
 #ifndef __DS_GRAPHICS_IMAGE_HPP____by_Duzy_Chan__
 #define __DS_GRAPHICS_IMAGE_HPP____by_Duzy_Chan__ 1
 #       include <boost/cstdint.hpp>
+#       include <string>
 
 namespace ds { namespace graphics {
 
@@ -28,6 +29,7 @@ namespace ds { namespace graphics {
         ARGB_8888_PIXEL,
       };
 
+      image( int w, int h, PixelType pt );
       image( int w, int h, PixelType pt, uint8_t * data );
 
       virtual ~image();
@@ -37,8 +39,10 @@ namespace ds { namespace graphics {
       bool create( int w, int h, PixelType pt );
       bool create( int w, int h, PixelType pt, uint8_t * data );
 
-      const uint8_t * pixels() const;
       uint8_t * pixels();
+      const uint8_t * pixels() const {
+        return const_cast<image*>(this)->pixels();
+      }
 
       /**
        *  @brief Load PNG image from a disk file or ds::resource.

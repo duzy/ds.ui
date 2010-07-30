@@ -26,12 +26,10 @@ namespace ds { namespace ui {
 
     void window::on_shown( const event::window::shown & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_hidden( const event::window::hidden & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     /*
@@ -43,47 +41,38 @@ namespace ds { namespace ui {
 
     void window::on_moved( const event::window::moved & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_resized( const event::window::resized & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_minimized( const event::window::minimized & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_maximized( const event::window::maximized & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_restored( const event::window::restored & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_enter( const event::window::enter & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_leave( const event::window::leave & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_focus( const event::window::focus & a )
     {
-      dsL("winact: "<<a.win);
     }
 
     void window::on_close( const event::window::close & a )
     {
-      dsL("winact: "<<a.win);
       do_close(); // Don't call 'close()'!
     }
 
@@ -94,7 +83,7 @@ namespace ds { namespace ui {
 
     void window::on_render( ds::graphics::canvas & canvas )
     {
-      dsL("render: "<<this);
+      dsL("TODO:render: "<<this);
       // TODO: draw each child view, support BSP view
     }
     

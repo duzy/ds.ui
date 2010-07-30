@@ -20,7 +20,7 @@ namespace ds { namespace ui {
 
       Window _xwin; // Window and Pixmap are Drawable
 
-      XVisualInfo _visualInfo;
+      XVisualInfo _vi;
       XImage * _ximage;
       ds::graphics::image _image;
       GC _gc;
@@ -30,13 +30,13 @@ namespace ds { namespace ui {
       IMPL( display * d )
         : _disp( d )
         , _xwin( NULL )
-        , _visualInfo()
+        , _vi()
         , _ximage( NULL )
         , _image()
         , _gc( NULL )
         , _dirtyRects()
       {
-        std::memset( &_visualInfo, 0, sizeof(_visualInfo) );
+        std::memset( &_vi, 0, sizeof(_vi) );
       }
 
       ~IMPL();
