@@ -9,30 +9,25 @@
 
 #ifndef __DS_GRAPHICS_CANVAS_hpp____by_Duzy_Chan__
 #define __DS_GRAPHICS_CANVAS_hpp____by_Duzy_Chan__ 1
+#       include <ds/graphics/rect.hpp>
+#       include <boost/noncopyable.hpp>
 
 namespace ds { namespace graphics {
 
-    namespace gil
-    {
-      struct image;
-      struct view;
-    }//namespace gil
+    struct image;
 
-    class canvas
+    class canvas : boost::noncopyable
     {
     public:
-      canvas( gil::image & );
-      canvas( gil::view & );
+      canvas( image & );
+
+      void clip( const irect & );
 
       void render( ... );
       void stroke( ... );
 
     private:
-      unsigned _isView : 1;
-      union {
-        gil::image      * _d;
-        gil::view       * _v;
-      };
+      image * _image;
     };//class canvas
     
   }//namespace graphics

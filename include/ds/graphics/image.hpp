@@ -21,7 +21,13 @@ namespace ds { namespace graphics {
     struct image
     {
       image();
-      image( int w, int h, int bitsPerPixel, uint8_t * data );
+
+      enum PixelType {
+        RGB_565_PIXEL,
+        ARGB_8888_PIXEL,
+      };
+
+      image( int w, int h, PixelType pt, uint8_t * data );
 
       virtual ~image();
 
@@ -45,7 +51,11 @@ namespace ds { namespace graphics {
       #endif
 
     private:
-      gil::image * _d;
+      unsigned _isView : 1;
+      union {
+        gil::image      * _m;
+        gil::view       * _v;
+      };//union
     };//struct image
 
   }//namespace graphics

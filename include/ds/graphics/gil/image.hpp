@@ -11,6 +11,7 @@
 #define __DS_GRAPHICS_GIL_IMAGE_HPP____by_Duzy_Chan__ 1
 #       include <boost/mpl/vector.hpp>
 #       include <boost/gil/typedefs.hpp>
+#       include <boost/gil/image_view_factory.hpp>
 #       include <boost/gil/extension/dynamic_image/any_image.hpp>
 //#       include <boost/gil/extension/dynamic_image/apply_operation.hpp>
 
@@ -54,9 +55,25 @@ namespace ds { namespace graphics { namespace gil {
         any_image_t & any() { return *this; }
 
         bool load_jpeg( const std::string & file );
-        bool load_png( const std::string & file );
+        bool load_png ( const std::string & file );
         bool load_tiff( const std::string & file );
       };//struct image
+
+      struct view : public any_image_t::view_t
+      {
+        view()
+          : any_image_t::view_t()
+        {}
+
+        template<typename PixelIter>
+        view(std::size_t w, std::size_t h, PixelIter *p, std::ptrdiff_t rowBytes)
+          : any_image_t::view_t(boost::gil::interleaved_view(w, h, p, rowBytes))
+        {
+        }
+
+        any_image_t::const_view_t & any() const { return *this; }
+        any_image_t::view_t & any() { return *this; }
+      };//struct view
 
     }//namespace gil
   }//namespace graphics

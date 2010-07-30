@@ -17,17 +17,29 @@
 namespace ds { namespace graphics {
 
     image::image()
-      : _d( new gil::image )
+      : _isView( 0 )
+      , _m( NULL )
     {
     }
 
-    image::image( int w, int h, int bitsPerPixel, uint8_t * data )
+    image::image( int w, int h, PixelType pt, uint8_t * data )
+      , _isView( 1 )
+      , _m( NULL )
     {
+      switch (pt) {
+      case RGB_565_PIXEL:
+        //_v = new gil::view( w, h, (gil::abgr8_image_t::x_iterator*)data, rowBytes );
+        break;
+      case ARGB_8888_PIXEL:
+        _v = new gil::view( w, h, (gil::abgr8_image_t::x_iterator*)data, rowBytes );
+        break;
+      }
     }
 
     image::~image()
     {
-      delete _d;
+      if (_isView) delete _v;
+      else delete _m;
     }
 
     int image::width() const
