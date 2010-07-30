@@ -11,6 +11,7 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/window.hpp>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include "screen_impl.h"
 #include "display_impl.h"
 #include "window_impl.h"

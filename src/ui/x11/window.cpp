@@ -20,7 +20,7 @@ namespace ds { namespace ui {
 
     void window::IMPL::get_visual( const screen::pointer & scrn )
     {
-      XDisplay xdisp = _disp->_p->_xdisp;
+      Display xdisp = _disp->_p->_xdisp;
 
       VisualID vid = 0;
       if (vid) {
@@ -191,7 +191,7 @@ namespace ds { namespace ui {
 
       this->on_render( canvas );
 
-      XDisplay xdisp = _disp->_p->_xdisp;
+      Display xdisp = _disp->_p->_xdisp;
 
       int copyCount = 0;
       ds::graphics::rect r;

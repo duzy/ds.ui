@@ -12,6 +12,7 @@
 #include <ds/ui/events.hpp>
 #include <ds/event_queue.hpp>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <sys/types.h>
 #include "display_impl.h"
 #include "screen_impl.h"

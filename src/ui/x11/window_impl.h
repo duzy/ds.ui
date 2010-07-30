@@ -29,7 +29,6 @@ namespace ds { namespace ui {
         , _xwin( NULL )
         , _visual()
         , _ximage()
-        , _drawable( NULL )
         , _gc( NULL )
         , _dirtyRects()
       {
