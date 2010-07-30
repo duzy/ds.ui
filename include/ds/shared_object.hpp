@@ -10,26 +10,13 @@
 #ifndef __DS_SHARED_OBJECT_HPP____by_Duzy_Chan__
 #define __DS_SHARED_OBJECT_HPP____by_Duzy_Chan__ 1
 #       include <boost/smart_ptr/intrusive_ptr.hpp>
+#       include <ds/shared_object_fwd.hpp>
 
 namespace ds {
 
   namespace detail
   {
-    template<class DerivedClass> class shared_object_impl;
-
-    template<class DerivedClass>
-    inline void intrusive_ptr_add_ref( shared_object_impl<DerivedClass> * p )
-    {
-      p->_inref();
-    }
-
-    template<class DerivedClass>
-    inline void intrusive_ptr_release( shared_object_impl<DerivedClass> * p )
-    {
-      p->_deref();
-    }
-
-    template<class DerivedClass>
+    template<class SO>
     class shared_object_impl
     {
       template<class T> friend void intrusive_ptr_add_ref( shared_object_impl<T> * );
@@ -61,19 +48,18 @@ namespace ds {
     public:
       int refcount() const { return _refcount < 0 ? 0 : _refcount; }
     };//struct shared_object_impl
-
   }//namespace detail
 
   /**
    *  @brief Shared object with smart pointer.
    */
-  template<class DerivedClass>
-  struct shared_object : public detail::shared_object_impl<DerivedClass>
+  template<class SO>
+  struct shared_object : public detail::shared_object_impl<SO>
   {
     /**
      *  Must be used to wrap raw pointers returned by 'new'. 
      */
-    typedef boost::intrusive_ptr<DerivedClass> pointer;
+    typedef boost::intrusive_ptr<SO> pointer;
   };//struct shared_object
 
 }//namespace ds
