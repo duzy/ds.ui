@@ -68,6 +68,11 @@ namespace ds { namespace graphics { namespace gil {
           : any_image_t::view_t()
         {}
 
+        explicit view( image & img )
+          : any_image_t::view_t(boost::gil::view(img))
+        {
+        }
+
         template<typename PixelIter>
         view(std::size_t w, std::size_t h, PixelIter *p, std::ptrdiff_t rowBytes)
           : any_image_t::view_t(boost::gil::interleaved_view(w, h, p, rowBytes))

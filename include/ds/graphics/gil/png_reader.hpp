@@ -26,20 +26,20 @@ namespace ds { namespace graphics { namespace gil {
           char buf[ sigSize ];
           is.read( buf, sigSize );
           if ( is.gcount() != sigSize )
-            { dsD("png_check_validity: failed to read file"); return; }
+            { dsL("png_check_validity: failed to read file"); return; }
           if ( png_sig_cmp((png_bytep)buf, (png_size_t)0, sigSize) != 0 )
-            { dsD("png_check_validity: invalid png file"); return; }
+            { dsL("png_check_validity: invalid png file"); return; }
           _png = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
           if ( _png == NULL )
-            { dsD("failed to call png_create_read_struct()"); return; }
+            { dsL("failed to call png_create_read_struct()"); return; }
           _info = png_create_info_struct( _png );
           if ( _info == NULL ) {
             png_destroy_read_struct(&_png,png_infopp_NULL,png_infopp_NULL);
-            dsD("failed to call png_create_info_struct()"); return;
+            dsL("failed to call png_create_info_struct()"); return;
           }
           if (setjmp(png_jmpbuf(_png))) {
             png_destroy_read_struct(&_png,&_info,png_infopp_NULL);
-            dsD("failed to call setjmp()"); return;
+            dsL("failed to call setjmp()"); return;
           }
           //png_init_io(_png,get());
           png_set_read_fn(_png,this,&png_reader::read_data);
@@ -107,7 +107,7 @@ namespace ds { namespace graphics { namespace gil {
             im.recreate(width,height);
             boost::gil::detail::dynamic_io_fnobj
               <boost::gil::detail::png_read_is_supported, png_reader> op(this);
-            boost::gil::apply_operation(view(im),op);
+            boost::gil::apply_operation(boost::gil::view(im),op);
           }
         }
 

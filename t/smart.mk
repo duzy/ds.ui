@@ -1,6 +1,6 @@
 #
 
-$(call sm-new-module, unit-tests, tests)
+$(call sm-new-module, all-units, tests)
 $(call sm-check-not-empty, ds.ui.dir)
 $(call sm-check-not-empty, ds.ui.dir.lib)
 
@@ -13,7 +13,9 @@ sm.module.includes := \
 
 sm.module.sources := \
   boost_test_stuff.cpp \
-  shared_object.t
+  shared_object.t \
+  streambuf.t \
+  png_reader.t \
 
 sm.module.libdirs := \
   -L$(ds.ui.dir.lib) \
