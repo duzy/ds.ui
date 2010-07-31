@@ -12,7 +12,21 @@
 
 namespace ds { namespace graphics {
 
-    struct color;
+    struct color
+    {
+      uint8_t red;
+      uint8_t green;
+      uint8_t blue;
+      uint8_t alpha;
+
+      color( float a, float r, float g, float b )
+        : red   ( uint32_t(0xFF * r) & 0xFF )
+        , green ( uint32_t(0xFF * g) & 0xFF )
+        , blue  ( uint32_t(0xFF * b) & 0xFF )
+        , alpha ( uint32_t(0xFF * a) & 0xFF )
+      {
+      }
+    };
     
   }//namespace graphics
 }//namespace ds

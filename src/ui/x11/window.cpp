@@ -12,6 +12,8 @@
 #include <ds/ui/screen.hpp>
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/canvas.hpp>
+#include <ds/graphics/box.hpp>
+#include <boost/geometry/algorithms/make.hpp>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "window_impl.h"
@@ -56,14 +58,16 @@ namespace ds { namespace ui {
 
     bool window::IMPL::create_image_if_needed( int w, int h )
     {
-      if ( _image.width() == w &&
-           _image.height() == h )
+      if ( _image.width() == w && _image.height() == h )
         return ( _ximage != NULL );
 
       _image.create(w, h, ds::graphics::image::ARGB_8888_PIXEL);
+      dsI( _image.is_valid() );
       dsI( _image.width() == w );
       dsI( _image.height() == h );
       dsI( _image.pixels() != NULL );
+      dsI( _image.pixel_type() == ds::graphics::image::ARGB_8888_PIXEL );
+      dsI( _image.pixel_size() == 4 );
       
       if ( _ximage != NULL ) {
         _ximage->data = NULL;
@@ -71,19 +75,17 @@ namespace ds { namespace ui {
         _ximage = NULL;
       }
 
-      int pixelBytes = 4;
-      int rowBytes = pixelBytes * w;
-
       Display * xdisp = _disp->_p->_xdisp;
 
       dsI( xdisp != NULL );
       dsI( _vi.visual != NULL );
       dsI( 0 < _vi.depth );
 
-      _ximage = XCreateImage(xdisp, _vi.visual, _vi.depth, ZPixmap, 0,
-                             (char*)_image.pixels(),
-                             _image.width(), _image.height(),
-                             pixelBytes * 8, rowBytes );
+      _ximage = XCreateImage( xdisp, _vi.visual, _vi.depth, ZPixmap, 0,
+                              reinterpret_cast<char*>( _image.pixels() ),
+                              _image.width(), _image.height(),
+                              _image.pixel_size() * 8,/* bitmap pad */
+                              _image.pixel_size() * w /* row bytes */ );
       
       return ( _ximage != NULL );
     }
@@ -225,19 +227,17 @@ namespace ds { namespace ui {
       // TODO: ...
     }
 
-    graphics::irect window::rect() const
+    graphics::box window::rect() const
     {
       XWindowAttributes a;
       std::memset( &a, 0, sizeof(a) );
       XGetWindowAttributes( _p->_disp->_p->_xdisp, _p->_xwin, &a );
-      graphics::irect r;
-      r.set_xywh( a.x, a.y, a.width, a.height );
-      return r;
+      return boost::geometry::make<graphics::box>( a.x, a.y, a.width, a.height );
     }
 
     void window::on_exposed( const event::window::exposed & a )
     {
-      graphics::irect const wr( this->rect() );
+      graphics::box const wr( this->rect() );
       if ( wr.is_empty() ) {
         dsE("empty window: "<<_p->_xwin);
         return;
@@ -254,8 +254,7 @@ namespace ds { namespace ui {
       dsI( wr.height() == _p->_image.height() );
       dsI( _p->_ximage );
 
-      ds::graphics::irect dr;
-      dr.set_xywh( a.x(), a.y(), a.width(), a.height() );
+      ds::graphics::box dr( boost::geometry::make<graphics::box>( a.x(), a.y(), a.width(), a.height() ) );
       if ( dr.is_empty() ) {
         dsE("empty dirty rect");
         return;
@@ -272,10 +271,10 @@ namespace ds { namespace ui {
       if ( _p->_dirtyRects.empty() ) {
         copyCount = 1;
         XPutImage( xdisp, _p->_xwin, _p->_gc, _p->_ximage,
-                   dr.left, dr.top, dr.left, dr.top, dr.width(), dr.height() );
+                   dr.x(), dr.y(), dr.x(), dr.y(), dr.width(), dr.height() );
       } else {
-        ds::graphics::irect r;
-        __gnu_cxx::slist<ds::graphics::irect>::const_iterator it;
+        ds::graphics::box r;
+        __gnu_cxx::slist<ds::graphics::box>::const_iterator it;
         for (it = _p->_dirtyRects.begin(); it != _p->_dirtyRects.end(); ++it) {
           if ( (r = it->intersect(dr)).is_empty() )
             continue;
@@ -287,7 +286,7 @@ namespace ds { namespace ui {
             r.x, r.y );
           */
           XPutImage( xdisp, _p->_xwin, _p->_gc, _p->_ximage,
-                     r.left, r.top, r.left, r.top, r.width(), r.height() );
+                     r.x(), r.y(), r.x(), r.y(), r.width(), r.height() );
         }
         _p->_dirtyRects.clear();
       }

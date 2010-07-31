@@ -4,6 +4,7 @@
 
 namespace ds { namespace graphics {
 
+    /*
     template<typename T>
     struct rect
     {
@@ -72,6 +73,7 @@ namespace ds { namespace graphics {
     };//struct rect
 
     typedef rect<int32_t> irect;
+    */
 
   }//namespace graphics
 }//namespace ds

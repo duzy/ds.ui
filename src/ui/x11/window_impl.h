@@ -9,7 +9,8 @@
 
 #include <ext/slist>
 #include <cstring>
-#include <ds/graphics/rect.hpp>
+//#include <ds/graphics/rect.hpp>
+#include <ds/graphics/box.hpp>
 #include <ds/graphics/image.hpp>
 
 namespace ds { namespace ui {
@@ -25,7 +26,8 @@ namespace ds { namespace ui {
       ds::graphics::image _image;
       GC _gc;
 
-      __gnu_cxx::slist<ds::graphics::irect> _dirtyRects;
+      //__gnu_cxx::slist<ds::graphics::irect> _dirtyRects;
+      __gnu_cxx::slist<ds::graphics::box> _dirtyRects;
 
       IMPL( display * d )
         : _disp( d )

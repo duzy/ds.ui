@@ -10,10 +10,6 @@
 #ifndef __DS_GRAPHICS_LINE__hpp____by_Duzy_Chan__
 #define __DS_GRAPHICS_LINE__hpp____by_Duzy_Chan__ 1
 #       include "point.hpp"
-//#       include <cstddef>
-//#       include <boost/concept/assert.hpp>
-//#       include <boost/mpl/if.hpp>
-//#       include <boost/type_traits/is_const.hpp>
 #       include <boost/geometry/geometries/concepts/point_concept.hpp>
 
 namespace ds { namespace graphics {
@@ -33,12 +29,10 @@ namespace ds { namespace graphics {
 
 //////////////////////////////////////////////////////////////////////
 
-namespace boost { namespace geometry {
-    // Traits specializations for ds::graphics::line
-    namespace traits
-    {
+namespace boost { namespace geometry { namespace traits {
+
       template <>
-      struct tag<ds::grapics::line>
+      struct tag<ds::graphics::line>
       {
         typedef segment_tag type;
       };
@@ -66,7 +60,6 @@ namespace boost { namespace geometry {
         }
       };
 
-
       template <std::size_t Dimension>
       struct indexed_access<ds::graphics::line, 1, Dimension>
       {
@@ -84,8 +77,6 @@ namespace boost { namespace geometry {
         }
       };
 
-    } // namespace traits
-  }// namespace geometry
-}// namespace boost
+    }}}// namespace boost::geometry::traits
 
 #endif//__DS_GRAPHICS_LINE__hpp____by_Duzy_Chan__

@@ -25,10 +25,12 @@ sm.module.rpath := \
   $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
 
 sm.module.libs += \
-  -l$(call ds.third.boost.use, program_options) \
-  -l$(call ds.third.boost.use, filesystem) \
-  -l$(call ds.third.boost.use, system) \
-  -lxml2 -lpng -lz
+  $(call ds.third.boost.use, program_options) \
+  $(call ds.third.boost.use, filesystem) \
+  $(call ds.third.boost.use, system) \
+  $(ds.third.libxml.libname) \
+  $(ds.third.libpng.libname) \
+  $(ds.third.zlib.libname) \
 
 libxml2_link_to_winsock = yes
 ifeq ($(libxml2_link_to_winsock),yes)

@@ -43,9 +43,36 @@ namespace ds { namespace graphics {
       else delete _m;
     }
 
-    bool image::is_valid() const
+    struct get_pixel_type_f
     {
-      return (_m != NULL) /*&& (_v != NULL)*/;
+      typedef image::PixelType result_type;
+
+      template<typename Any>
+      inline result_type operator()( const Any & a ) const { return image::NO_PIXEL; }
+
+      inline result_type operator()( const gil::argb8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::argb8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+    };//struct get_pixel_type_f
+
+    image::PixelType image::pixel_type() const
+    {
+      if ( !is_valid() ) return NO_PIXEL;
+
+      get_pixel_type_f f;
+      return _isView
+        ? boost::gil::apply_operation( _v->any(), f )
+        : boost::gil::apply_operation( _m->any(), f )
+        ;
+    }
+
+    std::size_t image::pixel_size() const
+    {
+      switch ( this->pixel_type() ) {
+      case ARGB_8888_PIXEL: return sizeof(gil::argb8_image_t::value_type);
+      case ARGB_4444_PIXEL: return 0;
+      case RGB_565_PIXEL:   return 0;
+      }
+      return 0;
     }
 
     bool image::create( int w, int h, PixelType pt )
@@ -58,10 +85,10 @@ namespace ds { namespace graphics {
 
       switch ( pt ) {
       case RGB_565_PIXEL:
-        //_m = new gil::image(gil::rgb565(w, h));
+      case ARGB_4444_PIXEL:
         break;
       case ARGB_8888_PIXEL:
-        _m = new gil::image(gil::abgr8_image_t(w, h));
+        _m = new gil::image(gil::argb8_image_t(w, h));
         break;
       }
 
@@ -82,10 +109,11 @@ namespace ds { namespace graphics {
 
       switch ( pt ) {
       case RGB_565_PIXEL:
-        //_v = new gil::view( w, h, (gil::abgr8_image_t::x_iterator*)data, rowBytes );
+      case ARGB_4444_PIXEL:
         break;
       case ARGB_8888_PIXEL:
-        _v = new gil::view( w, h, (gil::abgr8_image_t::value_type*)data, w*4 );
+        typedef gil::argb8_image_t::value_type pixel_t;
+        _v = new gil::view( w, h, (pixel_t*)data, w * sizeof(pixel_t) );
         break;
       }
 
@@ -108,44 +136,33 @@ namespace ds { namespace graphics {
       {
         return reinterpret_cast<result_type>(&(v[0]));
       }
-
-      inline uint8_t * result_of_view( const gil::any_image_t::view_t & v ) const
-      {
-        return boost::gil::apply_operation(v, *this);
-      }
-
-      inline uint8_t * result_of_image( gil::any_image_t & m ) const
-      {
-        return result_of_view( boost::gil::view(m) );
-      }
     };//struct get_image_pixels_f
 
     uint8_t * image::pixels()
     {
-      if ( !_m /*|| !_v*/ ) return NULL;
-      get_image_pixels_f fGetPixels;
+      if ( !is_valid() ) return NULL;
+
+      get_image_pixels_f f;
       return _isView
-        ? fGetPixels.result_of_view( _v->any() )
-        : fGetPixels.result_of_image( _m->any() )
+        ? boost::gil::apply_operation( _v->any(), f )
+        : boost::gil::apply_operation( boost::gil::view(_m->any()), f )
         ;
     }
 
     int image::width() const
     {
-      if ( !_m /*|| !_v*/ ) return 0;
+      if ( !is_valid() ) return 0;
       return _isView ? _v->width() : _m->width();
     }
 
     int image::height() const
     {
-      if ( !_m /*|| !_v*/ ) return 0;
+      if ( !is_valid() ) return 0;
       return _isView ? _v->height() : _m->height();
     }
 
     bool image::load( const std::string & file )
     {
-      if ( !_m /*|| !_v*/ ) return false;
-
       //TODO: using boost::filesystem::path?
       if ( file.empty() ) {
         dsE("empty image file name");
@@ -159,7 +176,7 @@ namespace ds { namespace graphics {
 
       if ( 5 < file.size() ) {
 
-        if ( _isView ) { // convert into image
+        if ( _isView || _m == NULL ) { // convert into image
           delete _v;
           _v = NULL;
           _isView = 0;

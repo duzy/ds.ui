@@ -11,9 +11,10 @@
 #       include <ds/shared_object.hpp>
 #       include <ds/ui/events.hpp>
 #       include <ds/ui/view.hpp>
-#       include <ds/graphics/rect.hpp>
+//#       include <ds/graphics/rect.hpp>
 
 namespace ds { namespace graphics {
+    struct box;
     class canvas;
   }//namespace graphics
 }//namespace ds
@@ -58,7 +59,8 @@ namespace ds { namespace ui {
       void move( int x, int y );
       void resize( int w, int h );
 
-      graphics::irect rect() const;
+      //graphics::irect rect() const;
+      graphics::box rect() const;
 
     public:
       struct on;

@@ -9,8 +9,8 @@
 
 #ifndef __DS_GRAPHICS_LINESTRING__hpp____by_Duzy_Chan__
 #define __DS_GRAPHICS_LINESTRING__hpp____by_Duzy_Chan__ 1
-#       include "point.hpp"
 #       include <boost/geometry/geometries/linestring.hpp>
+#       include "point.hpp"
 
 namespace ds { namespace graphics {
 

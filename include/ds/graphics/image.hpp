@@ -25,8 +25,10 @@ namespace ds { namespace graphics {
       image();
 
       enum PixelType {
-        RGB_565_PIXEL,
+        NO_PIXEL,
         ARGB_8888_PIXEL,
+        ARGB_4444_PIXEL,
+        RGB_565_PIXEL,
       };
 
       image( int w, int h, PixelType pt );
@@ -34,15 +36,17 @@ namespace ds { namespace graphics {
 
       virtual ~image();
 
-      bool is_valid() const;
+      inline bool is_valid() const { return (_m != NULL) /*&& (_v != NULL)*/; }
 
       bool create( int w, int h, PixelType pt );
       bool create( int w, int h, PixelType pt, uint8_t * data );
 
+      const uint8_t * pixels() const { return const_cast<image*>(this)->pixels(); }
       uint8_t * pixels();
-      const uint8_t * pixels() const {
-        return const_cast<image*>(this)->pixels();
-      }
+
+      PixelType pixel_type() const;
+
+      std::size_t pixel_size() const;
 
       /**
        *  @brief Load PNG image from a disk file or ds::resource.
