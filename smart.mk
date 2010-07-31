@@ -8,7 +8,7 @@ ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 
 include $(ds.ui.dir)/check-deps.mk
 
-#sm.this.verbose := true
+sm.this.verbose := true
 sm.this.toolset := gcc
 
 sm.this.compile.options.infile := true
@@ -18,12 +18,12 @@ sm.this.compile.options := \
   -DDS_LOG_LEVEL=3 \
   -DDS_BUILDING_DSO=1 \
   -DBOOST_THREAD_USE_LIB=1 \
-  -mthreads \
 
 #  -DBOOST_THREAD_BUILD_LIB=1
 
 sm.this.link.options.infile := true
-sm.this.link.options :=
+sm.this.link.options := \
+  -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib))
 
 sm.this.out_implib := dsui
 
@@ -49,9 +49,6 @@ sm.this.libdirs := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 
-sm.this.rpath := \
-  $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
-
 $(call sm-check-not-empty, ds.third.skia.libname)
 $(call sm-check-not-empty, ds.third.libpng.libname)
 $(call sm-check-not-empty, ds.third.freetype.libname)
@@ -72,7 +69,7 @@ else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
   sm.this.libs += gdi32
-  sm.this.compile.options +=
+  sm.this.compile.options += -mthreads
   sm.this.link.options += \
     -Wl,--subsystem,windows \
     -Wl,--enable-runtime-pseudo-reloc \

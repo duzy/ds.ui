@@ -23,6 +23,8 @@ sm.this.libdirs := \
 sm.this.sources := simple_window.cpp
 
 sm.this.libs := dsui
-sm.this.rpath := $(ds.ui.dir.lib)
+
+sm.this.link.options := \
+  -Wl,--rpath,$(ds.ui.dir.lib)
 
 $(sm-build-this)
