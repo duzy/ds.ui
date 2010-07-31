@@ -2,13 +2,17 @@
 #define __DS_GRAPHICS_GIL_PNG_READER__HPP____by_Duzy_Chan__ 1
 #	include <ds/debug.hpp>
 #	include <cstdio> //!< for fopen, fclose in gil/extension/io on MinGW
+extern "C" {
+#	include <png.h>
+#   if PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==4 && PNG_LIBPNG_VER_RELEASE>=3
+#      define png_infopp_NULL NULL /* for png_dynamic_io.hpp, libpng-1.4.x don't have */
+#      define int_p_NULL NULL /* for png_dynamic_io.hpp, libpng-1.4.x don't have */
+#   endif
+}
 #	include <boost/gil/extension/io/dynamic_io.hpp>
 #	include <boost/gil/extension/io/png_io.hpp>
 #	include <boost/gil/extension/io/png_dynamic_io.hpp>
 #	include <istream>
-extern "C" {
-#	include <png.h>
-}
 
 namespace ds { namespace graphics { namespace gil {
 

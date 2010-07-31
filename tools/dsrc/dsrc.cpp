@@ -20,7 +20,6 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
 
-//#define dsD(x) std::clog<<__FILE__<<":"<<__LINE__<<": "<<x<<std::endl;
 #define DSRC_NS "http://www.duzysoft.com/resource"
 
 namespace po = boost::program_options;

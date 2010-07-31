@@ -1,4 +1,4 @@
-# -*- mode: Makefile -*-
+#
 #
 
 $(call sm-new-module, dsrc, executable)
@@ -10,6 +10,7 @@ include $(sm.module.dir)/check-deps.mk
 sm.module.includes := \
   -I$(ds.ui.dir)/include \
   -I$(ds.third.dir.inc) \
+  -I$(ds.third.dir.inc)/zlib \
   -I$(ds.third.boost.dir)
 
 sm.module.compile.options := \
@@ -29,16 +30,14 @@ sm.module.libs += \
   $(call ds.third.boost.use, filesystem) \
   $(call ds.third.boost.use, system) \
   $(ds.third.libxml.libname) \
-  $(ds.third.libpng.libname) \
   $(ds.third.zlib.libname) \
 
-libxml2_link_to_winsock = yes
-ifeq ($(libxml2_link_to_winsock),yes)
-#  LDLIBS += -lnetapi32 -lrpcrt4 -lsnmpapi -liphlpapi \
-#    -luser32 -lwsock32 -lwin32k -lws2_32 -ldnsapi -lshell32
-  #sm.module.libs += -lwsock32
+ifeq ($(sm.os.name),win32)
+  #-lnetapi32 -lrpcrt4 -lsnmpapi -liphlpapi \
+  #-luser32 -lwsock32 -lwin32k -lws2_32 -ldnsapi -lshell32
+  sm.module.libs += -lwsock32
 endif
 
 sm.module.sources := dsrc.cpp
 
-$(call sm-build-this)
+$(sm-build-this)

@@ -10,12 +10,13 @@
 #include <ds/debug.hpp>
 #include <ds/graphics/gil/image.hpp>
 #include <boost/gil/image.hpp>
-#ifndef png_infopp_NULL         // libpng-1.4.x don't have it
-#  define png_infopp_NULL NULL
-#endif
-#ifndef int_p_NULL              // libpng-1.4.x don't have it
-#  define int_p_NULL NULL
-#endif
+extern "C" {
+#   include <png.h>
+}
+#   if PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==4 && PNG_LIBPNG_VER_RELEASE>=3
+#      define png_infopp_NULL NULL /* for png_dynamic_io.hpp, libpng-1.4.x don't have */
+#      define int_p_NULL NULL /* for png_dynamic_io.hpp, libpng-1.4.x don't have */
+#   endif
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 //#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
 //#include <boost/gil/extension/io/tiff_dynamic_io.hpp>
@@ -29,9 +30,7 @@ namespace ds { namespace graphics { namespace gil {
       bool image::load_png( const std::string & file )
       {
         try {
-          //png_read_image( file, *reinterpret_cast<any_image_t*>(this) );
-          //png_read_image( file, *this );
-          png_read_image( file, any() );
+          png_read_image( file, this->any() );
           return true;
         }
         catch( std::exception const & e ) {

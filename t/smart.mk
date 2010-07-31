@@ -9,6 +9,7 @@ sm.module.lang := c++
 sm.module.includes := \
   $(ds.ui.dir)/include \
   $(ds.third.dir.inc) \
+  $(ds.third.dir.inc)/zlib \
   $(ds.third.dir.inc)/libpng \
   $(ds.third.boost.dir)
 
@@ -19,16 +20,16 @@ sm.module.sources := \
   png_reader.t \
 
 sm.module.sources.generated := \
-  $(sm.dir.out.tmp)/dsrc_test.cpp
+  $(sm.dir.out.tmp)/dsrc_test_stub.cpp
 
-$(sm.dir.out)/temp/dsrc_test.cpp: \
-  $(sm.dir.out.bin)/dsrc \
-  $(sm.module.dir)/t/dsrc_test.xml
-	echo "TODO: $@"
+$(sm.dir.out.tmp)/dsrc_test_stub.cpp: \
+  $(sm.module.dir)/dsrc_test.xml \
+  $(sm.dir.out.bin)/dsrc
+	$(sm.var.Q) $(sm.dir.out.bin)/dsrc -o $@ $<
 
 sm.module.libdirs := \
-  -L$(ds.ui.dir.lib) \
-  -L$(ds.third.boost.dir.lib)
+  $(ds.ui.dir.lib) \
+  $(ds.third.boost.dir.lib)
 
 sm.module.rpath := \
   $(ds.ui.dir.lib) \

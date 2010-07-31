@@ -19,12 +19,14 @@ sm.module.out_implib := dsui
 sm.module.includes := \
   $(ds.ui.dir)/include \
   $(ds.third.dir.inc) \
+  $(ds.third.dir.inc)/zlib \
   $(ds.third.dir.inc)/libpng \
   $(ds.third.dir.inc)/skia/config \
   $(ds.third.boost.dir)
 
 sm.module.sources := \
   $(wildcard src/*.cpp) \
+  $(wildcard src/resource/*.cpp) \
   $(wildcard src/graphics/*.cpp) \
   $(wildcard src/graphics/gil/*.cpp) \
   $(wildcard src/graphics/skia/*.cpp) \

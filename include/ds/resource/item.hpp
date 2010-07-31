@@ -51,19 +51,19 @@ namespace ds { namespace resource {
   }//namespace resource
 }//namespace ds
 
-#define DS_RESOURCE_REGISTER_COMPILED(name)	\
-  namespace ds { namespace resource { namespace detail {	\
-	static struct compiled_resource_register_class____##name	\
-	{								\
-	  inline compiled_resource_register_class____##name()		\
-	  {								\
-	    if (!register_compiled_resource((const char*)name, sizeof(name))) { \
-	      dsD("can't register compiled resource: "#name);		\
-	    }								\
-	  }								\
-	} g_compiled_resource_register____##name##__var;		\
-      }									\
-    }									\
+#define DS_RESOURCE_REGISTER_COMPILED(name)                             \
+  namespace ds { namespace resource { namespace detail {                \
+        static struct compiled_resource_register_class____##name        \
+        {                                                               \
+          inline compiled_resource_register_class____##name()           \
+          {                                                             \
+            if (!register_compiled_resource((const char*)name, sizeof(name))) { \
+              dsE("can't register compiled resource: "#name);           \
+            }                                                           \
+          }                                                             \
+        } g_compiled_resource_register____##name##__var;                \
+      }                                                                 \
+    }                                                                   \
   }
 
 

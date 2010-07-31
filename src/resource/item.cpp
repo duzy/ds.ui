@@ -68,7 +68,7 @@ namespace ds { namespace resource {
         dsE("index offset out of range: "<<indexOffset<<", size="<<sz);
         return false;
       }
-      dsL("index offset: "<<indexOffset);
+      dsL4("index offset: "<<indexOffset);
       
       const item::byte_t * p( d + indexOffset );
       int count( *reinterpret_cast<const int*>(p) ); p += sizeof(int);
@@ -76,7 +76,7 @@ namespace ds { namespace resource {
         dsE("invalid index size: "<<count);
         return false;
       }
-      dsL("number of lists: "<<count);
+      dsL4("number of lists: "<<count);
 
       std::string prefix, name;
       register int off, nameLen, dataLen;
@@ -128,7 +128,7 @@ namespace ds { namespace resource {
             dsE("can't register_resource(): "<<prefix<<","<<name);
             return false;
           }
-          dsL("item: "<<prefix<<name<<", length="<<dataLen);
+          dsL4("item: "<<prefix<<name<<", length="<<dataLen);
         }
       }//!< for()
 
