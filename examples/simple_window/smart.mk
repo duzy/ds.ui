@@ -5,6 +5,7 @@ $(call sm-new-module, simple_window, executable)
 sm.this.verbose := true
 sm.this.toolset := gcc
 
+sm.this.compile.options.infile := true
 sm.this.compile.options := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
@@ -24,6 +25,7 @@ sm.this.sources := simple_window.cpp
 
 sm.this.libs := dsui
 
+sm.this.link.options.infile := true
 sm.this.link.options := \
   -Wl,--rpath,$(ds.ui.dir.lib)
 

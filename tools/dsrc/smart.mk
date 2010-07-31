@@ -14,17 +14,19 @@ sm.this.includes := \
   -I$(ds.third.dir.inc)/zlib \
   -I$(ds.third.boost.dir)
 
+sm.this.compile.options.infile := true
 sm.this.compile.options := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
 
+sm.this.link.options.infile := true
+sm.this.link.options := \
+  -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib))
+
 sm.this.libdirs := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
-
-sm.this.rpath := \
-  $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
 
 sm.this.libs += \
   $(call ds.third.boost.use, program_options) \
