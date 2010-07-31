@@ -261,7 +261,7 @@ namespace ds { namespace ui {
       XSelectInput( xdisp, _xwin, mask );
     }
 
-    ds::graphics::box window::IMPL::get_rect()
+    ds::graphics::box window::IMPL::get_rect() const
     {
       XWindowAttributes a;
       std::memset( &a, 0, sizeof(a) );

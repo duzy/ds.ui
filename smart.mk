@@ -64,7 +64,7 @@ sm.this.libs += \
 ifeq ($(sm.os.name),linux)
   sm.this.sources += $(wildcard src/ui/x11/*.cpp)
   sm.this.libs += X11 pthread
-  sm.this.compile.options +=
+  sm.this.compile.options += -DX11=1
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
