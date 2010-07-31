@@ -9,7 +9,6 @@
 
 #include <ext/slist>
 #include <cstring>
-//#include <ds/graphics/rect.hpp>
 #include <ds/graphics/box.hpp>
 #include <ds/graphics/image.hpp>
 
@@ -17,7 +16,7 @@ namespace ds { namespace ui {
     
     struct window::IMPL
     {
-      display::weak_ref _disp; // Never hold a display::pointer(will leak)!
+      screen::weak_ref _screen;
 
       Window _xwin; // Window and Pixmap are Drawable
 
@@ -29,8 +28,8 @@ namespace ds { namespace ui {
 
       __gnu_cxx::slist<ds::graphics::box> _dirtyRects;
 
-      IMPL( const display::pointer & d )
-        : _disp( d )
+      IMPL( const screen::pointer & d )
+        : _screen( d )
         , _xwin( NULL )
         , _vi()
         , _ximage( NULL )
@@ -43,6 +42,8 @@ namespace ds { namespace ui {
       }
 
       ~IMPL();
+
+      Display * x_display() const;
 
       bool get_visual_info( const screen::pointer & scrn );
       bool create_image_if_needed( int w, int h );

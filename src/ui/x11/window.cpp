@@ -22,12 +22,17 @@
 
 namespace ds { namespace ui {
 
+    Display * window::IMPL::x_display() const
+    {
+      screen::pointer scrn(_screen.lock());                  dsI(scrn);
+      display::pointer disp(scrn->get_display());              dsI(disp);
+      return disp->_p->_xdisplay;
+    }
+
     bool window::IMPL::get_visual_info( const screen::pointer & scrn )
     {
-      display::pointer disp( _disp.lock() );
-      dsI( disp );
-
-      Display * xdisp = disp->_p->_xdisp;
+      display::pointer disp( scrn->get_display() );             dsI( disp );
+      Display * xdisp = disp->_p->_xdisplay;
 
       VisualID vid = 0;
       if (vid) {
@@ -78,10 +83,7 @@ namespace ds { namespace ui {
         _ximage = NULL;
       }
 
-      display::pointer disp( _disp.lock() );
-      dsI(disp);
-
-      Display * xdisp = disp->_p->_xdisp;
+      Display * xdisp = x_display();
 
       dsI( xdisp != NULL );
       dsI( _vi.visual != NULL );
@@ -175,12 +177,11 @@ namespace ds { namespace ui {
     {
       dsI( !_xwin );
 
-      display::pointer disp( _disp.lock() );
-      dsI( disp );
+      screen::pointer scrn( _screen.lock() );           dsI( scrn );
+      display::pointer disp( scrn->get_display());           dsI( disp );
 
       int x(0), y(0), w(400), h(300), bw(0);
 
-      screen::pointer scrn = disp->default_screen();
       bool isVisualOK = get_visual_info( scrn );
 
       dsLif("cannot get visual", !isVisualOK);
@@ -188,11 +189,10 @@ namespace ds { namespace ui {
       unsigned fc = scrn->black_pixel();
       unsigned bc = scrn->white_pixel();
  
-      window::pointer root = scrn->root();
-      dsI(root);
+      window::pointer root = scrn->root();           dsI(root);
 
       Window pr = root->_p->_xwin;
-      register Display * const xdisp( disp->_p->_xdisp );
+      register Display * const xdisp( disp->_p->_xdisplay );
 
       //XCreateWindow(...);
       _xwin = XCreateSimpleWindow( xdisp, pr, x, y, w, h, bw, fc, bc );
@@ -239,8 +239,9 @@ namespace ds { namespace ui {
     void window::IMPL::destroy()
     {
       if ( _xwin ) {
-        display::pointer disp( _disp.lock() );          dsI(disp);
-        XDestroyWindow( disp->_p->_xdisp, _xwin );
+        screen::pointer scrn( _screen.lock() );         dsI( scrn );
+        display::pointer disp( scrn->get_display() );           dsI( disp );
+        XDestroyWindow( disp->_p->_xdisplay, _xwin );
       }
     }
 
@@ -264,7 +265,7 @@ namespace ds { namespace ui {
     }
 
     window::window( const display::pointer & disp )
-      : _p( new IMPL(disp/*.get()*/) )
+      : _p( new IMPL(disp->default_screen()) )
     {
       _p->create( this );
       disp->map( this );
@@ -276,19 +277,18 @@ namespace ds { namespace ui {
       dsL4("window: "<<this<<"->"<<_p->_xwin);
 
       _p->destroy();
-      _p->_disp.reset();// = NULL;
+      _p->_screen.reset();
       delete _p;
     }
 
-    display::pointer window::get_display() const
+    screen::pointer window::get_screen() const
     {
-      return _p->_disp.lock();
+      return _p->_screen.lock();
     }
 
     void window::select_input(long mask)
     {
-      display::pointer disp(_p->_disp.lock());                  dsI(disp);
-      XSelectInput( disp->_p->_xdisp, _p->_xwin, mask );
+      XSelectInput( _p->x_display(), _p->_xwin, mask );
     }
 
     void window::destroy()
@@ -321,8 +321,7 @@ namespace ds { namespace ui {
       XWindowAttributes a;
       std::memset( &a, 0, sizeof(a) );
 
-      display::pointer disp(_p->_disp.lock());          dsI(disp);
-      XGetWindowAttributes( disp->_p->_xdisp, _p->_xwin, &a );
+      XGetWindowAttributes( _p->x_display(), _p->_xwin, &a );
       return boost::geometry::make<graphics::box>( a.x, a.y, a.width, a.height );
     }
 
@@ -359,8 +358,7 @@ namespace ds { namespace ui {
       _p->convert_pixels( a.x(), a.y(), a.width(), a.height() );
 
       int copyCount = 0;
-      display::pointer disp(_p->_disp.lock());          dsI(disp);
-      Display * xdisp = disp->_p->_xdisp;
+      Display * xdisp = _p->x_display();
 
       if ( _p->_dirtyRects.empty() ) {
         copyCount = 1;
@@ -375,7 +373,7 @@ namespace ds { namespace ui {
 
           ++copyCount;
           /*
-            XCopyArea( _disp->_p->_xdisp, _p->_drawable, _p->_xwin, _p->_gc,
+            XCopyArea( _display->_p->_xdisplay, _p->_drawable, _p->_xwin, _p->_gc,
             r.x, r.y, r.w, r.h,
             r.x, r.y );
           */

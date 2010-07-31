@@ -23,16 +23,16 @@ namespace ds { namespace ui {
 
     void display::IMPL::init( const display::pointer & disp, const char * name )
     {
-      _xdisp = XOpenDisplay( name );
+      _xdisplay = XOpenDisplay( name );
 
-      int scrnCount( XScreenCount( _xdisp ) );
+      int scrnCount( XScreenCount( _xdisplay ) );
       dsI( 0 < scrnCount );
 
       _scrns = new screen::pointer [scrnCount];
       for ( int n = 0; n < scrnCount; ++n ) {
         screen::pointer s( new screen );
-        s->_p->_xscrn = XScreenOfDisplay( _xdisp, n );
-        s->_p->_disp = disp;
+        s->_p->_xscrn = XScreenOfDisplay( _xdisplay, n );
+        s->_p->_display = disp;
         _scrns[n] = s;
       }
 
@@ -43,7 +43,7 @@ namespace ds { namespace ui {
 
     void display::IMPL::init_atoms()
     {
-#define GET_ATOM(X) X = XInternAtom( _xdisp, #X, False )
+#define GET_ATOM(X) X = XInternAtom( _xdisplay, #X, False )
 
       GET_ATOM(WM_DELETE_WINDOW);
 
@@ -52,8 +52,8 @@ namespace ds { namespace ui {
 
     bool display::IMPL::pending()
     {
-      XFlush(_xdisp);
-      if (XEventsQueued(_xdisp, QueuedAlready)) {
+      XFlush(_xdisplay);
+      if (XEventsQueued(_xdisplay, QueuedAlready)) {
         return true;
       }
 
@@ -63,11 +63,11 @@ namespace ds { namespace ui {
         int fd;
         fd_set fdset;
         
-        fd = XConnectionNumber(_xdisp);
+        fd = XConnectionNumber(_xdisplay);
         FD_ZERO(&fdset);
         FD_SET(fd, &fdset);
         if (select(fd + 1, &fdset, NULL, NULL, &zeroTv) == 1) {
-          return (XPending(_xdisp));
+          return (XPending(_xdisplay));
         }
       }
 
@@ -81,13 +81,13 @@ namespace ds { namespace ui {
         dsE("event_queue unset, should call display::start first");
         return;
       }
-      if ( _xdisp == NULL ) return;
+      if ( _xdisplay == NULL ) return;
 
       XEvent event;
       //bzero( &event, sizeof(event) );
 
       while ( pending() ) {
-        XNextEvent( _xdisp, &event );
+        XNextEvent( _xdisplay, &event );
         push_event( eq, &event );
       }
     }
@@ -102,15 +102,15 @@ namespace ds { namespace ui {
       : event_pump( NULL )
       , _p( new IMPL )
     {
-      dsL("display: "<<this<<"->"<<_p->_xdisp);
+      dsL("display: "<<this<<"->"<<_p->_xdisplay);
     }
 
     display::~display()
     {
-      dsL("display: "<<this<<"->"<<_p->_xdisp);
+      dsL("display: "<<this<<"->"<<_p->_xdisplay);
 
-      if ( _p->_xdisp ) {
-        XCloseDisplay( _p->_xdisp );
+      if ( _p->_xdisplay ) {
+        XCloseDisplay( _p->_xdisplay );
         _p->_winmap.clear();
       }
 
@@ -134,42 +134,43 @@ namespace ds { namespace ui {
 
     int display::default_screen_number() const
     {
-      return XDefaultScreen( _p->_xdisp );
+      return XDefaultScreen( _p->_xdisplay );
     }
 
     int display::screen_count() const
     {
-      return XScreenCount( _p->_xdisp );
+      return XScreenCount( _p->_xdisplay );
     }
 
     window::pointer display::default_root() const
     {
       window::pointer w( new window ); // TODO: avoid making a new instance of window
-      w->_p->_disp = display::pointer(const_cast<display*>(this));//const_cast<display*>(this);
-      w->_p->_xwin = XDefaultRootWindow( _p->_xdisp );
+      //w->_p->_disp = display::pointer(const_cast<display*>(this));
+      w->_p->_screen = this->default_screen();
+      w->_p->_xwin = XDefaultRootWindow( _p->_xdisplay );
       return w;
     }
     
     void display::map( const window::pointer & win )
     {
       if ( /*!win->_p->_disp ||*/ !win->_p->_xwin ) {
-        win->_p->_disp = display::pointer(this); // implicitly convert to display::pointer
+        //win->_p->_disp = display::pointer(this);
+        win->_p->_screen = this->default_screen();
         win->_p->create( win );
       }
 
-      XMapWindow( _p->_xdisp, win->_p->_xwin );
+      XMapWindow( _p->_xdisplay, win->_p->_xwin );
     }
 
     void display::unmap( const window::pointer & win )
     {
-      XUnmapWindow( _p->_xdisp, win->_p->_xwin );
+      XUnmapWindow( _p->_xdisplay, win->_p->_xwin );
     }
 
     bool display::has( const window::pointer & win )
     {
-      // TODO: ...
-      //return false;
-      return true;
+      if (!win->_p->_xwin) return false;
+      return (_p->_winmap.find( win->_p->_xwin ) != _p->_winmap.end());
     }
 
     void display::pump_events()

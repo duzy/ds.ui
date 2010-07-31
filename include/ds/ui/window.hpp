@@ -46,7 +46,7 @@ namespace ds { namespace ui {
 
       ~window();
 
-      shared_object<display>::pointer get_display() const;
+      shared_object<screen>::pointer get_screen() const;
 
       void select_input(long mask);
 

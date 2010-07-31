@@ -189,7 +189,8 @@ namespace ds { namespace ui {
       case DestroyNotify: {
         // TODO: should notify the window of the destroy event
         win->_p->_xwin = NULL;
-        win->_p->_disp.reset(); // = NULL;
+        //win->_p->_display.reset();
+        win->_p->_screen.reset();
         _winmap.erase( wit->first );
         if ( _winmap.empty() ) {
           eq->push(new ds::event::quit);

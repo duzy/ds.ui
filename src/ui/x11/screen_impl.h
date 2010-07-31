@@ -11,15 +11,15 @@ namespace ds { namespace ui {
 
     struct screen::IMPL
     {
+      display::weak_ref _display;
+
+      window::pointer _root; // TODO: avoid using window::pointer ??
+
       Screen *_xscrn;
-
-      display::weak_ref _disp; // Never hold a display::pointer here(cycle leak)!
-
-      window::pointer _root;
 
       IMPL()
         : _xscrn( NULL )
-        , _disp( NULL )
+        , _display( NULL )
         , _root( NULL )
       {
       }

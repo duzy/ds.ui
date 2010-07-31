@@ -33,18 +33,14 @@ namespace ds { namespace ui {
 
     shared_object<display>::pointer screen::get_display() const
     {
-      //display::pointer disp( new display ); // TODO: avoid making a new instance of the display
-      //disp->_p->_xdisp = XDisplayOfScreen( _p->_xscrn );
-      ////disp->_p->screen = XScreenNumberOfScreen( _p->_xscrn );
-      //return disp;
-      return _p->_disp.lock(); // implicitly conversion
+      return _p->_display.lock();
     }
 
     window::pointer screen::root() const
     {
       if ( !_p->_root ) {
         _p->_root.reset( new window );
-        _p->_root->_p->_disp = get_display();//.get();
+        _p->_root->_p->_screen = pointer(const_cast<screen*>(this));
         _p->_root->_p->_xwin = XRootWindowOfScreen( _p->_xscrn );
       }
       return _p->_root;
