@@ -50,8 +50,8 @@ namespace ds { namespace graphics {
       template<typename Any>
       inline result_type operator()( const Any & a ) const { return image::NO_PIXEL; }
 
-      inline result_type operator()( const gil::argb8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
-      inline result_type operator()( const gil::argb8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::bgra8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::bgra8_image_t & ) const { return image::ARGB_8888_PIXEL; }
     };//struct get_pixel_type_f
 
     image::PixelType image::pixel_type() const
@@ -68,7 +68,7 @@ namespace ds { namespace graphics {
     std::size_t image::pixel_size() const
     {
       switch ( this->pixel_type() ) {
-      case ARGB_8888_PIXEL: return sizeof(gil::argb8_image_t::value_type);
+      case ARGB_8888_PIXEL: return sizeof(gil::bgra8_image_t::value_type);
       case ARGB_4444_PIXEL: return 0;
       case RGB_565_PIXEL:   return 0;
       }
@@ -88,7 +88,7 @@ namespace ds { namespace graphics {
       case ARGB_4444_PIXEL:
         break;
       case ARGB_8888_PIXEL:
-        _m = new gil::image(gil::argb8_image_t(w, h));
+        _m = new gil::image(gil::bgra8_image_t(w, h));
         break;
       }
 
@@ -112,20 +112,14 @@ namespace ds { namespace graphics {
       case ARGB_4444_PIXEL:
         break;
       case ARGB_8888_PIXEL:
-        typedef gil::argb8_image_t::value_type pixel_t;
-        _v = new gil::view( w, h, (pixel_t*)data, w * sizeof(pixel_t) );
-        break;
+        {
+          typedef gil::bgra8_image_t::value_type pixel_t;
+          _v = new gil::view( w, h, (pixel_t*)data, w * sizeof(pixel_t) );
+        } break;
       }
 
       return ( _v != NULL );
     }
-
-    /*
-    const uint8_t * image::pixels() const
-    {
-      return const_cast<image*>(this)->pixels();
-    }
-    */
 
     struct get_image_pixels_f
     {

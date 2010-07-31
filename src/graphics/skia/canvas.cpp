@@ -1,3 +1,12 @@
+/**
+ *    Copyright 2010-08 DuzySoft.com, by Zhan Xin-Ming (Duzy Chan)
+ *    All rights reserved by Zhan Xin-Ming (Duzy Chan)
+ *    Email: <duzy@duzy.info, duzy.chan@gmail.com>
+ *
+ *    $Id$
+ *
+ **/
+
 #include <ds/graphics/canvas.hpp>
 #include <ds/graphics/gil/image.hpp>
 #include <ds/graphics/image.hpp>
@@ -5,6 +14,7 @@
 #include <ds/graphics/segment.hpp>
 #include <ds/graphics/polygon.hpp>
 #include <ds/graphics/color.hpp>
+#include <ds/graphics/drawing_tools.hpp>
 #include <skia/core/SkCanvas.h>
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkRect.h>
@@ -13,20 +23,22 @@
 
 namespace ds { namespace graphics {
 
-    struct paint::IMPL
+    static void to_SkPaint( SkPaint & paint, const drawing_tool & d )
     {
-      SkPaint skPaint;
-    };//struct paint::IMPL
-
-    paint::paint()
-      : _imp( new IMPL )
-    {
+      // TODO: ...
     }
 
-    paint::~paint()
+    static void to_SkPaint( SkPaint & paint, const brush & b )
     {
-      delete _imp;
+      // TODO: ...
     }
+
+    static void to_SkPaint( SkPaint & paint, const pen & p )
+    {
+      // TODO: ...
+    }
+
+    //--------------------------------------------------------------------
     
     struct canvas::IMPL
     {
@@ -59,18 +71,18 @@ namespace ds { namespace graphics {
         _skCanvas.setBitmapDevice(_skBitmap);
       }
 
-      template<typename G>
-      inline void draw( const G & g, paint::IMPL * p, SkPaint::Style style )
+      template<typename G, typename D>
+      inline void draw( const G & g, const D & d, SkPaint::Style style )
       {
-        SkPaint skPaint( p->skPaint );
-        skPaint.setStyle( style );
-        this->draw( g, skPaint );
+        SkPaint paint;                  to_SkPaint( paint, d );
+        paint.setStyle( style );
+        this->draw( g, paint );
       }
 
-      void draw( const point & g, const SkPaint & p );
-      void draw( const segment & g, const SkPaint & p );
-      void draw( const box & g, const SkPaint & p );
-      void draw( const polygon & g, const SkPaint & p );
+      void draw( const point & g,       const SkPaint & p );
+      void draw( const segment & g,     const SkPaint & p );
+      void draw( const box & g,         const SkPaint & p );
+      void draw( const polygon & g,     const SkPaint & p );
     };//struct canvas::IMPL
 
     void canvas::IMPL::draw( const point & g, const SkPaint & p )
@@ -141,42 +153,6 @@ namespace ds { namespace graphics {
       delete _imp;
     }
 
-    /*
-    static inline SkRegion::Op convert_op(canvas::ClipOp o)
-    {
-      switch (o) {
-      case canvas::ClipDifference:        return SkRegion::kDifference_Op;
-      case canvas::ClipIntersect:         return SkRegion::kIntersect_Op;
-      case canvas::ClipUnion:             return SkRegion::kUnion_Op;
-      case canvas::ClipXOR:               return SkRegion::kXOR_Op;
-      case canvas::ClipReverseDifference: return SkRegion::kReverseDifference_Op;
-      case canvas::ClipReplace:           return SkRegion::kReplace_Op;
-      }
-      return SkRegion::kIntersect_Op;
-    }
-
-    bool canvas::clip( const box & g, ClipOp op )
-    {
-      return _imp->_skCanvas.clipRect(SkRect::MakeLTRB(g.min_corner().x(),
-                                                       g.min_corner().y(),
-                                                       g.max_corner().x(),
-                                                       g.max_corner().y()),
-                                      convert_op(op));
-    }
-
-    bool canvas::clip( const polygon & g, ClipOp op )
-    {
-      SkPath skPath;
-      if ( !g.outer().empty() ) {
-        polygon::ring_type::const_iterator it( g.outer().begin() );
-        skPath.moveTo(SkPoint::Make(it->x(), it->y()));
-        for(++it; it != g.outer().end(); ++it)
-          skPath.lineTo(SkPoint::Make(it->x(), it->y()));
-      }
-      return _imp->_skCanvas.clipPath(skPath, convert_op(op));
-    }
-    */
-
     bool canvas::clip( const box & g )
     {
       return _imp->_skCanvas.clipRect(SkRect::MakeLTRB(g.min_corner().x(),
@@ -184,6 +160,12 @@ namespace ds { namespace graphics {
                                                        g.max_corner().x(),
                                                        g.max_corner().y()),
                                       SkRegion::kReplace_Op);
+    }
+    
+    bool canvas::clip( const ring & g )
+    {
+      // TODO: ...
+      return false;
     }
 
     bool canvas::clip( const polygon & g )
@@ -198,19 +180,31 @@ namespace ds { namespace graphics {
       return _imp->_skCanvas.clipPath(skPath, SkRegion::kReplace_Op);
     }
 
-    void canvas::render( const point & g, const paint & p )
+    brush & canvas::default_brush()
     {
-      _imp->draw( g, p._imp, SkPaint::kFill_Style );
+      static brush sDefaultBrush;
+      return sDefaultBrush;
     }
 
-    void canvas::render( const box & g, const paint & p )
+    pen & canvas::default_pen()
     {
-      _imp->draw( g, p._imp, SkPaint::kFill_Style );
+      static pen sDefaultPen;
+      return sDefaultPen;
     }
 
-    void canvas::render( const polygon & g, const paint & p )
+    void canvas::render( const point & g, const brush & p )
     {
-      _imp->draw( g, p._imp, SkPaint::kFill_Style );
+      _imp->draw( g, p, SkPaint::kFill_Style );
+    }
+
+    void canvas::render( const box & g, const brush & p )
+    {
+      _imp->draw( g, p, SkPaint::kFill_Style );
+    }
+
+    void canvas::render( const polygon & g, const brush & p )
+    {
+      _imp->draw( g, p, SkPaint::kFill_Style );
     }//canvas::render
 
     void canvas::render( const color & c )
@@ -223,24 +217,24 @@ namespace ds { namespace graphics {
       // TODO: ...
     }
 
-    void canvas::stroke( const point & g, const paint & p )
+    void canvas::stroke( const point & g, const pen & p )
     {
-      _imp->draw( g, p._imp, SkPaint::kStroke_Style );
+      _imp->draw( g, p, SkPaint::kStroke_Style );
     }
 
-    void canvas::stroke( const segment & g , const paint & p )
+    void canvas::stroke( const segment & g , const pen & p )
     {
-      _imp->draw( g, p._imp, SkPaint::kStroke_Style );
+      _imp->draw( g, p, SkPaint::kStroke_Style );
     }
 
-    void canvas::stroke( const polygon & g, const paint & p )
+    void canvas::stroke( const polygon & g, const pen & p )
     {
-      _imp->draw( g, p._imp, SkPaint::kStroke_Style );
+      _imp->draw( g, p, SkPaint::kStroke_Style );
     }
 
-    void canvas::stroke( const box & g, const paint & p )
+    void canvas::stroke( const box & g, const pen & p )
     {
-      _imp->draw( g, p._imp, SkPaint::kStroke_Style );
+      _imp->draw( g, p, SkPaint::kStroke_Style );
     }
 
   }//namespace graphics

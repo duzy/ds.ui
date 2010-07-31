@@ -26,6 +26,7 @@ sm.module.sources := \
   $(wildcard src/*.cpp) \
   $(wildcard src/graphics/*.cpp) \
   $(wildcard src/graphics/gil/*.cpp) \
+  $(wildcard src/graphics/skia/*.cpp) \
   $(wildcard src/ui/*.cpp) \
   $(wildcard src/ui/events/*.cpp)
 

@@ -23,10 +23,10 @@ namespace ds { namespace ui {
 
       XVisualInfo _vi;
       XImage * _ximage;
+      void * _ximage_pixels;
       ds::graphics::image _image;
       GC _gc;
 
-      //__gnu_cxx::slist<ds::graphics::irect> _dirtyRects;
       __gnu_cxx::slist<ds::graphics::box> _dirtyRects;
 
       IMPL( display * d )
@@ -34,6 +34,7 @@ namespace ds { namespace ui {
         , _xwin( NULL )
         , _vi()
         , _ximage( NULL )
+        , _ximage_pixels( NULL )
         , _image()
         , _gc( NULL )
         , _dirtyRects()
@@ -48,6 +49,8 @@ namespace ds { namespace ui {
 
       void create( const window::pointer & );
       void destroy();
+
+      void convert_pixels( int x, int y, int w, int h ); 
     };//struct window::IMPL
     
   }//namespace ui

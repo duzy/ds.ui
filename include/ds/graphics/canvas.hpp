@@ -18,25 +18,14 @@ namespace ds { namespace graphics {
 
     struct point;
     struct segment;
+    struct linestring;
     struct box;
     struct ring;
     struct polygon;
-    struct linestring;
 
-    class canvas;
-    class paint
-    {
-      struct IMPL;
-
-    public:
-      paint();
-      ~paint();
-
-    private:
-      IMPL * _imp;
-
-      friend class canvas;
-    };//class paint
+    struct drawing_tool;
+    struct brush;
+    struct pen;
 
     class canvas : boost::noncopyable
     {
@@ -46,20 +35,8 @@ namespace ds { namespace graphics {
       canvas( image & );
       ~canvas();
 
-      /*
-      enum ClipOp {
-        ClipDifference, //!< subtract the op region from the first region
-        ClipIntersect,  //!< intersect the two regions
-        ClipUnion,      //!< union (inclusive-or) the two regions
-        ClipXOR,        //!< exclusive-or the two regions
-        ClipReverseDifference, //!< subtract the first region from the op region
-        ClipReplace     //!< replace the dst region with the op region
-      };
-
-      bool clip( const box &,           ClipOp = ClipIntersect );
-      bool clip( const polygon &,       ClipOp = ClipIntersect );
-      */
       bool clip( const box & );
+      bool clip( const ring & );
       bool clip( const polygon & );
 
       struct clip_t
@@ -70,7 +47,7 @@ namespace ds { namespace graphics {
         clip_t & operator |= ( const box & ); //!< inclusive-or
         clip_t & operator ^= ( const box & ); //!< exclusive-or
         clip_t & intersect( const box & ); //!< intersect
-      };
+      };//struct clip_t
 
       /**
          myCanvas.clip() |= box1;
@@ -80,16 +57,19 @@ namespace ds { namespace graphics {
       void render( const color & );
       void render( const image & );
 
-      void render( const point &,       const paint & );
-      void render( const box &,         const paint & );
-      void render( const polygon &,     const paint & );
-      //void render( const ds::ustring &, const paint & );
+      void render( const point &,       const brush & = default_brush() );
+      void render( const box &,         const brush & = default_brush() );
+      void render( const polygon &,     const brush & = default_brush() );
+      //void render( const ds::ustring &, const brush & = default_brush() );
 
-      void stroke( const point &,       const paint & );
-      void stroke( const segment &,     const paint & );
-      void stroke( const box &,         const paint & );
-      void stroke( const polygon &,     const paint & );
-      //void stroke( const ds::ustring &, const paint & );
+      void stroke( const point &,       const pen & = default_pen() );
+      void stroke( const segment &,     const pen & = default_pen() );
+      void stroke( const box &,         const pen & = default_pen() );
+      void stroke( const polygon &,     const pen & = default_pen() );
+      //void stroke( const ds::ustring &, const pen & = default_pen() );
+
+      static brush & default_brush();
+      static pen &   default_pen();
 
     private:
       IMPL * _imp;

@@ -81,13 +81,83 @@ namespace ds { namespace ui {
       dsI( _vi.visual != NULL );
       dsI( 0 < _vi.depth );
 
+      _ximage_pixels = malloc( h * w * (_vi.depth / 8) );
       _ximage = XCreateImage( xdisp, _vi.visual, _vi.depth, ZPixmap, 0,
-                              reinterpret_cast<char*>( _image.pixels() ),
+                              reinterpret_cast<char*>(_ximage_pixels),//( _image.pixels() ),
                               _image.width(), _image.height(),
                               _image.pixel_size() * 8,/* bitmap pad */
                               _image.pixel_size() * w /* row bytes */ );
-      
+
+      if (_ximage==NULL) {
+        free(_ximage_pixels);
+        _ximage_pixels = NULL;
+      } else {
+        dsI( _image.width() == _ximage->width );
+        dsI( _image.height() == _ximage->height );
+      }
+
+      dsL("image: bitmap_unit = "<<_ximage->bitmap_unit);
+      dsL("image: bitmap_pad = "<<_ximage->bitmap_pad);
+      dsL("image: depth = "<<_ximage->depth);
+      dsL("image: bytes_per_line = "<<_ximage->bytes_per_line);
+      dsL("image: bits_per_pixel = "<<_ximage->bits_per_pixel);
+      dsL("image: red_mask = "<<_ximage->red_mask);
+      dsL("image: green_mask = "<<_ximage->green_mask);
+      dsL("image: blue_mask = "<<_ximage->blue_mask);
+
       return ( _ximage != NULL );
+    }
+
+    void window::IMPL::convert_pixels( int x, int y, int w, int h )
+    {
+      if (_image.width() <= x) return;
+      if (_image.height() <= y) return;
+      if (_image.width() < (x+w)) w = _image.width() - x;
+      if (_image.height() < (y+h)) h = _image.height() - y;
+
+      const uint8_t * s = _image.pixels();
+      uint8_t * d = reinterpret_cast<uint8_t*>(_ximage_pixels);
+
+      uint32_t rmask,  gmask,  bmask;
+      rmask = _ximage->red_mask;
+      gmask = _ximage->green_mask;
+      bmask = _ximage->blue_mask;
+
+      uint32_t rshift(0), gshift(0), bshift(0);
+      while ((rmask & 1) == 0) { ++rshift; rmask >>= 1; }
+      while ((gmask & 1) == 0) { ++gshift; gmask >>= 1; }
+      while ((bmask & 1) == 0) { ++bshift; bmask >>= 1; }
+
+      uint32_t ncolors = _vi.colormap_size;
+      uint32_t bpp = _vi.depth / 8;
+
+      dsL("rmask: "<<rmask);
+      dsL("gmask: "<<gmask);
+      dsL("bmask: "<<bmask);
+      dsL("rshift: "<<rshift);
+      dsL("gshift: "<<gshift);
+      dsL("bshift: "<<bshift);
+      dsL("colormap-size: "<<ncolors<<", "<<_vi.visual->map_entries);
+
+      s += y * _image.width() * _image.pixel_size();
+      d += y * _image.width() * bpp;
+      
+      for (int n = 0; n < h; ++n) {
+        s += x * _image.pixel_size();
+        d += x * bpp;
+        for (int c = 0; c < w; ++c) {
+          *reinterpret_cast<short*>(d)
+            =( (((*(s + 0)) & rmask) << rshift)
+             | (((*(s + 1)) & gmask) << gshift)
+             | (((*(s + 2)) & bmask) << bshift)
+             ) & 0xFFFF;
+
+          s += _image.pixel_size();
+          d += bpp;
+        }
+        s += (_image.width() - w) * _image.pixel_size();
+        d += (_image.width() - w) * bpp;
+      }
     }
 
     void window::IMPL::create( const window::pointer & win )
@@ -104,7 +174,7 @@ namespace ds { namespace ui {
 
       unsigned fc = scrn->black_pixel();
       unsigned bc = scrn->white_pixel();
-
+ 
       window::pointer root = scrn->root();
       dsI(root);
 
@@ -162,7 +232,11 @@ namespace ds { namespace ui {
 
     window::IMPL::~IMPL()
     {
+      if (_ximage_pixels) {
+        free(_ximage_pixels);
+      }
       if (_ximage) {
+        _ximage->data = NULL;
         XDestroyImage(_ximage);
       }
     }
@@ -264,6 +338,8 @@ namespace ds { namespace ui {
       canvas.clip( dr );
 
       this->on_render( canvas );
+
+      _p->convert_pixels( a.x(), a.y(), a.width(), a.height() );
 
       int copyCount = 0;
       Display * xdisp = _p->_disp->_p->_xdisp;

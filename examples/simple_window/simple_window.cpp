@@ -83,7 +83,6 @@ protected:
   void on_render( ds::graphics::canvas & canvas )
   {
     using namespace boost::geometry;
-    ds::graphics::paint paint;
     polygon_2d poly;
     {
       const double coords[][2] = {
@@ -106,9 +105,9 @@ protected:
       <point_2d, ds::graphics::point> map(4,-1,10,7,400,300);
     transform(poly, g, map);
 
-    canvas.render( ds::graphics::color(1.0, 0.9, 0.1, 0.1) );
-    canvas.render( g, paint );
-    canvas.stroke( g, paint );
+    canvas.render( ds::graphics::color(1.0, 0.9, 0.0, 0.0) );
+    canvas.render( g );
+    canvas.stroke( g );
   }
 };
 
