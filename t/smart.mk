@@ -21,7 +21,7 @@ sm.this.sources := \
   streambuf.t \
   png_reader.t \
 
-sm.this.sources.generated := \
+sm.this.sources.external := \
   $(sm.out.tmp)/dsrc_test_stub.cpp
 
 $(sm.out.tmp)/dsrc_test_stub.cpp: \
@@ -29,13 +29,13 @@ $(sm.out.tmp)/dsrc_test_stub.cpp: \
   $(sm.out.bin)/dsrc
 	$(sm.var.Q) $(sm.out.bin)/dsrc -o $@ $<
 
+sm.this.link.options := \
+  -Wl,--rpath,$(ds.ui.dir.lib) \
+  -Wl,--rpath,$(ds.third.dir.lib)
+
 sm.this.libdirs := \
   $(ds.ui.dir.lib) \
   $(ds.third.boost.dir.lib)
-
-sm.this.rpath := \
-  $(ds.ui.dir.lib) \
-  $(ds.third.dir.lib) \
 
 sm.this.libs := dsui \
   $(call ds.third.boost.use, system) \

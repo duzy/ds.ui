@@ -22,11 +22,11 @@ sm.this.compile.options := \
 
 sm.this.link.options.infile := true
 sm.this.link.options := \
-  -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib))
+  -Wl,--rpath,$(ds.third.dir.lib)
 
 sm.this.libdirs := \
-  -L$(ds.third.dir.lib) \
-  -L$(ds.third.boost.dir.lib)
+  $(ds.third.dir.lib) \
+  $(ds.third.boost.dir.lib)
 
 sm.this.libs += \
   $(call ds.third.boost.use, program_options) \
