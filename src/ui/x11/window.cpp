@@ -141,16 +141,21 @@ namespace ds { namespace ui {
 
       s += y * _image.width() * _image.pixel_size();
       d += y * _image.width() * bpp;
-      
-      for (int n = 0; n < h; ++n) {
+
+      int red, green, blue, pixel, n, c;
+      for (n = 0; n < h; ++n) {
         s += x * _image.pixel_size();
         d += x * bpp;
-        for (int c = 0; c < w; ++c) {
-          *reinterpret_cast<short*>(d)
-            =( (((*(s + 0)) & rmask) << rshift)
-             | (((*(s + 1)) & gmask) << gshift)
-             | (((*(s + 2)) & bmask) << bshift)
-             ) & 0xFFFF;
+        for (c = 0; c < w; ++c) {
+          red = *(s + 0), green = *(s + 1), blue = *(s + 2);
+
+          red   = (red   & rmask) << rshift;
+          green = (green & gmask) << gshift;
+          blue  = (blue  & bmask) << bshift;
+
+          pixel = red | green | blue;
+
+          *reinterpret_cast<short*>(d) = static_cast<short>( pixel & 0xFFFF );
 
           s += _image.pixel_size();
           d += bpp;
