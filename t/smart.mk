@@ -27,7 +27,7 @@ sm.this.sources := \
 sm.this.sources.external := \
   $(sm.out.tmp)/dsrc_test_stub.cpp
 
-EXE := $(if $(sm.os.linux),,.exe)
+EXE := $(if $(sm.os.name.win32),.exe)
 
 $(sm.out.tmp)/dsrc_test_stub.cpp: \
   $(sm.this.dir)/dsrc_test.xml \

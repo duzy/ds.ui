@@ -24,7 +24,7 @@ namespace ds { namespace ui {
     window::IMPL::IMPL( const screen::pointer & d )
       : _screen( d )
       , _image()
-      , _dirty_rects()
+      , _dirty_region()
       , _native_win( NULL )
       , _native_gc( NULL )
       , _ximage( NULL )
@@ -290,7 +290,7 @@ namespace ds { namespace ui {
       dsL("commit-updates: "<<_pended_updates.size()-1);
 
       ds::graphics::box bound = _pended_updates.bounds();
-      box_list_t::const_iterator it = _pended_updates.begin();
+      ds::graphics::region::const_iterator it = _pended_updates.begin();
 
       if ( bound.empty() ) {
         dsE("empty update bounds");
