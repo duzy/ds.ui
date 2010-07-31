@@ -7,6 +7,9 @@
  *
  **/
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 namespace ds { namespace ui {
 
     struct screen::IMPL
@@ -15,14 +18,24 @@ namespace ds { namespace ui {
 
       window::pointer _root; // TODO: avoid using window::pointer ??
 
-      Screen *_xscrn;
+      Screen * _xscrn;
 
       IMPL()
-        : _xscrn( NULL )
-        , _display( NULL )
+        : _display( NULL )
         , _root( NULL )
+        , _xscrn( NULL )
       {
       }
+
+      const display::weak_ref & get_display_ref() const { return _display; }
+
+      window::pointer get_root_win( const screen::pointer & ) const;
+      int number() const;
+      int width() const;
+      int height() const;
+      unsigned black_pixel() const;
+      unsigned white_pixel() const;
+      int depth() const;
     };//struct screen::IMPL
     
   }//namespace ui

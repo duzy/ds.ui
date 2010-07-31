@@ -13,12 +13,10 @@
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/canvas.hpp>
 #include <ds/graphics/box.hpp>
+#include <ds/debug.hpp>
 #include <boost/geometry/algorithms/make.hpp>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include "window_impl.h"
 #include "display_impl.h"
-#include <ds/debug.hpp>
 
 namespace ds { namespace ui {
 
@@ -256,137 +254,82 @@ namespace ds { namespace ui {
       }
     }
 
-    //////////////////////////////////////////////////////////////////////
-    
-    window::window()
-      : _p( new IMPL(NULL) )
+    void window::IMPL::select_input(long mask)
     {
-      dsL4("window: "<<this<<"->"<<_p->_xwin);
+      Display * xdisp  = x_display();
+      dsI( xdisp );
+      XSelectInput( xdisp, _xwin, mask );
     }
 
-    window::window( const display::pointer & disp )
-      : _p( new IMPL(disp->default_screen()) )
-    {
-      _p->create( this );
-      disp->map( this );
-      dsL4("window: "<<this<<"->"<<_p->_xwin);
-    }
-
-    window::~window()
-    {
-      dsL4("window: "<<this<<"->"<<_p->_xwin);
-
-      _p->destroy();
-      _p->_screen.reset();
-      delete _p;
-    }
-
-    screen::pointer window::get_screen() const
-    {
-      return _p->_screen.lock();
-    }
-
-    void window::select_input(long mask)
-    {
-      XSelectInput( _p->x_display(), _p->_xwin, mask );
-    }
-
-    void window::destroy()
-    {
-      _p->destroy();
-    }
-
-    void window::show()
-    {
-      // TODO: ...
-    }
-
-    void window::hide()
-    {
-      // TODO: ...
-    }
-
-    void window::move( int x, int y )
-    {
-      // TODO: ...
-    }
-
-    void window::resize( int w, int h )
-    {
-      // TODO: ...
-    }
-
-    graphics::box window::rect() const
+    ds::graphics::box window::IMPL::get_rect()
     {
       XWindowAttributes a;
       std::memset( &a, 0, sizeof(a) );
 
-      XGetWindowAttributes( _p->x_display(), _p->_xwin, &a );
+      XGetWindowAttributes( x_display(), _xwin, &a );
+
       return boost::geometry::make<graphics::box>( a.x, a.y, a.width, a.height );
     }
 
-    void window::on_exposed( const event::window::exposed & a )
+    ds::graphics::image * window::IMPL::get_image_for_render()
     {
-      graphics::box const wr( this->rect() );
+      const graphics::box wr( this->get_rect() );
       if ( wr.is_empty() ) {
-        dsE("empty window: "<<_p->_xwin);
-        return;
+        dsE("empty window: "<<_xwin);
+        return NULL;
       }
 
-      if (!_p->create_image_if_needed(wr.width(), wr.height())) {
+      if (!create_image_if_needed(wr.width(), wr.height())) {
         dsE("Failed to create renderring buffer");
-        return;
-      }
-      dsI( _p->_image.is_valid() );
-      dsI( 0 < _p->_image.width() );
-      dsI( 0 < _p->_image.height() );
-      dsI( wr.width() == _p->_image.width() );
-      dsI( wr.height() == _p->_image.height() );
-      dsI( _p->_ximage );
-
-      ds::graphics::box dr( boost::geometry::make<graphics::box>( a.x(), a.y(), a.width(), a.height() ) );
-      if ( dr.is_empty() ) {
-        dsE("empty dirty rect");
-        return;
+        return NULL;
       }
 
-      ds::graphics::canvas canvas( _p->_image );
-      canvas.clip( dr );
+      dsI( _image.is_valid() );
+      dsI( 0 < _image.width() );
+      dsI( 0 < _image.height() );
+      dsI( wr.width() == _image.width() );
+      dsI( wr.height() == _image.height() );
+      dsI( _ximage );
 
-      this->on_render( canvas );
+      return &_image;
+    }
 
-      _p->convert_pixels( a.x(), a.y(), a.width(), a.height() );
+    bool window::IMPL::commit_image( const ds::graphics::box & dr )
+    {
+      convert_pixels( dr.x(), dr.y(), dr.width(), dr.height() );
 
       int copyCount = 0;
-      Display * xdisp = _p->x_display();
+      Display * xdisp = x_display();
 
-      if ( _p->_dirtyRects.empty() ) {
+      if ( _dirtyRects.empty() ) {
         copyCount = 1;
-        XPutImage( xdisp, _p->_xwin, _p->_gc, _p->_ximage,
+        XPutImage( xdisp, _xwin, _gc, _ximage,
                    dr.x(), dr.y(), dr.x(), dr.y(), dr.width(), dr.height() );
       } else {
         ds::graphics::box r;
         __gnu_cxx::slist<ds::graphics::box>::const_iterator it;
-        for (it = _p->_dirtyRects.begin(); it != _p->_dirtyRects.end(); ++it) {
+        for (it = _dirtyRects.begin(); it != _dirtyRects.end(); ++it) {
           if ( (r = it->intersect(dr)).is_empty() )
             continue;
 
           ++copyCount;
           /*
-            XCopyArea( _display->_p->_xdisplay, _p->_drawable, _p->_xwin, _p->_gc,
+            XCopyArea( _display->_xdisplay, _drawable, _xwin, _gc,
             r.x, r.y, r.w, r.h,
             r.x, r.y );
           */
-          XPutImage( xdisp, _p->_xwin, _p->_gc, _p->_ximage,
+          XPutImage( xdisp, _xwin, _gc, _ximage,
                      r.x(), r.y(), r.x(), r.y(), r.width(), r.height() );
         }
-        _p->_dirtyRects.clear();
+        _dirtyRects.clear();
       }
 
       if (0 < copyCount) {
         //XFlushGC( xdisp, _p->_gc );
         XSync( xdisp, False );
       }
+
+      return false;
     }
 
   }// namespace ui

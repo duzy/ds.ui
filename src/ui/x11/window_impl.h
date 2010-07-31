@@ -11,6 +11,8 @@
 #include <cstring>
 #include <ds/graphics/box.hpp>
 #include <ds/graphics/image.hpp>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 namespace ds { namespace ui {
     
@@ -51,7 +53,14 @@ namespace ds { namespace ui {
       void create( const window::pointer & );
       void destroy();
 
-      void convert_pixels( int x, int y, int w, int h ); 
+      void convert_pixels( int x, int y, int w, int h );
+
+      void select_input(long mask);
+
+      ds::graphics::box get_rect();
+
+      ds::graphics::image * get_image_for_render();
+      bool commit_image( const ds::graphics::box & dr );
     };//struct window::IMPL
     
   }//namespace ui

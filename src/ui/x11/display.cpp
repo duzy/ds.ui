@@ -11,17 +11,17 @@
 #include <ds/ui/window.hpp>
 #include <ds/ui/events.hpp>
 #include <ds/event_queue.hpp>
+#include <ds/debug.hpp>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <sys/types.h>
 #include "display_impl.h"
 #include "screen_impl.h"
 #include "window_impl.h"
-#include <ds/debug.hpp>
 
 namespace ds { namespace ui {
 
-    void display::IMPL::init( const display::pointer & disp, const char * name )
+    void display::IMPL::open( const display::pointer & disp, const char * name )
     {
       _xdisplay = XOpenDisplay( name );
 
@@ -92,91 +92,57 @@ namespace ds { namespace ui {
       }
     }
 
-    //////////////////////////////////////////////////////////////////////
-
-    display::id::id( void *p ) : _p( p ) {}
-
-    //////////////////////////////////////////////////////////////////////
-
-    display::display()
-      : event_pump( NULL )
-      , _p( new IMPL )
+    void display::IMPL::map( const window::pointer & win )
     {
-      dsL("display: "<<this<<"->"<<_p->_xdisplay);
-    }
+      window::IMPL * p = win->_p;
 
-    display::~display()
-    {
-      dsL("display: "<<this<<"->"<<_p->_xdisplay);
+      dsI( p );
 
-      if ( _p->_xdisplay ) {
-        XCloseDisplay( _p->_xdisplay );
-        _p->_winmap.clear();
+      if ( /*!p->_disp ||*/ !p->_xwin ) {
+
+        const int sn = XDefaultScreen( _xdisplay );
+        const int sc = XScreenCount( _xdisplay );
+
+        dsI( 0 <= sn && sn < sc );
+        dsI( _scrns != NULL );
+        
+        p->_screen = _scrns[ sn ];
+        p->create( win );
       }
 
-      delete [] _p->_scrns;
-      delete _p;
+      XMapWindow( _xdisplay, p->_xwin );
     }
 
-    display::pointer display::open( id i )
+    void display::IMPL::unmap( const window::pointer & win )
     {
-      pointer d( new display );
-      d->_p->init( d, (const char *) i._p );
-      return d;
-    }
+      window::IMPL * p = win->_p;
 
-    screen::pointer display::get_screen( int n ) const
-    {
-      dsI( 0 <= n && n < screen_count() );
-      dsI( _p->_scrns );
-      return _p->_scrns[n];
-    }
+      dsI( p );
+      dsI( _xdisplay );
 
-    int display::default_screen_number() const
-    {
-      return XDefaultScreen( _p->_xdisplay );
-    }
-
-    int display::screen_count() const
-    {
-      return XScreenCount( _p->_xdisplay );
-    }
-
-    window::pointer display::default_root() const
-    {
-      window::pointer w( new window ); // TODO: avoid making a new instance of window
-      //w->_p->_disp = display::pointer(const_cast<display*>(this));
-      w->_p->_screen = this->default_screen();
-      w->_p->_xwin = XDefaultRootWindow( _p->_xdisplay );
-      return w;
-    }
-    
-    void display::map( const window::pointer & win )
-    {
-      if ( /*!win->_p->_disp ||*/ !win->_p->_xwin ) {
-        //win->_p->_disp = display::pointer(this);
-        win->_p->_screen = this->default_screen();
-        win->_p->create( win );
+      if ( p->_xwin ) {
+        /**
+         *  This will send UnmapNotify, and it's handler will erase win from
+         *  _winmap .
+         */
+        XUnmapWindow( _xdisplay, p->_xwin );
       }
-
-      XMapWindow( _p->_xdisplay, win->_p->_xwin );
     }
 
-    void display::unmap( const window::pointer & win )
-    {
-      XUnmapWindow( _p->_xdisplay, win->_p->_xwin );
-    }
-
-    bool display::has( const window::pointer & win )
+    bool display::IMPL::has( const window::pointer & win )
     {
       if (!win->_p->_xwin) return false;
-      return (_p->_winmap.find( win->_p->_xwin ) != _p->_winmap.end());
+      return (_winmap.find( win->_p->_xwin ) != _winmap.end());
     }
 
-    void display::pump_events()
+    Window display::IMPL::default_root() const
     {
-      _p->pump_events( event_pump::get_queue() );
+      return XDefaultRootWindow( _xdisplay );
     }
-    
+
+    bool display::IMPL::is_default_root( const window::pointer & w ) const
+    {
+      return w->_p->_xwin == XDefaultRootWindow( _xdisplay );
+    }
   }//namespace ui
 }//namespace ds
