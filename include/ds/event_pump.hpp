@@ -6,42 +6,38 @@
  *    $Id$
  *
  **/
-#ifndef __DS_UI_EVENT_PUMP_HPP____by_Duzy_Chan__
-#define __DS_UI_EVENT_PUMP_HPP____by_Duzy_Chan__ 1
+#ifndef __DS_EVENT_PUMP_HPP____by_Duzy_Chan__
+#define __DS_EVENT_PUMP_HPP____by_Duzy_Chan__ 1
 
-namespace ds { namespace ui {
+namespace ds { 
 
-    struct event;
-    class event_queue;
+  struct event;
+  class event_queue;
+
+  /**
+   *  @brief Pumps platform events into the specified event queue. 
+   */
+  class event_pump
+  {
+  public:
+    virtual ~event_pump() {}
+
+    void start_pump();
+
+  protected:
+    event_pump(event_queue * q) : _queue(q) {}
 
     /**
-     *  @brief Pumps platform events into the specified event queue. 
+     *  This do the real task of pumping events and should be thread safety.
      */
-    class event_pump
-    {
-      event_pump(event_queue * q) : _queue(q) {}
-      
-      virtual ~event_pump() {}
+    virtual void pump_events() = 0;
 
-      // TODO: shold start a new thread to pump events
-      void start_pump()
-      {
-        while (_queue.is_active()) { // QUIT message should deactivate the queue
-          this->pump_events();
-        }
-      }
+    event_queue *get_queue() const { return _queue; }
 
-    protected:
-      /**
-       *  This do the real task of pumping events and should be thread safety.
-       */
-      virtual void pump_events() = 0;
-
-    private:
-      event_queue *_queue;
-    };//class event_pump
+  private:
+    event_queue *_queue;
+  };//class event_pump
     
-  }//namespace ui
 }//namespace ds
 
-#endif//__DS_UI_EVENT_PUMP_HPP____by_Duzy_Chan__
+#endif//__DS_EVENT_PUMP_HPP____by_Duzy_Chan__

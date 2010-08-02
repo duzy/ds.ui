@@ -29,8 +29,8 @@ namespace ds
     /**
      *  @brief Checks to see if certain event types are in the queue.
      */
-    void has_event(uint32_t type);
-    void has_events(uint32_t minType, uint32_t maxType);
+    bool has_event(uint32_t type);
+    bool has_events(uint32_t minType, uint32_t maxType);
 
     /**
      *  @brief Clears events of the specified type from the event queue.
@@ -71,7 +71,7 @@ namespace ds
     /**
      *  @brief Push an event to the queue.
      */
-    PushResult push();
+    PushResult push(event *);
 
     enum FilterResult // : bool
       {
@@ -94,8 +94,10 @@ namespace ds
      */
     int filter_events();
 
-    // TODO: event state (see SDL_events.h)
-    // TODO: user-defined events (see SDL_events.h)
+    bool is_active() const;
+
+    // TODO: event state (see SDL_events.h: SDL_EventState)
+    // TODO: user-defined events (see SDL_events.h: SDL_RegisterEvents)
 
   };//class event_queue
 }//namespace ds

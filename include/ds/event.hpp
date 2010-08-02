@@ -17,18 +17,24 @@ namespace ds
     int type;
 
     template<class SubEvent, int TV>
-    struct sub : event
-    {
-      enum { TypeValue = TV };
-      sub() : event( TypeValue ) {}
-    };
+    struct sub;
 
-    struct quit : sub<quit, 1> {};
-    struct custom : sub<custom, 2> {};
+    struct quit;
+    struct custom;
 
   protected:
     event(int v) : type(v) {}
   };//struct event
+
+  template<class SubEvent, int TV>
+  struct event::sub : event
+  {
+    enum { TypeValue = TV };
+    sub() : event( TypeValue ) {}
+  };
+
+  struct event::quit : event::sub<quit, 1> {};
+  struct event::custom : event::sub<custom, 2> {};
 }//namespace ds
 
 #endif//__DS_EVENT_HPP____by_Duzy_Chan__

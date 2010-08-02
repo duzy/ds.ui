@@ -13,7 +13,11 @@
 #       include <ds/event_loop.hpp>
 #       include <ds/shared_object.hpp>
 
-namespace ds { namespace ui {
+namespace ds {
+  
+  class event_queue;
+
+  namespace ui {
     namespace event
     {
       enum { TypeValueStart = 100 };
@@ -49,7 +53,6 @@ namespace ds { namespace ui {
       };
 
     class display;
-    class event_queue;
 
     /**
      *  @brief UI event loop
@@ -62,7 +65,8 @@ namespace ds { namespace ui {
       virtual ~event_loop();
 
     protected:
-      virtual void on_event(const event &);
+      virtual void should_pump_events();
+      virtual void on_event(const ds::event &);
     };//class event_loop
 
     event_queue * get_event_queue();

@@ -26,8 +26,8 @@ namespace ds { namespace ui {
       void init_atoms();
 
       bool pending();
-      void pump_events();
-      void dispatch( XEvent * event );
+      void pump_events( event_queue * );
+      void push_event( event_queue *, XEvent * event );
     };//struct display::IMPL
 
   }//namespace ui

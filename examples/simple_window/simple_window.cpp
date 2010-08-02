@@ -10,6 +10,7 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
+#include <ds/ui/events.hpp>
 #include <cassert>
 #include <iostream>
 
@@ -31,7 +32,9 @@ int main(int argc, char** argv)
   win2.show(); // show it since it's belong to 'disp'
   
   std::cout << "loop..." <<std::endl;
-  int n = disp->reduce_events();
+  //int n = disp->reduce_events();
+  ds::ui::event_loop loop( disp );
+  int n = loop.run();
 
   std::cout << n <<std::endl;
   return n;

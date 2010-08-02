@@ -8,6 +8,11 @@ ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 
 include $(ds.ui.dir)/check-deps.mk
 
+sm.module.options.compile := \
+  -DDS_TRACE_LEVEL=3 \
+  -DDS_DEBUG_LEVEL=3 \
+  -DDS_LOG_LEVEL=3 \
+
 #sm.log.filename := dsui.log
 sm.module.out_implib := dsui
 

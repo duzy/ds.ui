@@ -9,6 +9,7 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
+#include <ds/ui/events.hpp>
 #include <X11/Xlib.h>
 #include <sys/types.h>
 #include "display_impl.h"
@@ -51,7 +52,7 @@ namespace ds { namespace ui {
       return false;
     }
 
-    void display::IMPL::pump_events()
+    void display::IMPL::pump_events( event_queue * eq )
     {
       // see SDL/src/video/x11/SDL_x11events.c
 
@@ -61,14 +62,13 @@ namespace ds { namespace ui {
       XEvent event;
       //bzero( &event, sizeof(event) );
 
-      while ( true )
       while ( pending() ) {
         XNextEvent( xDisplay, &event );
-        dispatch( &event );
+        push_event( eq, &event );
       }
     }
 
-    void display::IMPL::dispatch( XEvent * event )
+    void display::IMPL::push_event( event_queue *eq, XEvent * event )
     {
       //std::cout << "event: " << event->type << std::endl;
 
@@ -77,6 +77,9 @@ namespace ds { namespace ui {
       if ( XFilterEvent(event, None) == True ) {
         return;
       }
+
+      // TODO: push parsed-event into the event_queue
+      //        eq->push( ... )
 
       switch (event->type) {
       case ClientMessage:
@@ -89,8 +92,6 @@ namespace ds { namespace ui {
         }
         break;
       }
-
-      //TODO: send events to my event_queue
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -100,14 +101,15 @@ namespace ds { namespace ui {
     //////////////////////////////////////////////////////////////////////
 
     display::display()
-      : _p( new IMPL )
+      : event_pump( get_event_queue() )
+      , _p( new IMPL )
     {
+      dsD("display::display: "<<this);
     }
 
     display::~display()
     {
-      //dsD("display::~display()");
-      std::cout<<"display::~display()"<<std::endl;
+      dsD("display::~display: "<<this);
 
       if ( _p->xDisplay )
         XCloseDisplay( _p->xDisplay );
@@ -167,13 +169,11 @@ namespace ds { namespace ui {
       return true;
     }
 
-    int display::reduce_events()
+    void display::pump_events()
     {
       //XSync( _p->xDisplay, False );
 
-      _p->pump_events();
-
-      return 0;
+      _p->pump_events( event_pump::get_queue() );
     }
     
   }//namespace ui

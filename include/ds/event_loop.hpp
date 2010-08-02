@@ -69,6 +69,7 @@ namespace ds
     int run();
 
   protected:
+    virtual void should_pump_events();
     virtual void on_event(const event &) = 0;
 
   private:

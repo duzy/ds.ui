@@ -17,17 +17,35 @@ namespace ds {
   {
     // TODO: event loop implentation... handles QUIT event
     event * evt = NULL;
-    while (evt = _queue->wait()) {
+    while (_queue->is_active()) {
+      // TODO: should pump events at this point?
+      //         e.g. this->pump_events()
+      //       SDL does pumping events before wait(SDL_WaitEventTimeOut)
+      this->should_pump_events();
+
+      if (!(evt = _queue->wait())) {
+        // TODO: no event or got error?
+        continue;
+      }
+
       if (evt->type == event::quit::TypeValue) {
         return 0;
       }
+
+      this->on_event(*evt);
     }
     return -1;
   }
 
+  void event_loop::should_pump_events()
+  {
+    // Does nothing by default, the derived should do pumping on it's own
+  }
+
   void event_loop::on_event(const event &)
   {
-    // Does nothing.
+    // Does nothing, just allow the derived class to invoke
+    // 'ds::event_loop::on_event' in it's own 'on_event' implenmentation.
   }
   
 }//namespace ds

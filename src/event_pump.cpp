@@ -14,7 +14,8 @@ namespace ds {
 
   void event_pump::start_pump()
   {
-    // TODO: shold start a new thread to pump events?
+    // TODO: shold start a new thread to pump events or just making
+    //       this method thread safe?
     while (_queue->is_active()) { // TODO: QUIT message should deactivate the queue
       this->pump_events();
     }
