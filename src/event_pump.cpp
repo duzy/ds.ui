@@ -21,4 +21,9 @@ namespace ds {
     }
   }
 
+  void event_pump::pump()
+  {
+    this->pump_events();
+  }
+
 }//namespace ds

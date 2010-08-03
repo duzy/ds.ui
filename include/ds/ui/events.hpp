@@ -67,6 +67,9 @@ namespace ds {
     protected:
       virtual void should_pump_events();
       virtual void on_event(const ds::event &);
+
+    private:
+      shared_object<display>::pointer_t _display;
     };//class event_loop
 
     event_queue * get_event_queue();

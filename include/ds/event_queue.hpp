@@ -25,17 +25,19 @@ namespace ds
    */
   class event_queue : boost::noncopyable // TODO: should be shared_object ??
   {
+    struct IMPL;
+
   public:
     /**
      *  @brief Checks to see if certain event types are in the queue.
      */
-    bool has_event(uint32_t type);
+    bool has_event(uint32_t type) { return has_events(type, type); }
     bool has_events(uint32_t minType, uint32_t maxType);
 
     /**
      *  @brief Clears events of the specified type from the event queue.
      */
-    void flush(uint32_t type);
+    void flush(uint32_t type) { return flush(type, type); }
     void flush(uint32_t minType, uint32_t maxType);
 
     /**
@@ -50,7 +52,7 @@ namespace ds
      *
      *  Returns NULL if there was an error while waiting for events.
      */
-    event * wait();
+    event * wait() { return wait(-1); }
 
     /**
      *  @brief Waits until the specified timeout(in milliseconds) for the next
@@ -99,6 +101,8 @@ namespace ds
     // TODO: event state (see SDL_events.h: SDL_EventState)
     // TODO: user-defined events (see SDL_events.h: SDL_RegisterEvents)
 
+  private:
+    IMPL *_p;
   };//class event_queue
 }//namespace ds
 

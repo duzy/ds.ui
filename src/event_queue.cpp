@@ -8,21 +8,26 @@
  **/
 
 #include <ds/event_queue.hpp>
+#include <deque>
+//#include <ext/new_allocator.h>
+//#include <ext/pool_allocator.h>
+#include <ext/bitmap_allocator.h>
 
 namespace ds {
 
-  bool event_queue::has_event(uint32_t type)
+  struct event_queue::IMPL
   {
-    return false;
-  }
+    //typedef __gnu_cxx::new_allocator<event*> allocator_t;
+    typedef __gnu_cxx::bitmap_allocator<event*> allocator_t;
+    
+    std::deque<event*, allocator_t> events;
+  };//struct event_queue::IMPL
+
+  //////////////////////////////////////////////////////////////////////
 
   bool event_queue::has_events(uint32_t minType, uint32_t maxType)
   {
     return false;
-  }
-
-  void event_queue::flush(uint32_t type)
-  {
   }
 
   void event_queue::flush(uint32_t minType, uint32_t maxType)
@@ -30,11 +35,6 @@ namespace ds {
   }
 
   event * event_queue::poll()
-  {
-    return 0;
-  }
-
-  event * event_queue::wait()
   {
     return 0;
   }
@@ -65,7 +65,7 @@ namespace ds {
 
   bool event_queue::is_active() const
   {
-    return false;
+    return true;
   }
 
 }//namespace ds

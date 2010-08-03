@@ -24,6 +24,8 @@ namespace ds {
 
     void start_pump();
 
+    void pump();
+
   protected:
     event_pump(event_queue * q) : _queue(q) {}
 

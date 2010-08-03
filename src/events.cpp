@@ -12,6 +12,7 @@ namespace ds { namespace ui {
 
     event_loop::event_loop(const display::pointer_t & disp)
       : ds::event_loop( get_event_queue() )
+      , _display( disp )
     {
       //disp->start_pump();
     }
@@ -23,6 +24,7 @@ namespace ds { namespace ui {
     void event_loop::should_pump_events()
     {
       // TODO: pump events from the display
+      _display->pump();
     }
 
     void event_loop::on_event(const ds::event & evt)
