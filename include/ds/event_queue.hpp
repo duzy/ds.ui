@@ -31,8 +31,8 @@ namespace ds
     /**
      *  @brief Checks to see if certain event types are in the queue.
      */
-    bool has_event(uint32_t type) { return has_events(type, type); }
-    bool has_events(uint32_t minType, uint32_t maxType);
+    bool has_event(uint32_t type) const { return has_events(type, type); }
+    bool has_events(uint32_t minType, uint32_t maxType) const;
 
     /**
      *  @brief Clears events of the specified type from the event queue.
