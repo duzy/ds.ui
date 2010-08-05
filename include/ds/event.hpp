@@ -21,6 +21,7 @@ namespace ds
 
     struct quit;
     struct custom;
+    struct test;
 
   protected:
     event(int v) : type(v) {}
@@ -35,6 +36,7 @@ namespace ds
 
   struct event::quit : event::sub<quit, 1> {};
   struct event::custom : event::sub<custom, 2> {};
+  struct event::test : event::sub<test, 3> {};
 }//namespace ds
 
 #endif//__DS_EVENT_HPP____by_Duzy_Chan__

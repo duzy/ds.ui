@@ -32,6 +32,11 @@ namespace ds
     ~event_queue();
 
     /**
+     *  @brief All events returned by poll() and wait() must be revoked.
+     */
+    void revoke_event(event *);
+
+    /**
      *  @brief Checks to see if certain event types are in the queue.
      */
     bool has_event(uint32_t type) const { return has_events(type, type); }

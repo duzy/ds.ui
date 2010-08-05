@@ -33,6 +33,9 @@ namespace ds {
       }
 
       this->on_event(*evt);
+
+      delete evt; // TODO: avoid using 'event *' and this delete command
+      //_queue->revoke_event(evt);
     }
     return -1;
   }

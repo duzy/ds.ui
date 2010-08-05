@@ -1,6 +1,8 @@
+#include <ds/event.hpp>
 #include <ds/ui/events.hpp>
 #include <ds/ui/display.hpp>
 #include <ds/event_queue.hpp>
+#include <ds/debug.hpp>
 
 namespace ds { namespace ui {
 
@@ -30,6 +32,7 @@ namespace ds { namespace ui {
     void event_loop::on_event(const ds::event & evt)
     {
       // TODO: dispatch UI events
+      dsD("event: "<<evt.type);
       ds::event_loop::on_event(evt);
     }
     

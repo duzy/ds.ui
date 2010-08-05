@@ -10,6 +10,7 @@
 #include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
 #include <ds/ui/events.hpp>
+#include <ds/event_queue.hpp>
 #include <X11/Xlib.h>
 #include <sys/types.h>
 #include "display_impl.h"
@@ -70,8 +71,6 @@ namespace ds { namespace ui {
 
     void display::IMPL::push_event( event_queue *eq, XEvent * event )
     {
-      //std::cout << "event: " << event->type << std::endl;
-
       /* filter events catchs XIM events and sends them to the correct
          handler */
       if ( XFilterEvent(event, None) == True ) {
@@ -80,6 +79,8 @@ namespace ds { namespace ui {
 
       // TODO: push parsed-event into the event_queue
       //        eq->push( ... )
+      dsD("event: "<<event->type);
+      eq->push(new ds::event::test);
 
       switch (event->type) {
       case ClientMessage:
