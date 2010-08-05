@@ -7,6 +7,7 @@
  *
  **/
 
+#include <ds/event.hpp>
 #include <ds/event_queue.hpp>
 #include <deque>
 //#include <ext/new_allocator.h>
@@ -29,16 +30,29 @@ namespace ds {
     mutex_t _mutex;
     queue_t _events;
 
+    int _isActive : 1; // QUIT event will unset this flag
+
     IMPL()
       : _condHasEvents()
       , _mutex()
       , _events()
+      , _isActive(1)
     {
       
     }
   };//struct event_queue::IMPL
 
   //////////////////////////////////////////////////////////////////////
+
+  event_queue::event_queue()
+    : _p( new IMPL )
+  {
+  }
+
+  event_queue::~event_queue()
+  {
+    delete _p;
+  }
 
   bool event_queue::has_events(uint32_t minType, uint32_t maxType) const
   {
@@ -68,36 +82,50 @@ namespace ds {
   event * event_queue::poll()
   {
     IMPL::mutex_t::scoped_lock l( _p->_mutex );
-    return 0;
+    if ( _p->_events.empty() ) return 0;
+    event * evt( _p->_events.front() );
+    _p->_events.pop_front();
+    return evt;
   }
 
   event * event_queue::wait(int timeout)
   {
-    return 0;
+    IMPL::mutex_t::scoped_lock l( _p->_mutex );
+    while ( _p->_events.empty() ) _p->_condHasEvents.wait(l);
+    event * evt( _p->_events.front() );
+    _p->_events.pop_front();
+    return evt;
   }
 
-  event_queue::PushResult event_queue::push(event *)
+  event_queue::PushResult event_queue::push(event *evt)
   {
-    return PushError;
+    IMPL::mutex_t::scoped_lock l( _p->_mutex );
+    // TODO: handle with PushFiltered, PushFull, PushError
+    _p->_events.push_back( evt );
+    _p->_condHasEvents.notify_one();
+    return PushOk;
   }
 
   void event_queue::set_filter(const filter_t & f)
   {
+    // TODO: ...
   }
 
   event_queue::filter_t event_queue::get_filter() const
   {
+    // TODO: ...
     return event_queue::filter_t(0);
   }
 
   int event_queue::filter_events()
   {
+    // TODO: ...
     return 0;
   }
 
   bool event_queue::is_active() const
   {
-    return true;
+    return bool( _p->_isActive );
   }
 
 }//namespace ds

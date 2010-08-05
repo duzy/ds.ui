@@ -28,6 +28,9 @@ namespace ds
     struct IMPL;
 
   public:
+    event_queue();
+    ~event_queue();
+
     /**
      *  @brief Checks to see if certain event types are in the queue.
      */

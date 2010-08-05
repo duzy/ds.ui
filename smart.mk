@@ -24,6 +24,19 @@ sm.module.sources := \
   $(wildcard src/*.cpp) \
   $(wildcard src/events/*.cpp)
 
+sm.module.dirs.lib := \
+  -L$(ds.third.dir.lib) \
+  -L$(ds.third.boost.dir.lib)
+
+#sm.module.rpath := \
+#  $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
+
+sm.module.libs += \
+  -l$(call ds.third.boost.use, thread) \
+  -lpthread
+
+#  -l$(call ds.third.boost.use, system) \
+
 ifeq ($(sm.os.name),linux)
   sm.module.sources += $(wildcard src/x11/*.cpp)
   sm.module.libs += X11
