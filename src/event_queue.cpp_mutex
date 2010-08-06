@@ -111,7 +111,7 @@ namespace ds {
     do {
       if ( event * evt = poll() ) return evt;
       if ( 0 == timeout ) return NULL;
-      if ( timeout < 0 ) return NULL;
+      //if ( timeout < 0 ) return NULL;
       if ( 0 < timeout ) {
         boost::system_time t2 = boost::get_system_time();
         if (timeout <= (t2 - t1).total_milliseconds()) return NULL;

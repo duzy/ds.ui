@@ -18,6 +18,8 @@
 //#include <boost/thread/shared_mutex.hpp>
 //#include <boost/thread/condition_variable.hpp>
 #include <boost/thread/condition.hpp>
+#include <boost/thread/xtime.hpp>
+#include <boost/thread/thread.hpp>
 
 namespace ds {
 
@@ -28,7 +30,6 @@ namespace ds {
     typedef std::deque<event*, allocator_t> queue_t;
     //typedef boost::mutex mutex_t;
     typedef boost::recursive_mutex mutex_t;
-    //typedef boost::shared_mutex mutex_t;
     //typedef boost::condition_variable condition_t;
     typedef boost::condition condition_t;
 
@@ -88,25 +89,47 @@ namespace ds {
 
   event * event_queue::poll()
   {
+    boost::this_thread::disable_interruption noDisturb;
     IMPL::mutex_t::scoped_lock l( _p->_mutex );
     if ( _p->_events.empty() ) return 0;
-    event * evt( _p->_events.front() );
-    _p->_events.pop_front();
-    return evt;
-  }
-
-  event * event_queue::wait(int timeout)
-  {
-    IMPL::mutex_t::scoped_lock l( _p->_mutex );
-    while ( _p->_events.empty() ) _p->_condHasEvents.wait(l);
     event * evt( _p->_events.front() );
     _p->_events.pop_front();
     //_p->_condQueueFull.notify_one();
     return evt;
   }
 
+  event * event_queue::wait(int timeout)
+  {
+    boost::system_time t1 = boost::get_system_time();
+    do {
+      {
+        IMPL::mutex_t::scoped_lock l( _p->_mutex );
+        //while ( _p->_events.empty() ) _p->_condHasEvents.wait(l);
+        if ( _p->_events.empty() ) {
+          boost::system_time t = boost::get_system_time();
+          t += boost::posix_time::milliseconds(10);
+          _p->_condHasEvents.timed_wait(l, t);
+        }
+        if ( !_p->_events.empty() ) {
+          boost::this_thread::disable_interruption noDisturb;
+          event * evt( _p->_events.front() );
+          _p->_events.pop_front();
+          return evt;
+        }
+      }
+      if ( 0 == timeout ) return NULL;
+      //if ( timeout < 0 ) return NULL;
+      if ( 0 < timeout ) {
+        boost::system_time t2 = boost::get_system_time();
+        if (timeout <= (t2 - t1).total_milliseconds()) return NULL;
+      }
+    } while (true);
+    //return NULL;
+  }
+
   event_queue::PushResult event_queue::push(event *evt)
   {
+    boost::this_thread::disable_interruption noDisturb;
     IMPL::mutex_t::scoped_lock l( _p->_mutex );
     //while ( 128 <= _p->_events.size() ) _p->_condQueueFull.wait(l);
     // TODO: handle with PushFiltered, PushFull, PushError

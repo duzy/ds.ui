@@ -15,15 +15,15 @@ namespace ds {
 
   int event_loop::run()
   {
-    // TODO: event loop implentation... handles QUIT event
     event * evt = NULL;
     while ( _queue->is_active() ) {
-      // TODO: should pump events at this point?
-      //         e.g. this->pump_events()
-      //       SDL does pumping events before wait(SDL_WaitEventTimeOut)
-      this->should_pump_events();
+      /** This enables UI event loop to pump events in-loop.
+       *  SDL does pumping events before wait(SDL_WaitEventTimeOut)
+       */
+      this->loop_in();
 
-      if (!(evt = _queue->wait())) {
+      //if (!(evt = _queue->wait())) {
+      if (!(evt = _queue->wait(10))) {
         // TODO: no event or got error?
         continue;
       }
@@ -41,7 +41,7 @@ namespace ds {
     return -1;
   }
 
-  void event_loop::should_pump_events()
+  void event_loop::loop_in()
   {
     // Does nothing by default, the derived should do pumping on it's own
   }

@@ -65,7 +65,7 @@ namespace ds {
       virtual ~event_loop();
 
     protected:
-      virtual void should_pump_events();
+      virtual void loop_in();
       virtual void on_event(const ds::event &);
 
     private:

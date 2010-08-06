@@ -22,7 +22,7 @@ namespace ds { namespace ui {
     {
     }
 
-    void event_loop::should_pump_events()
+    void event_loop::loop_in()
     {
       /**
        *  Pump events out of the display will actually push the events into
