@@ -11,6 +11,11 @@
 #       include <ds/shared_object.hpp>
 #       include <ds/ui/events.hpp>
 
+namespace ds { namespace graphics {
+    struct canvas;
+  }//namespace graphics
+}//namespace ds
+
 namespace ds { namespace ui {
 
     class display;
