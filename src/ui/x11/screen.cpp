@@ -68,6 +68,11 @@ namespace ds { namespace ui {
     {
       return XWhitePixelOfScreen( _p->_xscrn );
     }
+
+    int screen::depth() const
+    {
+      return XDefaultDepthOfScreen( _p->_xscrn );
+    }
     
   }//namespace ui
 }//namespace ds

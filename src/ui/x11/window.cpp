@@ -11,11 +11,42 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/screen.hpp>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include "window_impl.h"
 #include "display_impl.h"
 #include <ds/debug.hpp>
 
 namespace ds { namespace ui {
+
+    void window::IMPL::get_visual( const screen::pointer & scrn )
+    {
+      XDisplay xdisp = _disp->_p->_xdisp;
+
+      VisualID vid = 0;
+      if (vid) {
+        XVisualInfo *vi, temp;
+        int n;
+        std::memset( &temp, 0, sizeof(temp) );
+        temp.visualid = vid;
+        if (vi = XGetVisualInfo(xdisp, VisualIDMask, &temp, &n)) {
+          _visual = *vi;
+          XFree(vi);
+          return;
+        }
+      }
+
+      bool useDirectColorVisual = false;
+      int depth = scrn->depth();
+      if ((useDirectColorVisual &&
+           XMatchVisualInfo(xdisp, screen, depth, DirectColor, &_visual)) ||
+          XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_visual) ||
+          XMatchVisualInfo(xdisp, screen, depth, Color, &_visual) ||
+          XMatchVisualInfo(xdisp, screen, depth, Color, &_visual) ||
+          )
+        return;
+
+      std::memset( &_visual, 0, sizeof() );
+    }
 
     void window::IMPL::create( const window::pointer & win )
     {
@@ -25,6 +56,8 @@ namespace ds { namespace ui {
       int x(0), y(0), w(400), h(300), bw(0);
 
       screen::pointer scrn = _disp->default_screen();
+      get_visual( scrn );
+
       unsigned fc = scrn->black_pixel();
       unsigned bc = scrn->white_pixel();
 
@@ -148,7 +181,7 @@ namespace ds { namespace ui {
 
       int copyCount = 0;
       ds::graphics::rect r;
-      std::slist<ds::graphics::rect>::const_iterator it;
+      __gnu_cxx::slist<ds::graphics::rect>::const_iterator it;
       for (it = _p->_dirtyRects.begin(); it != _p->_dirtyRects.end(); ++it) {
         if ( (r = it->intersect(dr)).is_valid() ) {
           ++copyCount;

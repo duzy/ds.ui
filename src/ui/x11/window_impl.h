@@ -7,6 +7,9 @@
  *
  **/
 
+#include <ext/slist>
+#include <cstring>
+
 namespace ds { namespace ui {
     
     struct window::IMPL
@@ -15,20 +18,27 @@ namespace ds { namespace ui {
 
       Window _xwin; // Window and Pixmap are Drawable
 
+      XVisualInfo _visual;
       XImage _image; 
       Drawable _drawable; // Pixmap, Window, etc...
       GC _gc;
 
-      std::slist<ds::graphics::rect> _dirtyRects;
+      __gnu_cxx::slist<ds::graphics::rect> _dirtyRects;
 
       IMPL( display * d )
         : _disp( d )
         , _xwin( NULL )
+        , _visual()
+        , _image()
         , _drawable( NULL )
         , _gc( NULL )
         , _dirtyRects()
       {
+        std::memset( &_visual, 0, sizeof(_visual) );
+        std::memset( &_image, 0, sizeof(_image) );
       }
+
+      void get_visual( const screen::pointer & scrn );
 
       void create( const window::pointer & );
       void destroy();

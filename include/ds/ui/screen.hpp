@@ -34,6 +34,8 @@ namespace ds { namespace ui {
       unsigned black_pixel() const;
       unsigned white_pixel() const;
 
+      int depth() const;
+
     private:
       IMPL * _p;
     };//class screen
