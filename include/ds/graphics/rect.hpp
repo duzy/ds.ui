@@ -11,6 +11,11 @@ namespace ds { namespace graphics {
         left = l, top = t, right = r, bottom = b;
       }
 
+      void set_xywh(scalar_t x, scalar_t y, scalar_t w, scalar_t h)
+      {
+        set(x, y, x+w, y+h);
+      }
+
       void set_empty() { std::memset(this, 0, sizeof(*this)); }
       bool is_empty() const { return left >= right || top >= bottom; }
       

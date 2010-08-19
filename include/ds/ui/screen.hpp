@@ -28,6 +28,8 @@ namespace ds { namespace ui {
 
       shared_object<window>::pointer root() const;
 
+      int number() const;
+
       int width() const;
       int height() const;
 

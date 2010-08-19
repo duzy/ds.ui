@@ -9,6 +9,7 @@
 
 #ifndef __DS_GRAPHICS_IMAGE_HPP____by_Duzy_Chan__
 #define __DS_GRAPHICS_IMAGE_HPP____by_Duzy_Chan__ 1
+#       include <boost/cstdint.hpp>
 
 namespace ds { namespace graphics {
 

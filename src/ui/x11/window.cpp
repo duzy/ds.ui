@@ -10,6 +10,7 @@
 #include <ds/ui/window.hpp>
 #include <ds/ui/display.hpp>
 #include <ds/ui/screen.hpp>
+#include <ds/graphics/image.hpp>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "window_impl.h"
@@ -20,7 +21,7 @@ namespace ds { namespace ui {
 
     void window::IMPL::get_visual( const screen::pointer & scrn )
     {
-      Display xdisp = _disp->_p->_xdisp;
+      Display * xdisp = _disp->_p->_xdisp;
 
       VisualID vid = 0;
       if (vid) {
@@ -35,14 +36,14 @@ namespace ds { namespace ui {
         }
       }
 
+      int screen = scrn->number();
       int depth = scrn->depth();
       bool useDirectColorVisual = false;
       if ((useDirectColorVisual &&
            XMatchVisualInfo(xdisp, screen, depth, DirectColor, &_visual)) ||
           XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_visual) ||
-          XMatchVisualInfo(xdisp, screen, depth, Color, &_visual) ||
-          XMatchVisualInfo(xdisp, screen, depth, Color, &_visual) ||
-          )
+          XMatchVisualInfo(xdisp, screen, depth, PseudoColor, &_visual) ||
+          XMatchVisualInfo(xdisp, screen, depth, StaticColor, &_visual) )
         return;
 
       std::memset( &_visual, 0, sizeof(_visual) );
@@ -179,12 +180,13 @@ namespace ds { namespace ui {
         return;
       }
 
-      ds::graphics::rect const dr( a.x(), a.y(), a.width(), a.height() );
+      ds::graphics::irect dr;
+      dr.set_xywh( a.x(), a.y(), a.width(), a.height() );
 
       ds::graphics::image img( _p->_ximage.width,
                                _p->_ximage.height,
                                _p->_ximage.bits_per_pixel,
-                               _p->_ximage.data );
+                               (uint8_t*)_p->_ximage.data );
 
       ds::graphics::canvas canvas( img );
       canvas.clip( dr );
@@ -195,7 +197,7 @@ namespace ds { namespace ui {
 
       int copyCount = 0;
       ds::graphics::rect r;
-      __gnu_cxx::slist<ds::graphics::rect>::const_iterator it;
+      __gnu_cxx::slist<ds::graphics::irect>::const_iterator it;
       for (it = _p->_dirtyRects.begin(); it != _p->_dirtyRects.end(); ++it) {
         if ( (r = it->intersect(dr)).is_valid() ) {
           ++copyCount;

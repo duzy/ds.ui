@@ -50,6 +50,11 @@ namespace ds { namespace ui {
       return _p->_root;
     }
 
+    int screen::number() const
+    {
+      return XScreenNumberOfScreen( _p->_xscrn );
+    }
+
     int screen::width() const
     {
       return XWidthOfScreen( _p->_xscrn );
