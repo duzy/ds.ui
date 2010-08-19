@@ -12,11 +12,27 @@
 
 namespace ds { namespace graphics {
 
+    namespace gil
+    {
+      struct image;
+      struct view;
+    }//namespace gil
+
     class canvas
     {
     public:
+      canvas( gil::image & );
+      canvas( gil::view & );
+
       void render( ... );
       void stroke( ... );
+
+    private:
+      unsigned _isView : 1;
+      union {
+        gil::image      * _d;
+        gil::view       * _v;
+      };
     };//class canvas
     
   }//namespace graphics

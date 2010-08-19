@@ -11,6 +11,7 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/graphics/image.hpp>
+#include <ds/graphics/canvas.hpp>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "window_impl.h"
