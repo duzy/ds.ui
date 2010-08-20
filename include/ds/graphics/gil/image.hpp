@@ -13,7 +13,6 @@
 #       include <boost/gil/typedefs.hpp>
 #       include <boost/gil/image_view_factory.hpp>
 #       include <boost/gil/extension/dynamic_image/any_image.hpp>
-//#       include <boost/gil/extension/dynamic_image/apply_operation.hpp>
 
 namespace ds { namespace graphics { namespace gil {
 
