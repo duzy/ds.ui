@@ -32,6 +32,14 @@ namespace ds { namespace graphics {
 
       virtual ~image();
 
+      bool is_valid() const;
+
+      bool create( int w, int h, PixelType pt );
+      bool create( int w, int h, PixelType pt, uint8_t * data );
+
+      const uint8_t * pixels() const;
+      uint8_t * pixels();
+
       /**
        *  @brief Load PNG image from a disk file or ds::resource.
        *

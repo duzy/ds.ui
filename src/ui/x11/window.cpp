@@ -20,7 +20,7 @@
 
 namespace ds { namespace ui {
 
-    bool window::IMPL::get_visual( const screen::pointer & scrn )
+    bool window::IMPL::get_visual_info( const screen::pointer & scrn )
     {
       Display * xdisp = _disp->_p->_xdisp;
 
@@ -31,7 +31,7 @@ namespace ds { namespace ui {
         std::memset( &temp, 0, sizeof(temp) );
         temp.visualid = vid;
         if (vi = XGetVisualInfo(xdisp, VisualIDMask, &temp, &n)) {
-          _visual = *vi;
+          _visualInfo = *vi;
           XFree(vi);
           return false;
         }
@@ -41,14 +41,38 @@ namespace ds { namespace ui {
       int depth = scrn->depth();
       bool useDirectColorVisual = false;
       if ((useDirectColorVisual &&
-           XMatchVisualInfo(xdisp, screen, depth, DirectColor, &_visual)) ||
-          XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_visual) ||
-          XMatchVisualInfo(xdisp, screen, depth, PseudoColor, &_visual) ||
-          XMatchVisualInfo(xdisp, screen, depth, StaticColor, &_visual) )
+           XMatchVisualInfo(xdisp, screen, depth, DirectColor, &_visualInfo)) ||
+          XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_visualInfo) ||
+          XMatchVisualInfo(xdisp, screen, depth, PseudoColor, &_visualInfo) ||
+          XMatchVisualInfo(xdisp, screen, depth, StaticColor, &_visualInfo) )
         return true;
 
-      std::memset( &_visual, 0, sizeof(_visual) );
+      std::memset( &_visualInfo, 0, sizeof(_visualInfo) );
       return false;
+    }
+
+    bool window::IMPL::create_image_if_needed( int w, int h )
+    {
+      // TODO: return true if no needs to recreate image
+
+      _image.create(w, h, ds::graphics::image::ARGB_8888_PIXEL);
+      
+      Display * xdisp = _disp->_p->_xdisp;
+
+      if (_ximage) {
+        _ximage->data = NULL;
+        XDestroyImage(_ximage);
+        _ximage = NULL;
+      }
+
+      int pixelBytes = 4;
+      int rowBytes = pixelBytes * w;
+
+      _ximage = XCreateImage(xdisp, _visualInfo.visual, _visualInfo.depth,
+                             ZPixmap, 0, (char*)_image.pixels(), w, h,
+                             pixelBytes, rowBytes );
+      
+      return ( _ximage != NULL );
     }
 
     void window::IMPL::create( const window::pointer & win )
@@ -59,7 +83,7 @@ namespace ds { namespace ui {
       int x(0), y(0), w(400), h(300), bw(0);
 
       screen::pointer scrn = _disp->default_screen();
-      bool isVisualOK = get_visual( scrn );
+      bool isVisualOK = get_visual_info( scrn );
 
       dsLif("cannot get visual", !isVisualOK);
 
@@ -113,6 +137,13 @@ namespace ds { namespace ui {
     {
       if ( _xwin ) {
         XDestroyWindow( _disp->_p->_xdisp, _xwin );
+      }
+    }
+
+    window::IMPL::~IMPL()
+    {
+      if (_ximage) {
+        XDestroyImage(_ximage);
       }
     }
 
@@ -174,26 +205,29 @@ namespace ds { namespace ui {
 
     void window::on_exposed( const event::window::exposed & a )
     {
+      int w = 500, h = 600;
+
+      if (!_p->create_image_if_needed(w, h)) {
+        dsE("Failed to create buffer image for renderring");
+        return;
+      }
+      /*
       if (_p->_ximage.width <= 0 || _p->_ximage.height <= 0) {
         dsE("Invalid buffer image size");
         return;
       }
       if (_p->_ximage.data==NULL) {
-        dsE("Uninitialized buffer image of size: "
+        dsE("Invalid buffer image of size: "
             <<_p->_ximage.width<<"x"<<_p->_ximage.height);
         return;
       }
+      */
+      dsI( _p->_image.is_valid() );
 
       ds::graphics::irect dr;
       dr.set_xywh( a.x(), a.y(), a.width(), a.height() );
 
-      ds::graphics::image img( _p->_ximage.width,
-                               _p->_ximage.height,
-                               //_p->_ximage.bits_per_pixel,
-                               ds::graphics::image::ARGB_8888_PIXEL,
-                               (uint8_t*)_p->_ximage.data );
-
-      ds::graphics::canvas canvas( img );
+      ds::graphics::canvas canvas( _p->_image );
       canvas.clip( dr );
 
       this->on_render( canvas );
@@ -213,7 +247,7 @@ namespace ds { namespace ui {
           r.x, r.y, r.w, r.h,
           r.x, r.y );
         */
-        XPutImage( xdisp, _p->_xwin, _p->_gc, &_p->_ximage,
+        XPutImage( xdisp, _p->_xwin, _p->_gc, _p->_ximage,
                    r.left, r.top, r.left, r.top, r.width(), r.height() );
       }
 

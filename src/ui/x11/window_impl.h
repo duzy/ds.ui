@@ -10,6 +10,7 @@
 #include <ext/slist>
 #include <cstring>
 #include <ds/graphics/rect.hpp>
+#include <ds/graphics/image.hpp>
 
 namespace ds { namespace ui {
     
@@ -19,8 +20,9 @@ namespace ds { namespace ui {
 
       Window _xwin; // Window and Pixmap are Drawable
 
-      XVisualInfo _visual;
-      XImage _ximage; 
+      XVisualInfo _visualInfo;
+      XImage * _ximage;
+      ds::graphics::image _image;
       GC _gc;
 
       __gnu_cxx::slist<ds::graphics::irect> _dirtyRects;
@@ -28,16 +30,19 @@ namespace ds { namespace ui {
       IMPL( display * d )
         : _disp( d )
         , _xwin( NULL )
-        , _visual()
-        , _ximage()
+        , _visualInfo()
+        , _ximage( NULL )
+        , _image()
         , _gc( NULL )
         , _dirtyRects()
       {
-        std::memset( &_visual, 0, sizeof(_visual) );
-        std::memset( &_ximage, 0, sizeof(_ximage) );
+        std::memset( &_visualInfo, 0, sizeof(_visualInfo) );
       }
 
-      bool get_visual( const screen::pointer & scrn );
+      ~IMPL();
+
+      bool get_visual_info( const screen::pointer & scrn );
+      bool create_image_if_needed( int w, int h );
 
       void create( const window::pointer & );
       void destroy();
