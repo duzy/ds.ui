@@ -71,7 +71,8 @@ namespace ds { namespace graphics { namespace gil {
         {
         }
 
-        any_image_t::const_view_t & any() const { return *this; }
+        //any_image_t::const_view_t & any() const { return this->const_view(); }
+        const any_image_t::view_t & any() const { return *this; }
         any_image_t::view_t & any() { return *this; }
       };//struct view
 

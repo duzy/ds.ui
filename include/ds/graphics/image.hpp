@@ -16,6 +16,7 @@ namespace ds { namespace graphics {
     namespace gil
     {
       struct image; // Forward declaration
+      struct view ; // Forward declaration
     }//namespace gil
 
     struct image

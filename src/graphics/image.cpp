@@ -23,7 +23,7 @@ namespace ds { namespace graphics {
     }
 
     image::image( int w, int h, PixelType pt, uint8_t * data )
-      , _isView( 1 )
+      : _isView( 1 )
       , _m( NULL )
     {
       switch (pt) {
@@ -31,7 +31,7 @@ namespace ds { namespace graphics {
         //_v = new gil::view( w, h, (gil::abgr8_image_t::x_iterator*)data, rowBytes );
         break;
       case ARGB_8888_PIXEL:
-        _v = new gil::view( w, h, (gil::abgr8_image_t::x_iterator*)data, rowBytes );
+        _v = new gil::view( w, h, (gil::abgr8_image_t::value_type*)data, w*4 );
         break;
       }
     }
@@ -44,12 +44,12 @@ namespace ds { namespace graphics {
 
     int image::width() const
     {
-      return _d->width();
+      return _isView ? _v->width() : _m->width();
     }
 
     int image::height() const
     {
-      return _d->height();
+      return _isView ? _v->height() : _m->height();
     }
 
     bool image::load( const std::string & file )
@@ -71,11 +71,11 @@ namespace ds { namespace graphics {
         using boost::iends_with;
         std::string suffix( file.substr(file.size()-5, std::string::npos) );
         to_lower( suffix );
-        if ( iends_with(suffix, ".png") ) return _d->load_png( file );
-        if ( iends_with(suffix, ".jpg") ) return _d->load_jpeg( file );
-        if ( iends_with(suffix, ".jpeg") ) return _d->load_jpeg( file );
-        if ( iends_with(suffix, ".tiff") ) return _d->load_tiff( file );
-        if ( iends_with(suffix, ".skin") ) return _d->load_png( file );
+        if ( iends_with(suffix, ".png") ) return _m->load_png( file );
+        if ( iends_with(suffix, ".jpg") ) return _m->load_jpeg( file );
+        if ( iends_with(suffix, ".jpeg") ) return _m->load_jpeg( file );
+        if ( iends_with(suffix, ".tiff") ) return _m->load_tiff( file );
+        if ( iends_with(suffix, ".skin") ) return _m->load_png( file );
       }
       return false;
     }

@@ -1,3 +1,7 @@
+#ifndef __DS_GRAPHICS_RECT__hpp____by_Duzy_Chan__
+#define __DS_GRAPHICS_RECT__hpp____by_Duzy_Chan__ 1
+#       include <boost/cstdint.hpp>
+
 namespace ds { namespace graphics {
 
     template<typename T>
@@ -16,7 +20,9 @@ namespace ds { namespace graphics {
         set(x, y, x+w, y+h);
       }
 
-      void set_empty() { std::memset(this, 0, sizeof(*this)); }
+      //void set_empty() { std::memset(this, 0, sizeof(*this)); }
+      void set_empty() { left = top = right = bottom = 0; }
+
       bool is_empty() const { return left >= right || top >= bottom; }
       
       scalar_t width() const { return right - left; }
@@ -32,8 +38,15 @@ namespace ds { namespace graphics {
         left += dx, top += dy, right -= dx, bottom -= dy;
       }
 
-      bool intersect(const rect & r)
+      rect intersect(const rect & r) const
       {
+        rect o;                    o.set_empty();
+        if ( r.is_empty() ) return o;
+        o.left = left < r.left ? r.left : left;
+        o.top  = top  < r.top  ? r.top  : top;
+        o.right  = right  < r.right ? right : r.right;
+        o.bottom = bottom < r.bottom ? bottom : r.bottom;
+        return o;
       }
 
       bool intersects(const rect & r) const
@@ -62,3 +75,5 @@ namespace ds { namespace graphics {
 
   }//namespace graphics
 }//namespace ds
+
+#endif//__DS_GRAPHICS_RECT__hpp____by_Duzy_Chan__

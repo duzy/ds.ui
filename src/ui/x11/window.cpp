@@ -186,7 +186,8 @@ namespace ds { namespace ui {
 
       ds::graphics::image img( _p->_ximage.width,
                                _p->_ximage.height,
-                               _p->_ximage.bits_per_pixel,
+                               //_p->_ximage.bits_per_pixel,
+                               ds::graphics::image::ARGB_8888_PIXEL,
                                (uint8_t*)_p->_ximage.data );
 
       ds::graphics::canvas canvas( img );
@@ -194,22 +195,23 @@ namespace ds { namespace ui {
 
       this->on_render( canvas );
 
-      Display xdisp = _disp->_p->_xdisp;
+      Display * xdisp = _p->_disp->_p->_xdisp;
 
       int copyCount = 0;
-      ds::graphics::rect r;
+      ds::graphics::irect r;
       __gnu_cxx::slist<ds::graphics::irect>::const_iterator it;
       for (it = _p->_dirtyRects.begin(); it != _p->_dirtyRects.end(); ++it) {
-        if ( (r = it->intersect(dr)).is_valid() ) {
-          ++copyCount;
-          /*
+        if ( (r = it->intersect(dr)).is_empty() )
+          continue;
+
+        ++copyCount;
+        /*
           XCopyArea( _disp->_p->_xdisp, _p->_drawable, _p->_xwin, _p->_gc,
-                     r.x, r.y, r.w, r.h,
-                     r.x, r.y );
-          */
-          XPutImage( xdisp, _p->_xwin, _p->_gc, _p->_image,
-                     r.x, r.y, r.x, r.y, r.w, r.h );
-        }
+          r.x, r.y, r.w, r.h,
+          r.x, r.y );
+        */
+        XPutImage( xdisp, _p->_xwin, _p->_gc, &_p->_ximage,
+                   r.left, r.top, r.left, r.top, r.width(), r.height() );
       }
 
       _p->_dirtyRects.clear();
