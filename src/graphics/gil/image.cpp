@@ -10,7 +10,6 @@
 #include <ds/debug.hpp>
 #include <ds/graphics/gil/image.hpp>
 #include <boost/gil/image.hpp>
-#include <boost/gil/extension/dynamic_image/apply_operation.hpp>
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 //#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
 //#include <boost/gil/extension/io/tiff_dynamic_io.hpp>

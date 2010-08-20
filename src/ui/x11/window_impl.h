@@ -37,7 +37,7 @@ namespace ds { namespace ui {
         std::memset( &_ximage, 0, sizeof(_ximage) );
       }
 
-      void get_visual( const screen::pointer & scrn );
+      bool get_visual( const screen::pointer & scrn );
 
       void create( const window::pointer & );
       void destroy();

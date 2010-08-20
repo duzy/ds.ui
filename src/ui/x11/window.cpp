@@ -20,7 +20,7 @@
 
 namespace ds { namespace ui {
 
-    void window::IMPL::get_visual( const screen::pointer & scrn )
+    bool window::IMPL::get_visual( const screen::pointer & scrn )
     {
       Display * xdisp = _disp->_p->_xdisp;
 
@@ -33,7 +33,7 @@ namespace ds { namespace ui {
         if (vi = XGetVisualInfo(xdisp, VisualIDMask, &temp, &n)) {
           _visual = *vi;
           XFree(vi);
-          return;
+          return false;
         }
       }
 
@@ -45,9 +45,10 @@ namespace ds { namespace ui {
           XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_visual) ||
           XMatchVisualInfo(xdisp, screen, depth, PseudoColor, &_visual) ||
           XMatchVisualInfo(xdisp, screen, depth, StaticColor, &_visual) )
-        return;
+        return true;
 
       std::memset( &_visual, 0, sizeof(_visual) );
+      return false;
     }
 
     void window::IMPL::create( const window::pointer & win )
@@ -58,7 +59,9 @@ namespace ds { namespace ui {
       int x(0), y(0), w(400), h(300), bw(0);
 
       screen::pointer scrn = _disp->default_screen();
-      get_visual( scrn );
+      bool isVisualOK = get_visual( scrn );
+
+      dsLif("cannot get visual", !isVisualOK);
 
       unsigned fc = scrn->black_pixel();
       unsigned bc = scrn->white_pixel();
