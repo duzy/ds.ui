@@ -17,7 +17,7 @@ namespace ds { namespace ui {
     
     struct window::IMPL
     {
-      display * _disp; // Never hold a display::pointer_t(will leak)!
+      display::weak_ref _disp; // Never hold a display::pointer_t(will leak)!
 
       Window _xwin; // Window and Pixmap are Drawable
 

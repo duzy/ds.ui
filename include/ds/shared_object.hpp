@@ -51,7 +51,10 @@ namespace ds {
         atomic_word * _weakcount;
 
       protected:
-        SO * so() const { return reinterpret_cast<SO*>(_so); }
+        SO * so() const {
+          if ( (*_weakcount) < 0 ) return NULL;
+          return reinterpret_cast<SO*>(_so);
+        }
 
       public:
         explicit weak_ref_base(shared_object_impl * so)
