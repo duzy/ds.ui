@@ -73,8 +73,8 @@ struct so_test : ds::shared_object<so_test> {};
 
 static void test_so_f( so_test::pointer p, int n )
 {
-  dsI( 0 < p->refcount() );
-  dsI( p->refcount() == n + 1 );
+  dsI( 0 < p->use_count() );
+  dsI( p->use_count() == n + 1 );
 }
 
 struct my_window : ds::ui::window
@@ -114,39 +114,39 @@ protected:
 static void test_shared_object()
 {
   so_test *p( new so_test );
-  dsI( p->refcount() == 0 );
+  dsI( p->use_count() == 0 );
 
   so_test::pointer sp( p );
-  dsI( p->refcount() == 1 );
-  dsI( p->refcount() == sp->refcount() );
+  dsI( p->use_count() == 1 );
+  dsI( p->use_count() == sp->use_count() );
 
   so_test::pointer sp2( p );
-  dsI( p->refcount() == 2 );
-  dsI( p->refcount() == sp2->refcount() );
-  dsI( sp->refcount() == sp2->refcount() );
+  dsI( p->use_count() == 2 );
+  dsI( p->use_count() == sp2->use_count() );
+  dsI( sp->use_count() == sp2->use_count() );
 
   {
     so_test::pointer sp3( p );
-    dsI( p->refcount() == 3 );
+    dsI( p->use_count() == 3 );
   }
-  dsI( p->refcount() == 2 );
+  dsI( p->use_count() == 2 );
 
   {
     so_test::pointer sp4( sp );
-    dsI( p->refcount() == 3 );
+    dsI( p->use_count() == 3 );
   }
-  dsI( p->refcount() == 2 );
+  dsI( p->use_count() == 2 );
   
   test_so_f( p, 2 );
-  test_so_f( p, p->refcount() );
+  test_so_f( p, p->use_count() );
 
   /*
   so_test so;
-  dsI( so.refcount() == 0 );
+  dsI( so.use_count() == 0 );
   {
     so_test::pointer p( &so );
-    dsI( so.refcount() == 1 );
-    dsI( p->refcount() == 1 );
+    dsI( so.use_count() == 1 );
+    dsI( p->use_count() == 1 );
   }
   */
 
@@ -183,10 +183,10 @@ int main(int argc, char** argv)
 
   // make a default display connection
   ds::ui::display::pointer disp = ds::ui::display::open();
-  dsL("display-refs: "<<disp->refcount());
+  dsL("display-refs: "<<disp->use_count());
 
   ds::ui::screen::pointer scrn = disp->default_screen();
-  dsL("screen-refs: "<<scrn->refcount());
+  dsL("screen-refs: "<<scrn->use_count());
 
   //ds::ui::window win1( disp ); // a window in the display 'disp'
   ds::ui::window::pointer win1( new ds::ui::window(disp) );
@@ -201,15 +201,15 @@ int main(int argc, char** argv)
 
   win2->show(); // show it since it's belong to 'disp'
 
-  dsL("display-refs: "<<disp->refcount());
+  dsL("display-refs: "<<disp->use_count());
 
   int n;
   {
     ds::ui::event_loop loop( disp );
-    dsL("display-refs: "<<disp->refcount());
+    dsL("display-refs: "<<disp->use_count());
     n = loop.run();
   }
 
-  dsL("display-refs: "<<disp->refcount());
+  dsL("display-refs: "<<disp->use_count());
   return n;
 }
