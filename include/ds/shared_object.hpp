@@ -24,7 +24,8 @@ namespace ds {
       template<class T> friend void intrusive_ptr_add_ref( shared_object_impl<T> * );
       template<class T> friend void intrusive_ptr_release( shared_object_impl<T> * );
 
-      typedef boost::detail::atomic_count atomic_word;
+      //typedef boost::detail::atomic_count atomic_word;
+      typedef long atomic_word;
       atomic_word _usecount;
       atomic_word * _weakcount;
 
@@ -36,6 +37,7 @@ namespace ds {
       void _deref()
       {
         if ( --_usecount == 0 ) {
+          if (_weakcount != NULL) *_weakcount = -(*_weakcount);
           delete this;
         }
       }
@@ -107,7 +109,8 @@ namespace ds {
     public:
       long use_count() const
       {
-        return static_cast<int const volatile &>( _usecount );
+        //return static_cast<int const volatile &>( _usecount );
+        return ( _usecount );
       }
 
       /*

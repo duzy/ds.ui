@@ -5,7 +5,7 @@
 #include <boost/test/unit_test.hpp>
 #include <ds/shared_object.hpp>
 
-struct simple_so : ds::shared_object
+struct simple_so : ds::shared_object<simple_so>
 {
   static int instance_count;
 
