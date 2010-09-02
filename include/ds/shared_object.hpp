@@ -54,15 +54,17 @@ namespace ds {
 
       protected:
         SO * so() const {
+          if ( _weakcount == NULL ) return NULL;
           if ( (*_weakcount) < 0 ) return NULL;
           return reinterpret_cast<SO*>(_so);
         }
 
       public:
         explicit weak_ref_base(shared_object_impl * so)
-          : _so(so), _weakcount(so->_weakcount)
+          : _so(so), _weakcount(NULL)
         {
-          if (_weakcount == NULL) {
+          if (so == NULL) return;
+          if ((_weakcount = so->_weakcount) == NULL) {
             _weakcount = so->_weakcount = new atomic_word(1);
           }
           else {
@@ -72,7 +74,7 @@ namespace ds {
 
         ~weak_ref_base()
         {
-          BOOST_ASSERT( _weakcount != NULL );
+          if (_weakcount == NULL) return;
 
           // TODO: rethink about multi-thread environment
           if ( (*_weakcount) < 0 ) {
@@ -90,15 +92,14 @@ namespace ds {
 
         long use_count() const
         {
-          BOOST_ASSERT( _weakcount != NULL );
-
+          if (_weakcount == NULL) return 0;
           if ((*_weakcount) < 0) return 0;
-          return *(_so->_usecount);
+          return _so->_usecount;
         }
 
         long weak_count() const
         {
-          BOOST_ASSERT( _weakcount != NULL );
+          if (_weakcount == NULL) return 0;
 
           long wc(*_weakcount);
           if (wc < 0) return -wc;
@@ -139,6 +140,15 @@ namespace ds {
      */
     struct weak_ref : detail::shared_object_impl<SO>::weak_ref_base
     {
+      weak_ref()
+        : detail::shared_object_impl<SO>::weak_ref_base(NULL) {}
+
+      /*explicit*/ weak_ref( const pointer & p )
+        : detail::shared_object_impl<SO>::weak_ref_base(p.get()) {}
+
+      weak_ref( const weak_ref & r )
+        : detail::shared_object_impl<SO>::weak_ref_base(r.so()) {}
+
       pointer lock() const { return pointer(this->so()); }
     };//struct weak_ref
   };//struct shared_object

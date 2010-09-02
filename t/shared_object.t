@@ -36,11 +36,14 @@ BOOST_AUTO_TEST_CASE( so_pointer )
     BOOST_CHECK( p1->use_count() == 1 );
     BOOST_CHECK( simple_so::instance_count == 1 );
 
-    as_arg_add_use_count( p1->use_count(), p1 );
+    //as_arg_add_use_count( p1->use_count(), p1 );
+    int n = p1->use_count();
+    as_arg_add_use_count( n, p1 );
 
     BOOST_CHECK( p1->use_count() == 1 );
 
-    as_arg_no_add_use_count( p1->use_count(), p1 );
+    //as_arg_no_add_use_count( p1->use_count(), p1 );
+    as_arg_no_add_use_count( 1, p1 );
 
     BOOST_CHECK( p1->use_count() == 1 );
 
@@ -64,7 +67,7 @@ BOOST_AUTO_TEST_CASE( so_pointer )
 
     {
       simple_so::pointer p2( new simple_so(2) );
-      BOOST_CHECK( p1->use_count() == 1 );
+      BOOST_CHECK( p2->use_count() == 1 );
       BOOST_CHECK( simple_so::instance_count == 2 );
     }
     BOOST_CHECK( simple_so::instance_count == 1 );
@@ -74,8 +77,32 @@ BOOST_AUTO_TEST_CASE( so_pointer )
 
 BOOST_AUTO_TEST_CASE( so_weak_ref )
 {
+  {
+    simple_so::weak_ref r0;
+    BOOST_CHECK( r0.use_count() == 0 );
+    BOOST_CHECK( r0.weak_count() == 0 );
+    BOOST_CHECK( r0.lock() == simple_so::pointer(NULL) );
+  }
+
   simple_so::pointer p1( new simple_so(1) );
-  
+  simple_so::weak_ref r1( p1 );
+  BOOST_CHECK( r1.use_count() == p1->use_count() );
+  BOOST_CHECK( p1->use_count() == 1 );
+  BOOST_CHECK( r1.weak_count() == 1 );
+
+  simple_so::weak_ref r2( p1 );
+  BOOST_CHECK( r2.use_count() == p1->use_count() );
+  BOOST_CHECK( p1->use_count() == 1 );
+  BOOST_CHECK( r1.weak_count() == 2 );
+  BOOST_CHECK( r2.weak_count() == 2 );
+
+  simple_so::weak_ref r3( r2 );
+  BOOST_CHECK( r3.use_count() == p1->use_count() );
+  BOOST_CHECK( p1->use_count() == 1 );
+  BOOST_CHECK( r1.weak_count() == 3 );
+  BOOST_CHECK( r2.weak_count() == 3 );
+  BOOST_CHECK( r3.weak_count() == 3 );
+
 }
 
 BOOST_AUTO_TEST_CASE( so_NO_CYCLE )
