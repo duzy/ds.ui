@@ -12,11 +12,11 @@
 #define DS_SHARED_OBJECT(TYPE)                                          \
   inline void intrusive_ptr_add_ref( TYPE * p )                         \
   {                                                                     \
-    ds::detail::intrusive_ptr_add_ref(reinterpret_cast<ds::detail::shared_object_impl<TYPE>*>(p)); \
+    ds::detail::intrusive_ptr_add_ref(reinterpret_cast<ds::detail::shared_object_base<TYPE>*>(p)); \
   }                                                                     \
   inline void intrusive_ptr_release( TYPE * p )                         \
   {                                                                     \
-    ds::detail::intrusive_ptr_release(reinterpret_cast<ds::detail::shared_object_impl<TYPE>*>(p)); \
+    ds::detail::intrusive_ptr_release(reinterpret_cast<ds::detail::shared_object_base<TYPE>*>(p)); \
   }
 
 namespace ds
@@ -24,20 +24,20 @@ namespace ds
 
   namespace detail
   {
-    template<class SO> class shared_object_impl;
+    template<class SO> class shared_object_base;
     template<class SO>
-    inline void intrusive_ptr_add_ref( shared_object_impl<SO> * p )
+    inline void intrusive_ptr_add_ref( shared_object_base<SO> * p )
     {
       //(void) sizeof(SO); // ensure complete type
-      //(void) sizeof(shared_object_impl<SO>); // ensure complete type
+      //(void) sizeof(shared_object_base<SO>); // ensure complete type
       p->_inref();
     }
 
     template<class SO>
-    inline void intrusive_ptr_release( shared_object_impl<SO> * p )
+    inline void intrusive_ptr_release( shared_object_base<SO> * p )
     {
       //(void) sizeof(SO); // ensure complete type
-      //(void) sizeof(shared_object_impl<SO>); // ensure complete type
+      //(void) sizeof(shared_object_base<SO>); // ensure complete type
       p->_deref();
     }
   }//namespace detail

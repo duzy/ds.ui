@@ -19,10 +19,10 @@ namespace ds {
   namespace detail
   {
     template<class SO>
-    class shared_object_impl
+    class shared_object_base
     {
-      template<class T> friend void intrusive_ptr_add_ref( shared_object_impl<T> * );
-      template<class T> friend void intrusive_ptr_release( shared_object_impl<T> * );
+      template<class T> friend void intrusive_ptr_add_ref( shared_object_base<T> * );
+      template<class T> friend void intrusive_ptr_release( shared_object_base<T> * );
 
       //typedef boost::detail::atomic_count atomic_word;
       typedef long atomic_word;
@@ -43,13 +43,13 @@ namespace ds {
       }
 
     protected:
-      shared_object_impl() : _usecount( 0 ), _weakcount(NULL) {}
+      shared_object_base() : _usecount( 0 ), _weakcount(NULL) {}
 
-      virtual ~shared_object_impl() {}
+      virtual ~shared_object_base() {}
 
       class weak_ref_base
       {
-        shared_object_impl * _so;
+        shared_object_base * _so;
         atomic_word * _weakcount;
 
       protected:
@@ -60,7 +60,7 @@ namespace ds {
         }
 
       public:
-        explicit weak_ref_base(shared_object_impl * so)
+        explicit weak_ref_base(shared_object_base * so)
           : _so(so), _weakcount(NULL)
         {
           if (so == NULL) return;
@@ -88,6 +88,16 @@ namespace ds {
               _weakcount = _so->_weakcount = NULL;
             }
           }
+        }
+
+        void swap( weak_ref_base & o )
+        {
+          shared_object_base * so = o._so;
+          atomic_word * weakcount = o._weakcount;
+          o._so = _so;
+          o._weakcount = _weakcount;
+          _so = so;
+          _weakcount = weakcount;
         }
 
         long use_count() const
@@ -121,14 +131,14 @@ namespace ds {
           : 0 ;
       }
       */
-    };//class shared_object_impl
+    };//class shared_object_base
   }//namespace detail
 
   /**
    *  @brief Shared object with smart pointer.
    */
   template<class SO>
-  struct shared_object : public detail::shared_object_impl<SO>
+  struct shared_object : public detail::shared_object_base<SO>
   {
     /**
      *  Must be used to wrap raw pointers returned by 'new'. 
@@ -138,16 +148,22 @@ namespace ds {
     /**
      *  Use weak_ref to break cycles.
      */
-    struct weak_ref : detail::shared_object_impl<SO>::weak_ref_base
+    struct weak_ref : detail::shared_object_base<SO>::weak_ref_base
     {
       weak_ref()
-        : detail::shared_object_impl<SO>::weak_ref_base(NULL) {}
+        : detail::shared_object_base<SO>::weak_ref_base(NULL) {}
 
       /*explicit*/ weak_ref( const pointer & p )
-        : detail::shared_object_impl<SO>::weak_ref_base(p.get()) {}
+        : detail::shared_object_base<SO>::weak_ref_base(p.get()) {}
 
       weak_ref( const weak_ref & r )
-        : detail::shared_object_impl<SO>::weak_ref_base(r.so()) {}
+        : detail::shared_object_base<SO>::weak_ref_base(r.so()) {}
+
+      weak_ref & operator=( const weak_ref & o )
+      {
+        weak_ref(o).swap( *this );
+        return *this;
+      }
 
       pointer lock() const { return pointer(this->so()); }
     };//struct weak_ref
