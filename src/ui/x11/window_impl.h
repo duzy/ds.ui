@@ -17,8 +17,7 @@ namespace ds { namespace ui {
     
     struct window::IMPL
     {
-      //display::weak_ref _disp; // Never hold a display::pointer_t(will leak)!
-      display * _disp; // Never hold a display::pointer_t(will leak)!
+      display::weak_ref _disp; // Never hold a display::pointer(will leak)!
 
       Window _xwin; // Window and Pixmap are Drawable
 
@@ -30,7 +29,7 @@ namespace ds { namespace ui {
 
       __gnu_cxx::slist<ds::graphics::box> _dirtyRects;
 
-      IMPL( display * d )
+      IMPL( const display::pointer & d )
         : _disp( d )
         , _xwin( NULL )
         , _vi()

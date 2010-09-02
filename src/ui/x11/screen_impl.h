@@ -13,7 +13,7 @@ namespace ds { namespace ui {
     {
       Screen *_xscrn;
 
-      display * _disp; // Never hold a display::pointer_t here(cycle leak)!
+      display::weak_ref _disp; // Never hold a display::pointer here(cycle leak)!
 
       window::pointer _root;
 

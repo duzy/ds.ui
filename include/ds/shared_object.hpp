@@ -100,6 +100,11 @@ namespace ds {
           _weakcount = weakcount;
         }
 
+        void reset()
+        {
+          weak_ref_base(NULL).swap( *this );
+        }
+
         long use_count() const
         {
           if (_weakcount == NULL) return 0;

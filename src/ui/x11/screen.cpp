@@ -37,14 +37,14 @@ namespace ds { namespace ui {
       //disp->_p->_xdisp = XDisplayOfScreen( _p->_xscrn );
       ////disp->_p->screen = XScreenNumberOfScreen( _p->_xscrn );
       //return disp;
-      return _p->_disp; // implicitly conversion
+      return _p->_disp.lock(); // implicitly conversion
     }
 
     window::pointer screen::root() const
     {
       if ( !_p->_root ) {
         _p->_root.reset( new window );
-        _p->_root->_p->_disp = get_display().get();
+        _p->_root->_p->_disp = get_display();//.get();
         _p->_root->_p->_xwin = XRootWindowOfScreen( _p->_xscrn );
       }
       return _p->_root;

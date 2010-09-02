@@ -24,7 +24,10 @@ namespace ds { namespace ui {
 
     bool window::IMPL::get_visual_info( const screen::pointer & scrn )
     {
-      Display * xdisp = _disp->_p->_xdisp;
+      display::pointer disp( _disp.lock() );
+      dsI( disp );
+
+      Display * xdisp = disp->_p->_xdisp;
 
       VisualID vid = 0;
       if (vid) {
@@ -75,7 +78,10 @@ namespace ds { namespace ui {
         _ximage = NULL;
       }
 
-      Display * xdisp = _disp->_p->_xdisp;
+      display::pointer disp( _disp.lock() );
+      dsI(disp);
+
+      Display * xdisp = disp->_p->_xdisp;
 
       dsI( xdisp != NULL );
       dsI( _vi.visual != NULL );
@@ -168,11 +174,13 @@ namespace ds { namespace ui {
     void window::IMPL::create( const window::pointer & win )
     {
       dsI( !_xwin );
-      dsI( _disp );
+
+      display::pointer disp( _disp.lock() );
+      dsI( disp );
 
       int x(0), y(0), w(400), h(300), bw(0);
 
-      screen::pointer scrn = _disp->default_screen();
+      screen::pointer scrn = disp->default_screen();
       bool isVisualOK = get_visual_info( scrn );
 
       dsLif("cannot get visual", !isVisualOK);
@@ -184,7 +192,7 @@ namespace ds { namespace ui {
       dsI(root);
 
       Window pr = root->_p->_xwin;
-      register Display * const xdisp( _disp->_p->_xdisp );
+      register Display * const xdisp( disp->_p->_xdisp );
 
       //XCreateWindow(...);
       _xwin = XCreateSimpleWindow( xdisp, pr, x, y, w, h, bw, fc, bc );
@@ -194,10 +202,10 @@ namespace ds { namespace ui {
       gcv.graphics_exposures = False;
       _gc = XCreateGC( xdisp, _xwin, GCGraphicsExposures, &gcv );
 
-      _disp->_p->_winmap.insert( std::make_pair( _xwin, win ) );
+      disp->_p->_winmap.insert( std::make_pair( _xwin, win ) );
 
       /* Allow window to be deleted by the window manager */
-      XSetWMProtocols( xdisp, _xwin, &_disp->_p->WM_DELETE_WINDOW, 1 );
+      XSetWMProtocols( xdisp, _xwin, &disp->_p->WM_DELETE_WINDOW, 1 );
 
       int eventMask
         = KeyPressMask
@@ -231,7 +239,8 @@ namespace ds { namespace ui {
     void window::IMPL::destroy()
     {
       if ( _xwin ) {
-        XDestroyWindow( _disp->_p->_xdisp, _xwin );
+        display::pointer disp( _disp.lock() );          dsI(disp);
+        XDestroyWindow( disp->_p->_xdisp, _xwin );
       }
     }
 
@@ -255,7 +264,7 @@ namespace ds { namespace ui {
     }
 
     window::window( const display::pointer & disp )
-      : _p( new IMPL(disp.get()) )
+      : _p( new IMPL(disp/*.get()*/) )
     {
       _p->create( this );
       disp->map( this );
@@ -267,18 +276,19 @@ namespace ds { namespace ui {
       dsL4("window: "<<this<<"->"<<_p->_xwin);
 
       _p->destroy();
-      _p->_disp = NULL;
+      _p->_disp.reset();// = NULL;
       delete _p;
     }
 
     display::pointer window::get_display() const
     {
-      return _p->_disp;
+      return _p->_disp.lock();
     }
 
     void window::select_input(long mask)
     {
-      XSelectInput( _p->_disp->_p->_xdisp, _p->_xwin, mask );
+      display::pointer disp(_p->_disp.lock());                  dsI(disp);
+      XSelectInput( disp->_p->_xdisp, _p->_xwin, mask );
     }
 
     void window::destroy()
@@ -310,7 +320,9 @@ namespace ds { namespace ui {
     {
       XWindowAttributes a;
       std::memset( &a, 0, sizeof(a) );
-      XGetWindowAttributes( _p->_disp->_p->_xdisp, _p->_xwin, &a );
+
+      display::pointer disp(_p->_disp.lock());          dsI(disp);
+      XGetWindowAttributes( disp->_p->_xdisp, _p->_xwin, &a );
       return boost::geometry::make<graphics::box>( a.x, a.y, a.width, a.height );
     }
 
@@ -347,7 +359,8 @@ namespace ds { namespace ui {
       _p->convert_pixels( a.x(), a.y(), a.width(), a.height() );
 
       int copyCount = 0;
-      Display * xdisp = _p->_disp->_p->_xdisp;
+      display::pointer disp(_p->_disp.lock());          dsI(disp);
+      Display * xdisp = disp->_p->_xdisp;
 
       if ( _p->_dirtyRects.empty() ) {
         copyCount = 1;

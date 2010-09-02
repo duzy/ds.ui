@@ -29,7 +29,7 @@ namespace ds { namespace ui {
       {
       }
 
-      void init( display *disp, const char * name );
+      void init( const display::pointer & disp, const char * name );
       void init_atoms();
 
       bool pending();

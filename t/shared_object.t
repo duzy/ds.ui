@@ -159,6 +159,14 @@ BOOST_AUTO_TEST_CASE( so_NO_CYCLE )
     BOOST_CHECK( p2->other.weak_count() == 0 );
     BOOST_CHECK( r.use_count() == 1 );
     BOOST_CHECK( r.weak_count() == 2 );
+
+    r.reset();
+
+    BOOST_CHECK( p1->use_count() == 1 );
+    BOOST_CHECK( p1->other.use_count() == 1 );
+    BOOST_CHECK( p1->other.weak_count() == 1 );
+    BOOST_CHECK( r.use_count() == 0 );
+    BOOST_CHECK( r.weak_count() == 0 );
   }
   BOOST_CHECK( simple_so::instance_count == 0 );
 }

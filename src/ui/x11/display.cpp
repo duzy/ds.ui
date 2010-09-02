@@ -21,7 +21,7 @@
 
 namespace ds { namespace ui {
 
-    void display::IMPL::init( display *disp, const char * name )
+    void display::IMPL::init( const display::pointer & disp, const char * name )
     {
       _xdisp = XOpenDisplay( name );
 
@@ -121,7 +121,7 @@ namespace ds { namespace ui {
     display::pointer display::open( id i )
     {
       pointer d( new display );
-      d->_p->init( d.get(), (const char *) i._p );
+      d->_p->init( d, (const char *) i._p );
       return d;
     }
 
@@ -145,7 +145,7 @@ namespace ds { namespace ui {
     window::pointer display::default_root() const
     {
       window::pointer w( new window ); // TODO: avoid making a new instance of window
-      w->_p->_disp = const_cast<display*>(this);
+      w->_p->_disp = display::pointer(const_cast<display*>(this));//const_cast<display*>(this);
       w->_p->_xwin = XDefaultRootWindow( _p->_xdisp );
       return w;
     }
@@ -153,7 +153,7 @@ namespace ds { namespace ui {
     void display::map( const window::pointer & win )
     {
       if ( /*!win->_p->_disp ||*/ !win->_p->_xwin ) {
-        win->_p->_disp = this; // implicitly convert to display::pointer
+        win->_p->_disp = display::pointer(this); // implicitly convert to display::pointer
         win->_p->create( win );
       }
 
