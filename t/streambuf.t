@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( streambuf )
 
 BOOST_AUTO_TEST_CASE( dsrc )
 {
-  std::string dsrc( "tools/dsrc/dsrc" );
+  std::string dsrc( "out/debug/bin/dsrc" );
   std::string f( "t/dsrc_test_file.txt" );
 # ifdef WIN32
   dsrc += ".exe";

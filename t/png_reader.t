@@ -2,6 +2,12 @@
  *
  */
 
+#ifndef png_infopp_NULL         // libpng-1.4.x don't have it
+#  define png_infopp_NULL NULL
+#endif
+#ifndef int_p_NULL              // libpng-1.4.x don't have it
+#  define int_p_NULL NULL
+#endif
 #include <ds/graphics/gil/png_reader.hpp>
 #include <ds/graphics/gil/image.hpp>
 #include <boost/test/unit_test.hpp>

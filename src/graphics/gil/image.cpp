@@ -10,6 +10,12 @@
 #include <ds/debug.hpp>
 #include <ds/graphics/gil/image.hpp>
 #include <boost/gil/image.hpp>
+#ifndef png_infopp_NULL         // libpng-1.4.x don't have it
+#  define png_infopp_NULL NULL
+#endif
+#ifndef int_p_NULL              // libpng-1.4.x don't have it
+#  define int_p_NULL NULL
+#endif
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 //#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
 //#include <boost/gil/extension/io/tiff_dynamic_io.hpp>
