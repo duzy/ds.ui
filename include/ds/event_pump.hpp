@@ -8,6 +8,7 @@
  **/
 #ifndef __DS_EVENT_PUMP_HPP____by_Duzy_Chan__
 #define __DS_EVENT_PUMP_HPP____by_Duzy_Chan__ 1
+#       include <ds/dso_visibility.hpp>
 
 namespace ds { 
 
@@ -17,7 +18,7 @@ namespace ds {
   /**
    *  @brief Pumps platform events into the specified event queue. 
    */
-  class event_pump
+  class DSO_PUBLIC event_pump
   {
   public:
     virtual ~event_pump() {}

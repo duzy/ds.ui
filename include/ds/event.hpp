@@ -9,6 +9,7 @@
 
 #ifndef __DS_EVENT_HPP____by_Duzy_Chan__
 #define __DS_EVENT_HPP____by_Duzy_Chan__ 1
+#       include <ds/dso_visibility.hpp>
 
 namespace ds
 {

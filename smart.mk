@@ -1,8 +1,6 @@
 #
 #
 
-sm.var.Q := 
-
 $(call sm-new-module, dsui, shared)
 
 ds.ui.dir := $(sm.this.dir)
@@ -15,7 +13,8 @@ sm.this.compile.options := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
-  -mthreads
+  -DDS_BUILDING_DSO=1 \
+  -mthreads \
 
 sm.this.link.options.infile := true
 sm.this.link.options :=
@@ -63,6 +62,7 @@ sm.this.libs += \
 ifeq ($(sm.os.name),linux)
   sm.this.sources += $(wildcard src/ui/x11/*.cpp)
   sm.this.libs += X11 pthread
+  sm.this.compile.options +=
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)

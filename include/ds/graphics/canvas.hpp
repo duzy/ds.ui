@@ -9,7 +9,8 @@
 
 #ifndef __DS_GRAPHICS_CANVAS_hpp____by_Duzy_Chan__
 #define __DS_GRAPHICS_CANVAS_hpp____by_Duzy_Chan__ 1
-#       include <boost/noncopyable.hpp>
+#   include <boost/noncopyable.hpp>
+#   include <ds/dso_visibility.hpp>
 
 namespace ds { namespace graphics {
 
@@ -27,7 +28,7 @@ namespace ds { namespace graphics {
     struct brush;
     struct pen;
 
-    class canvas : boost::noncopyable
+    class DSO_PUBLIC canvas : boost::noncopyable
     {
       struct IMPL;
 

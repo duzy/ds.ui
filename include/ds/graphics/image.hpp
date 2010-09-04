@@ -9,8 +9,9 @@
 
 #ifndef __DS_GRAPHICS_IMAGE_HPP____by_Duzy_Chan__
 #define __DS_GRAPHICS_IMAGE_HPP____by_Duzy_Chan__ 1
-#       include <boost/cstdint.hpp>
-#       include <string>
+#   include <boost/cstdint.hpp>
+#   include <ds/dso_visibility.hpp>
+#   include <string>
 
 namespace ds { namespace graphics {
 
@@ -20,7 +21,7 @@ namespace ds { namespace graphics {
       struct view ; // Forward declaration
     }//namespace gil
 
-    struct image
+    struct DSO_PUBLIC image
     {
       image();
 

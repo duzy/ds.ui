@@ -15,7 +15,7 @@ namespace ds { namespace ui {
     class display;
     class window;
     
-    class screen : public shared_object<screen>
+    class DSO_PUBLIC screen : public shared_object<screen>
     {
       screen();
       ~screen();

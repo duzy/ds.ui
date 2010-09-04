@@ -178,7 +178,7 @@ namespace ds { namespace ui {
     /**
      *  @brief UI event loop
      */
-    class event_loop
+    class DSO_PUBLIC event_loop
       : public boost::base_from_member<event_queue>
       , public ds::event_loop
     {

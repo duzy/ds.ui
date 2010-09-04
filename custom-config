@@ -5,3 +5,4 @@ $(call sm-check-exists, ../../ds.mk)
 
 include ../../ds.mk
 
+sm.global.compile.options += $(ds.compile.options)

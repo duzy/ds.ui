@@ -9,7 +9,8 @@
 
 #ifndef __DS_EVENT_LOOP_HPP____by_Duzy_Chan__
 #define __DS_EVENT_LOOP_HPP____by_Duzy_Chan__ 1
-#       include <boost/noncopyable.hpp>
+#    include <ds/dso_visibility.hpp>
+#    include <boost/noncopyable.hpp>
 
 namespace ds
 {
@@ -59,7 +60,7 @@ namespace ds
    *    }
    *  @endcode
    */
-  class event_loop : boost::noncopyable
+  class DSO_PUBLIC event_loop : boost::noncopyable
   {
   public:
     explicit event_loop(event_queue * q) : _queue(q) {}

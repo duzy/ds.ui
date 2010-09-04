@@ -7,6 +7,8 @@
  *
  **/
 
+#       include <ds/dso_visibility.hpp>
+
 namespace ds { namespace graphics {
     class canvas;    
   }//namespace graphics
@@ -14,7 +16,7 @@ namespace ds { namespace graphics {
 
 namespace ds { namespace ui {
 
-    class view
+    class DSO_PUBLIC view
     {
     protected:
       virtual void on_render( ds::graphics::canvas & ) = 0;
