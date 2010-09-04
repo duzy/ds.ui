@@ -48,7 +48,6 @@ namespace ds {
       , _events()
       , _isActive(1)
     {
-      
     }
   };//struct event_queue::IMPL
 
