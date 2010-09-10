@@ -1,7 +1,7 @@
 # -*- mode: makefile -*-
 #
 
-$(call sm-check-exists, ../../ds.mk)
+$(call sm-check-target-exists, ../../ds.mk)
 
 include ../../ds.mk
 
