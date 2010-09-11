@@ -20,12 +20,12 @@ sm.this.sources := \
   png_reader.t \
 
 sm.this.sources.generated := \
-  $(sm.dir.out.tmp)/dsrc_test_stub.cpp
+  $(sm.out.tmp)/dsrc_test_stub.cpp
 
-$(sm.dir.out.tmp)/dsrc_test_stub.cpp: \
+$(sm.out.tmp)/dsrc_test_stub.cpp: \
   $(sm.this.dir)/dsrc_test.xml \
-  $(sm.dir.out.bin)/dsrc
-	$(sm.var.Q) $(sm.dir.out.bin)/dsrc -o $@ $<
+  $(sm.out.bin)/dsrc
+	$(sm.var.Q) $(sm.out.bin)/dsrc -o $@ $<
 
 sm.this.libdirs := \
   $(ds.ui.dir.lib) \
