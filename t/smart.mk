@@ -4,6 +4,8 @@ $(call sm-new-module, all-units, tests)
 $(call sm-check-not-empty, ds.ui.dir)
 $(call sm-check-not-empty, ds.ui.dir.lib)
 
+sm.this.verbose := true
+sm.this.toolset := gcc
 sm.this.lang := c++
 
 sm.this.includes := \

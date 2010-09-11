@@ -5,7 +5,8 @@ $(call sm-new-module, dsrc, executable)
 
 include $(sm.this.dir)/check-deps.mk
 
-#SM_COMPILE_LOG := dsrc.log
+sm.this.verbose := true
+sm.this.toolset := gcc
 
 sm.this.includes := \
   -I$(ds.ui.dir)/include \

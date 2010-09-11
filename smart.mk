@@ -8,6 +8,9 @@ ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 
 include $(ds.ui.dir)/check-deps.mk
 
+sm.this.verbose := true
+sm.this.toolset := gcc
+
 sm.this.compile.options.infile := true
 sm.this.compile.options := \
   -DDS_TRACE_LEVEL=3 \
