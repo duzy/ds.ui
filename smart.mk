@@ -8,7 +8,7 @@ ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 
 include $(ds.ui.dir)/check-deps.mk
 
-sm.this.verbose := true
+#sm.this.verbose := true
 sm.this.toolset := gcc
 
 sm.this.compile.options.infile := true
@@ -17,12 +17,14 @@ sm.this.compile.options := \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
   -DDS_BUILDING_DSO=1 \
+  -DBOOST_THREAD_USE_LIB=1 \
   -mthreads \
+
+#  -DBOOST_THREAD_BUILD_LIB=1
 
 sm.this.link.options.infile := true
 sm.this.link.options :=
 
-#sm.log.filename := dsui.log
 sm.this.out_implib := dsui
 
 sm.this.includes := \

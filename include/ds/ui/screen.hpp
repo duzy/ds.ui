@@ -9,6 +9,7 @@
 #ifndef __DS_UI_SCREEN_HPP____by_Duzy_Chan__
 #define __DS_UI_SCREEN_HPP____by_Duzy_Chan__ 1
 #       include <ds/shared_object.hpp>
+#       include <ds/dso_visibility.hpp>
 
 namespace ds { namespace ui {
 
