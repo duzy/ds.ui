@@ -190,7 +190,7 @@ namespace ds { namespace ui {
 
     void window::IMPL::create( const window::pointer & win )
     {
-      dsI( !_xwin );
+      dsI( !_native_win );
 
       screen::pointer scrn( _screen.lock() );           dsI( scrn );
       display::pointer disp( scrn->get_display());           dsI( disp );
@@ -206,21 +206,21 @@ namespace ds { namespace ui {
  
       window::pointer root = scrn->root();           dsI(root);
 
-      Window pr = root->_p->_xwin;
+      Window pr = root->_p->_native_win;
       register Display * const xdisp( disp->_p->_xdisplay );
 
       //XCreateWindow(...);
-      _xwin = XCreateSimpleWindow( xdisp, pr, x, y, w, h, bw, fc, bc );
-      dsI( _xwin );
+      _native_win = XCreateSimpleWindow( xdisp, pr, x, y, w, h, bw, fc, bc );
+      dsI( _native_win );
 
       XGCValues gcv;
       gcv.graphics_exposures = False;
-      _gc = XCreateGC( xdisp, _xwin, GCGraphicsExposures, &gcv );
+      _native_gc = XCreateGC( xdisp, _native_win, GCGraphicsExposures, &gcv );
 
-      disp->_p->_winmap.insert( std::make_pair( _xwin, win ) );
+      //disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
 
       /* Allow window to be deleted by the window manager */
-      XSetWMProtocols( xdisp, _xwin, &disp->_p->WM_DELETE_WINDOW, 1 );
+      XSetWMProtocols( xdisp, _native_win, &disp->_p->WM_DELETE_WINDOW, 1 );
 
       int eventMask
         = KeyPressMask
@@ -248,15 +248,15 @@ namespace ds { namespace ui {
         | ColormapChangeMask
         | OwnerGrabButtonMask
         ;
-      XSelectInput( xdisp, _xwin, eventMask );
+      XSelectInput( xdisp, _native_win, eventMask );
     }
 
     void window::IMPL::destroy()
     {
-      if ( _xwin ) {
+      if ( _native_win ) {
         screen::pointer scrn( _screen.lock() );         dsI( scrn );
         display::pointer disp( scrn->get_display() );           dsI( disp );
-        XDestroyWindow( disp->_p->_xdisplay, _xwin );
+        XDestroyWindow( disp->_p->_xdisplay, _native_win );
       }
     }
 
@@ -275,7 +275,7 @@ namespace ds { namespace ui {
     {
       Display * xdisp  = x_display();
       dsI( xdisp );
-      XSelectInput( xdisp, _xwin, mask );
+      XSelectInput( xdisp, _native_win, mask );
     }
 
     ds::graphics::box window::IMPL::get_rect() const
@@ -283,7 +283,7 @@ namespace ds { namespace ui {
       XWindowAttributes a;
       std::memset( &a, 0, sizeof(a) );
 
-      XGetWindowAttributes( x_display(), _xwin, &a );
+      XGetWindowAttributes( x_display(), _native_win, &a );
 
       return boost::geometry::make<graphics::box>( a.x, a.y, a.width, a.height );
     }
@@ -292,7 +292,7 @@ namespace ds { namespace ui {
     {
       const graphics::box wr( this->get_rect() );
       if ( wr.is_empty() ) {
-        dsE("empty window: "<<_xwin);
+        dsE("empty window: "<<_native_win);
         return NULL;
       }
 
@@ -320,7 +320,7 @@ namespace ds { namespace ui {
 
       if ( _dirtyRects.empty() ) {
         copyCount = 1;
-        XPutImage( xdisp, _xwin, _gc, _ximage,
+        XPutImage( xdisp, _native_win, _native_gc, _ximage,
                    dr.x(), dr.y(), dr.x(), dr.y(), dr.width(), dr.height() );
       } else {
         ds::graphics::box r;
@@ -331,18 +331,18 @@ namespace ds { namespace ui {
 
           ++copyCount;
           /*
-            XCopyArea( _display->_xdisplay, _drawable, _xwin, _gc,
+            XCopyArea( _display->_xdisplay, _drawable, _native_win, _native_gc,
             r.x, r.y, r.w, r.h,
             r.x, r.y );
           */
-          XPutImage( xdisp, _xwin, _gc, _ximage,
+          XPutImage( xdisp, _native_win, _native_gc, _ximage,
                      r.x(), r.y(), r.x(), r.y(), r.width(), r.height() );
         }
         _dirtyRects.clear();
       }
 
       if (0 < copyCount) {
-        //XFlushGC( xdisp, _p->_gc );
+        //XFlushGC( xdisp, _p->_native_gc );
         XSync( xdisp, False );
       }
 

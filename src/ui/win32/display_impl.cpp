@@ -32,21 +32,19 @@ namespace ds { namespace ui {
     {
     }
 
-    void display::IMPL::pump_events( event_queue * )
+    bool display::IMPL::map_win_natively( const window::pointer & win )
     {
+      return false;
     }
 
-    void display::IMPL::map( const window::pointer & win )
+    bool display::IMPL::unmap_win_natively( const window::pointer & win )
     {
+      return false;
     }
 
-    void display::IMPL::unmap( const window::pointer & win )
+    bool display::IMPL::is_win_mapped_natively( const window::pointer & win )
     {
-    }
-
-    bool display::IMPL::has( const window::pointer & win )
-    {
-      return true;
+      return (win->_p->_native_win);
     }
 
     HWND display::IMPL::default_root() const
@@ -73,5 +71,38 @@ namespace ds { namespace ui {
     {
       return NULL;
     }
+
+    void display::IMPL::pump_native_events( event_queue * eq )
+    {
+      MSG msg;
+      //memset( &msg, 0, sizeof(msg) );
+
+      while (::PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        ::TranslateMessage( &msg );
+
+        if (msg.message == WM_QUIT) {
+          // TODO: post quit message
+          break;
+        }
+
+        ::DispatchMessage( &msg );
+      }
+    }
+
+    LRESULT CALLBACK display::IMPL::win_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+    {
+      LONG ud = ::GetWindowLong( hWnd, GWL_USERDATA );
+
+      if ( ud == 0 )
+        return 0;
+
+      // TODO: think about this?
+      display * d = reinterpret_cast<display*>(ud);
+
+      d->_p->push_event( d->get_queue(), hWnd, msg, wParam, lParam );
+      
+      return 0;
+    }
+
   }//namespace ui
 }//namespace ds

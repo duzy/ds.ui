@@ -33,7 +33,7 @@ namespace ds { namespace ui {
     {
       if ( _xdisplay ) {
         XCloseDisplay( _xdisplay );
-        _winmap.clear();
+        _winmap.clear(); //!< destroy all mapped windows
       }
 
       delete [] _scrns;
@@ -92,7 +92,7 @@ namespace ds { namespace ui {
       return false;
     }
 
-    void display::IMPL::pump_events( event_queue * eq )
+    void display::IMPL::pump_native_events( event_queue * eq )
     {
       // see SDL/src/video/x11/SDL_x11events.c
       if ( eq == NULL ) {
@@ -102,7 +102,9 @@ namespace ds { namespace ui {
       if ( _xdisplay == NULL ) return;
 
       XEvent event;
+
       //bzero( &event, sizeof(event) );
+      memset( &event, 0, sizeof(event) );
 
       while ( pending() ) {
         XNextEvent( _xdisplay, &event );
@@ -110,13 +112,13 @@ namespace ds { namespace ui {
       }
     }
 
-    void display::IMPL::map( const window::pointer & win )
+    bool display::IMPL::map_win_natively( const window::pointer & win )
     {
       window::IMPL * p = win->_p;
 
       dsI( p );
 
-      if ( /*!p->_disp ||*/ !p->_xwin ) {
+      if ( /*!p->_disp ||*/ !p->_native_win ) {
 
         const int sn = XDefaultScreen( _xdisplay );
         const int sc = XScreenCount( _xdisplay );
@@ -128,29 +130,31 @@ namespace ds { namespace ui {
         p->create( win );
       }
 
-      XMapWindow( _xdisplay, p->_xwin );
+      XMapWindow( _xdisplay, p->_native_win );
+      return true;
     }
 
-    void display::IMPL::unmap( const window::pointer & win )
+    bool display::IMPL::unmap_win_natively( const window::pointer & win )
     {
       window::IMPL * p = win->_p;
 
       dsI( p );
       dsI( _xdisplay );
 
-      if ( p->_xwin ) {
+      if ( p->_native_win ) {
         /**
          *  This will send UnmapNotify, and it's handler will erase win from
          *  _winmap .
          */
-        XUnmapWindow( _xdisplay, p->_xwin );
+        XUnmapWindow( _xdisplay, p->_native_win );
+        return true;
       }
+      return false;
     }
 
-    bool display::IMPL::has( const window::pointer & win )
+    bool display::IMPL::is_win_mapped_natively( const window::pointer & win )
     {
-      if (!win->_p->_xwin) return false;
-      return (_winmap.find( win->_p->_xwin ) != _winmap.end());
+      return (win->_p->_native_win);
     }
 
     Window display::IMPL::default_root() const
@@ -160,7 +164,7 @@ namespace ds { namespace ui {
 
     bool display::IMPL::is_default_root( const window::pointer & w ) const
     {
-      return w->_p->_xwin == XDefaultRootWindow( _xdisplay );
+      return w->_p->_native_win == XDefaultRootWindow( _xdisplay );
     }
 
     int display::IMPL::screen_count() const

@@ -26,10 +26,10 @@ namespace ds { namespace ui {
       ~IMPL();
 
       void open( const display::pointer & disp, const char * name );
-      void pump_events( event_queue * );
-      void map( const window::pointer & win );
-      void unmap( const window::pointer & win );
-      bool has( const window::pointer & win );
+      void pump_native_events( event_queue * );
+      bool map_win_natively( const window::pointer & win );
+      bool unmap_win_natively( const window::pointer & win );
+      bool is_win_mapped_natively( const window::pointer & win );
       int screen_count() const;
       int default_screen_number() const;
       screen::pointer get_screen( int n ) const;
@@ -40,6 +40,9 @@ namespace ds { namespace ui {
       window_map_t _winmap;
 
 #ifdef _WIN32
+      
+      void push_event( event_queue *, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+      static LRESULT CALLBACK win_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #elif defined(X11)
       Display * _xdisplay;
       Atom WM_DELETE_WINDOW;

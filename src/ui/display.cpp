@@ -72,22 +72,37 @@ namespace ds { namespace ui {
     
     void display::map( const window::pointer & win )
     {
-      _p->map( win );
+      /**
+       *  At this point the win may not really exists natively, the
+       *  %map_win_natively is responsibly for creating the win
+       */
+      if ( _p->map_win_natively( win ) ) {
+        // TODO: should insert into _winmap here?
+        //       maybe should delay to the MappedNotify or WM_CREATE handler
+        _p->_winmap.insert( std::make_pair( win->_p->_native_win, win ) );
+      }
+      else {
+        dsE( "can't map window: "<<win->_p->_native_win );
+      }
     }
 
     void display::unmap( const window::pointer & win )
     {
-      _p->unmap( win );
+      _p->unmap_win_natively( win );
+      // TODO: should erase from _winmap here?
+      //       maybe should delay to the UnmappedNotify or WM_DESTROY handler
     }
 
     bool display::has( const window::pointer & win )
     {
-      return _p->has( win );
+      if ( _p->_winmap.find( win->_p->_native_win ) != _p->_winmap.end() )
+        return _p->is_win_mapped_natively( win );
+      return false;
     }
 
     void display::pump_events()
     {
-      _p->pump_events( event_pump::get_queue() );
+      _p->pump_native_events( event_pump::get_queue() );
     }
 
   }//namespace ui
