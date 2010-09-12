@@ -57,7 +57,7 @@ namespace ds { namespace ui {
 
       void select_input(long mask);
 
-      ds::graphics::box get_rect();
+      ds::graphics::box get_rect() const;
 
       ds::graphics::image * get_image_for_render();
       bool commit_image( const ds::graphics::box & dr );

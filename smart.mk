@@ -82,4 +82,7 @@ endif#win32
 endif#linux
 
 $(call sm-build-this)
+## use sm.this.dirs to maintain build order
+#sm.this.dirs := tools t examples
+sm.this.dirs := tools examples
 $(call sm-load-subdirs)

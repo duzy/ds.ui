@@ -25,9 +25,8 @@ sm.this.sources.external := \
   $(sm.out.tmp)/dsrc_test_stub.cpp
 
 $(sm.out.tmp)/dsrc_test_stub.cpp: \
-  $(sm.this.dir)/dsrc_test.xml \
-  $(sm.out.bin)/dsrc
-	$(sm.var.Q) $(sm.out.bin)/dsrc -o $@ $<
+  $(sm.this.dir)/dsrc_test.xml | $(sm.out.bin)/dsrc
+	@$(sm.out.bin)/dsrc -o $@ $<
 
 sm.this.link.options := \
   -Wl,--rpath,$(ds.ui.dir.lib) \

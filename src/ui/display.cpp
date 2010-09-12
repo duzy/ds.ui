@@ -12,7 +12,13 @@
 #include <ds/ui/events.hpp>
 #include <ds/event_queue.hpp>
 #include <ds/debug.hpp>
-#include "x11/display_impl.h"
+#ifdef _WIN32
+#   include "win32/display_impl.h"
+#elif defined(X11)
+#   include "x11/display_impl.h"
+#else
+#   error unsupported platform
+#endif
 
 namespace ds { namespace ui {
 
