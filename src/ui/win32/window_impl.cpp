@@ -10,10 +10,19 @@
 #include <ds/ui/window.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/display.hpp>
-#include "window_impl.h"
-#include "screen_impl.h"
+#include "../window_impl.h"
+#include "../screen_impl.h"
 
 namespace ds { namespace ui {
+
+    window::IMPL::IMPL( const screen::pointer & d )
+      : _screen( d )
+      , _image()
+      , _dirty_rects()
+      , _native_win( NULL )
+      , _native_gc( NULL )
+    {
+    }
 
     window::IMPL::~IMPL()
     {

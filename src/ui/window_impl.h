@@ -11,45 +11,28 @@
 #include <cstring>
 #include <ds/graphics/box.hpp>
 #include <ds/graphics/image.hpp>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+
+#ifdef _WIN32
+#    include <windows.h>
+typedef HWND    native_window_t;
+typedef HDC     native_gc_t;
+#elif defined(X11)
+#    include <X11/Xlib.h>
+#    include <X11/Xutil.h>
+typedef Window  native_window_t;
+typedef GC      native_gc_t;
+#else
+#    error unsupported platform
+#endif
 
 namespace ds { namespace ui {
     
     struct window::IMPL
     {
-      screen::weak_ref _screen;
-
-      Window _xwin; // Window and Pixmap are Drawable
-
-      XVisualInfo _vi;
-      XImage * _ximage;
-      void * _ximage_pixels;
-      ds::graphics::image _image;
-      GC _gc;
-
-      __gnu_cxx::slist<ds::graphics::box> _dirtyRects;
-
-      IMPL( const screen::pointer & d )
-        : _screen( d )
-        , _xwin( NULL )
-        , _vi()
-        , _ximage( NULL )
-        , _ximage_pixels( NULL )
-        , _image()
-        , _gc( NULL )
-        , _dirtyRects()
-      {
-        std::memset( &_vi, 0, sizeof(_vi) );
-      }
-
+      IMPL( const screen::pointer & d );
       ~IMPL();
 
-      Display * x_display() const;
-
-      bool get_visual_info( const screen::pointer & scrn );
       bool create_image_if_needed( int w, int h );
-
       void create( const window::pointer & );
       void destroy();
 
@@ -61,6 +44,25 @@ namespace ds { namespace ui {
 
       ds::graphics::image * get_image_for_render();
       bool commit_image( const ds::graphics::box & dr );
+
+      screen::weak_ref _screen;
+      ds::graphics::image _image;
+      __gnu_cxx::slist<ds::graphics::box> _dirty_rects;
+
+      native_window_t _native_win;
+      native_gc_t _native_gc;
+
+#ifdef _WIN32
+#elif defined(X11)
+      XVisualInfo _vi;
+      XImage * _ximage;
+      void * _ximage_pixels;
+
+      Display * x_display() const;
+      bool get_visual_info( const screen::pointer & scrn );
+#else
+#   error unsupported platform
+#endif
     };//struct window::IMPL
     
   }//namespace ui

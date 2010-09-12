@@ -15,11 +15,38 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <sys/types.h>
-#include "display_impl.h"
-#include "screen_impl.h"
-#include "window_impl.h"
+#include "../display_impl.h"
+#include "../screen_impl.h"
+#include "../window_impl.h"
 
 namespace ds { namespace ui {
+
+    display::IMPL::IMPL()
+      : _xdisplay( NULL )
+      , _scrns( NULL )
+      , _winmap()
+      , WM_DELETE_WINDOW( 0 )
+    {
+    }
+
+    display::IMPL::~IMPL()
+    {
+      if ( _xdisplay ) {
+        XCloseDisplay( _xdisplay );
+        _winmap.clear();
+      }
+
+      delete [] _scrns;
+    }
+
+    void display::IMPL::init_atoms()
+    {
+#define GET_ATOM(X) X = XInternAtom( _xdisplay, #X, False )
+
+      GET_ATOM(WM_DELETE_WINDOW);
+
+#undef GET_ATOM
+    }
 
     void display::IMPL::open( const display::pointer & disp, const char * name )
     {
@@ -39,15 +66,6 @@ namespace ds { namespace ui {
       _winmap.clear();
 
       init_atoms();
-    }
-
-    void display::IMPL::init_atoms()
-    {
-#define GET_ATOM(X) X = XInternAtom( _xdisplay, #X, False )
-
-      GET_ATOM(WM_DELETE_WINDOW);
-
-#undef GET_ATOM
     }
 
     bool display::IMPL::pending()
@@ -143,6 +161,27 @@ namespace ds { namespace ui {
     bool display::IMPL::is_default_root( const window::pointer & w ) const
     {
       return w->_p->_xwin == XDefaultRootWindow( _xdisplay );
+    }
+
+    int display::IMPL::screen_count() const
+    {
+      dsI( _xdisplay );
+      return XScreenCount( _xdisplay );
+    }
+
+    int display::IMPL::default_screen_number() const
+    {
+      dsI( _xdisplay );
+      return XDefaultScreen( _xdisplay );
+    }
+
+    screen::pointer display::IMPL::get_screen( int n ) const
+    {
+      if ( 0 <= n && n < screen_count() ) {
+        dsI( _scrns );
+        return _scrns[n];
+      }
+      return NULL;
     }
   }//namespace ui
 }//namespace ds

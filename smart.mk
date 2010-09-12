@@ -25,7 +25,7 @@ sm.this.link.options.infile := true
 sm.this.link.options := \
   -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib))
 
-sm.this.out_implib := dsui
+#sm.this.out_implib := dsui
 
 sm.this.includes := \
   $(ds.ui.dir)/include \
@@ -61,19 +61,27 @@ sm.this.libs += \
 
 #  $(call ds.third.boost.use, system) \
 
+sm.this.depends :=
+
 ifeq ($(sm.os.name),linux)
   sm.this.sources += $(wildcard src/ui/x11/*.cpp)
   sm.this.libs += X11 pthread
   sm.this.compile.options += -DX11=1
+  sm.this.depends += $(sm.out.lib)/libdsui.so
+  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.this.targets)
+	$(call sm.tool.common.ln,$@,$(sm.this.targets))
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
   sm.this.libs += gdi32
   sm.this.compile.options += -mthreads
   sm.this.link.options += \
+    -Wl,--out-implib,$(sm.out.lib)/libdsui.a \
     -Wl,--subsystem,windows \
     -Wl,--enable-runtime-pseudo-reloc \
     -Wl,--enable-auto-import
+  sm.this.depends += $(sm.out.lib)/libdsui.a
+  $(sm.out.lib)/libdsui.a : $(sm.out.lib) $(sm.this.targets)
 else
 ifeq ($(sm.os.name),mac)
   sm.this.sources += $(wildcard src/ui/cocoa/*.cpp)

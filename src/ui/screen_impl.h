@@ -7,25 +7,21 @@
  *
  **/
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#ifdef _WIN32
+#   include <windows.h>
+#elif defined(X11)
+#   include <X11/Xlib.h>
+#   include <X11/Xutil.h>
+#else
+#   error unsupported platform
+#endif
 
 namespace ds { namespace ui {
 
     struct screen::IMPL
     {
-      display::weak_ref _display;
-
-      window::pointer _root; // TODO: avoid using window::pointer ??
-
-      Screen * _xscrn;
-
-      IMPL()
-        : _display( NULL )
-        , _root( NULL )
-        , _xscrn( NULL )
-      {
-      }
+      IMPL();
+      ~IMPL();
 
       const display::weak_ref & get_display_ref() const { return _display; }
 
@@ -36,6 +32,16 @@ namespace ds { namespace ui {
       unsigned black_pixel() const;
       unsigned white_pixel() const;
       int depth() const;
+
+      display::weak_ref _display;
+      window::pointer _root; // TODO: avoid using window::pointer ??
+
+#ifdef _WIN32
+#elif defined(X11)
+      Screen * _xscrn;
+#else
+#   error unsupported platform
+#endif
     };//struct screen::IMPL
     
   }//namespace ui

@@ -9,7 +9,7 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
-#include "x11/screen_impl.h"
+#include "screen_impl.h"
 
 namespace ds { namespace ui {
 

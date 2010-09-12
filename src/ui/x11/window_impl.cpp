@@ -15,10 +15,27 @@
 #include <ds/graphics/box.hpp>
 #include <ds/debug.hpp>
 #include <boost/geometry/algorithms/make.hpp>
-#include "window_impl.h"
-#include "display_impl.h"
+#include "../window_impl.h"
+#include "../display_impl.h"
 
 namespace ds { namespace ui {
+
+    window::IMPL::IMPL( const screen::pointer & d )
+      : _screen( d )
+      , _image()
+      , _dirty_rects()
+      , _native_win( NULL )
+      , _native_gc( NULL )
+      , _vi()
+      , _ximage( NULL )
+      , _ximage_pixels( NULL )
+    {
+      std::memset( &_vi, 0, sizeof(_vi) );
+    }
+
+    window::IMPL::~IMPL()
+    {
+    }
 
     Display * window::IMPL::x_display() const
     {

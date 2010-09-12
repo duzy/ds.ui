@@ -22,61 +22,6 @@
 #include <ds/debug.hpp>
 #include <cassert>
 
-namespace cycle
-{
-  struct so_1;
-  struct so_2;
-  struct so_3;
-  struct so_4;
-
-  static int object_count_1 = 0;
-  static int object_count_2 = 0;
-  static int object_count_3 = 0;
-  static int object_count_4 = 0;
-
-  struct so_1 : ds::shared_object<so_1>
-  {
-    ds::shared_object<so_2>::pointer _2;
-
-    so_1() { ++object_count_1; }
-    ~so_1() { --object_count_1; }
-  };
-
-  struct so_2 : ds::shared_object<so_2>
-  {
-    ds::shared_object<so_1>::pointer _1;
-    ds::shared_object<so_3>::pointer _3;
-
-    so_2() { ++object_count_2; }
-    ~so_2() { --object_count_2; }
-  };
-
-  struct so_3 : ds::shared_object<so_3>
-  {
-    ds::shared_object<so_1>::pointer _1;
-    ds::shared_object<so_4>::pointer _4;
-
-    so_3() { ++object_count_3; }
-    ~so_3() { --object_count_3; }
-  };
-
-  struct so_4 : ds::shared_object<so_4>
-  {
-    ds::shared_object<so_1>::pointer _1;
-
-    so_4() { ++object_count_4; }
-    ~so_4() { --object_count_4; }
-  };
-}
-
-struct so_test : ds::shared_object<so_test> {};
-
-static void test_so_f( so_test::pointer p, int n )
-{
-  dsI( 0 < p->use_count() );
-  dsI( p->use_count() == n + 1 );
-}
-
 struct my_window : ds::ui::window
 {
 protected:
@@ -111,76 +56,9 @@ protected:
   }
 };
 
-static void test_shared_object()
-{
-  so_test *p( new so_test );
-  dsI( p->use_count() == 0 );
-
-  so_test::pointer sp( p );
-  dsI( p->use_count() == 1 );
-  dsI( p->use_count() == sp->use_count() );
-
-  so_test::pointer sp2( p );
-  dsI( p->use_count() == 2 );
-  dsI( p->use_count() == sp2->use_count() );
-  dsI( sp->use_count() == sp2->use_count() );
-
-  {
-    so_test::pointer sp3( p );
-    dsI( p->use_count() == 3 );
-  }
-  dsI( p->use_count() == 2 );
-
-  {
-    so_test::pointer sp4( sp );
-    dsI( p->use_count() == 3 );
-  }
-  dsI( p->use_count() == 2 );
-  
-  test_so_f( p, 2 );
-  test_so_f( p, p->use_count() );
-
-  /*
-  so_test so;
-  dsI( so.use_count() == 0 );
-  {
-    so_test::pointer p( &so );
-    dsI( so.use_count() == 1 );
-    dsI( p->use_count() == 1 );
-  }
-  */
-
-  {
-    cycle::so_1::pointer _1( new cycle::so_1 );
-    cycle::so_2::pointer _2( new cycle::so_2 );
-    cycle::so_3::pointer _3( new cycle::so_3 );
-    cycle::so_4::pointer _4( new cycle::so_4 );
-    
-    /* Cycle Leak 1 */
-    //_1->_2 = _2;
-    //_2->_1 = _1;
-
-    /* Cycle Leak 2 */
-    //_1->_2 = _2;
-    //_2->_3 = _3;
-    //_3->_1 = _1;
-
-    /* Cycle Leak 3 */
-    _1->_2 = _2;
-    _2->_3 = _3;
-    _3->_4 = _4;
-    //_4->_1 = _1;
-  }
-  dsI( cycle::object_count_1 == 0 );
-  dsI( cycle::object_count_2 == 0 );
-  dsI( cycle::object_count_3 == 0 );
-  dsI( cycle::object_count_4 == 0 );
-}
 
 int main(int argc, char** argv)
 {
-  test_shared_object();
-
   // make a default display connection
   ds::ui::display::pointer disp = ds::ui::display::open();
   dsL("display-refs: "<<disp->use_count());

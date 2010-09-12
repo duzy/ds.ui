@@ -14,7 +14,8 @@ sm.this.compile.options := \
 sm.this.includes := \
   -I$(ds.ui.dir)/include \
   -I$(ds.third.dir.inc) \
-  -I$(ds.third.boost.dir)
+  -I$(ds.third.boost.dir) \
+  $(ds.third.boost.geometry)
 
 sm.this.libdirs := \
   -L$(ds.ui.dir.lib) \

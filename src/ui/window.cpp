@@ -13,13 +13,7 @@
 #include <ds/graphics/canvas.hpp>
 #include <ds/debug.hpp>
 #include <boost/geometry/algorithms/make.hpp>
-#ifdef _WIN32
-#   include "win32/window_impl.h"
-#elif defined(X11)
-#   include "x11/window_impl.h"
-#else
-#   error unsupported platform
-#endif
+#include "window_impl.h"
 
 namespace ds { namespace ui {
 

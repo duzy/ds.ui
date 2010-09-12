@@ -12,19 +12,11 @@
 #include <ds/ui/events.hpp>
 #include <ds/event_queue.hpp>
 #include <ds/debug.hpp>
-#ifdef _WIN32
-#   include "win32/display_impl.h"
-#elif defined(X11)
-#   include "x11/display_impl.h"
-#else
-#   error unsupported platform
-#endif
+#include "window_impl.h"
+#include "screen_impl.h"
+#include "display_impl.h"
 
 namespace ds { namespace ui {
-
-    display::id::id( void *p ) : _p( p ) {}
-
-    //////////////////////////////////////////////////////////////////////
 
     display::display()
       : event_pump( NULL )

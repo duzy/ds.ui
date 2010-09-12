@@ -11,11 +11,22 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/window.hpp>
 #include <ds/debug.hpp>
-#include "screen_impl.h"
-#include "display_impl.h"
-#include "window_impl.h"
+#include "../screen_impl.h"
+#include "../display_impl.h"
+#include "../window_impl.h"
 
 namespace ds { namespace ui {
+
+    screen::IMPL::IMPL()
+      : _display( NULL )
+      , _root( NULL )
+      , _xscrn( NULL )
+    {
+    }
+
+    screen::IMPL::~IMPL()
+    {
+    }
 
     window::pointer screen::IMPL::get_root_win( const screen::pointer & s ) const
     {
