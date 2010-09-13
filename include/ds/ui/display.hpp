@@ -72,7 +72,7 @@ namespace ds { namespace ui {
         friend class display;
 
       public:
-        id(void * = 0);
+        id(void * p = 0) : _p(p) {}
       };
 
       // TODO:

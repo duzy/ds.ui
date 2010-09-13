@@ -8,10 +8,58 @@
  **/
 
 #include <ds/ui/window.hpp>
+#include <ds/ui/screen.hpp>
+#include <ds/ui/display.hpp>
 #include <ds/graphics/canvas.hpp>
 #include <ds/debug.hpp>
+#include <boost/geometry/algorithms/make.hpp>
+#include "window_impl.h"
 
 namespace ds { namespace ui {
+
+    window::window()
+      : _p( new IMPL(NULL) )
+    {
+    }
+
+    window::window( const display::pointer & disp )
+      : _p( new IMPL(disp->default_screen()) )
+    {
+      _p->create( this );
+      disp->map( this );
+    }
+
+    window::~window()
+    {
+      _p->destroy();
+      _p->_screen.reset();
+      delete _p;
+    }
+
+    screen::pointer window::get_screen() const
+    {
+      return _p->_screen.lock();
+    }
+
+    void window::select_input(long mask)
+    {
+      _p->select_input( mask );
+    }
+
+    void window::destroy()
+    {
+      _p->destroy();
+    }
+
+    void window::show()
+    {
+      // TODO: ...
+    }
+
+    void window::hide()
+    {
+      // TODO: ...
+    }
 
     void window::close()
     {
@@ -22,6 +70,42 @@ namespace ds { namespace ui {
       event::window::close evt;
       evt.win = this;
       this->on_close( evt );
+    }
+
+    void window::move( int x, int y )
+    {
+      // TODO: ...
+    }
+
+    void window::resize( int w, int h )
+    {
+      // TODO: ...
+    }
+
+    graphics::box window::rect() const
+    {
+      return _p->get_rect();
+    }
+
+    void window::on_exposed( const event::window::exposed & a )
+    {
+      ds::graphics::image * img( _p->get_image_for_render() );
+      if ( img == NULL ) {
+        return;
+      }
+
+      ds::graphics::box dr( boost::geometry::make<graphics::box>( a.x(), a.y(), a.width(), a.height() ) );
+      if ( dr.is_empty() ) {
+        dsE("empty dirty rect");
+        return;
+      }
+
+      ds::graphics::canvas canvas( *img );
+      canvas.clip( dr );
+
+      this->on_render( canvas );
+
+      _p->commit_image( dr );
     }
 
     void window::on_shown( const event::window::shown & a )

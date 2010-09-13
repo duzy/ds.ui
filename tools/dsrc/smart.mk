@@ -5,7 +5,8 @@ $(call sm-new-module, dsrc, executable)
 
 include $(sm.this.dir)/check-deps.mk
 
-#SM_COMPILE_LOG := dsrc.log
+sm.this.verbose := true
+sm.this.toolset := gcc
 
 sm.this.includes := \
   -I$(ds.ui.dir)/include \
@@ -13,17 +14,19 @@ sm.this.includes := \
   -I$(ds.third.dir.inc)/zlib \
   -I$(ds.third.boost.dir)
 
+sm.this.compile.options.infile := true
 sm.this.compile.options := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
 
-sm.this.libdirs := \
-  -L$(ds.third.dir.lib) \
-  -L$(ds.third.boost.dir.lib)
+sm.this.link.options.infile := true
+sm.this.link.options := \
+  -Wl,--rpath,$(ds.third.dir.lib)
 
-sm.this.rpath := \
-  $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
+sm.this.libdirs := \
+  $(ds.third.dir.lib) \
+  $(ds.third.boost.dir.lib)
 
 sm.this.libs += \
   $(call ds.third.boost.use, program_options) \

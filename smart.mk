@@ -17,13 +17,15 @@ sm.this.compile.options := \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
   -DDS_BUILDING_DSO=1 \
-  -mthreads \
+  -DBOOST_THREAD_USE_LIB=1 \
+
+#  -DBOOST_THREAD_BUILD_LIB=1
 
 sm.this.link.options.infile := true
-sm.this.link.options :=
+sm.this.link.options := \
+  -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib))
 
-#sm.log.filename := dsui.log
-sm.this.out_implib := dsui
+#sm.this.out_implib := dsui
 
 sm.this.includes := \
   $(ds.ui.dir)/include \
@@ -47,9 +49,6 @@ sm.this.libdirs := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 
-sm.this.rpath := \
-  $(ds.ui.dir)/$(strip $(ds.third.dir.lib))
-
 $(call sm-check-not-empty, ds.third.skia.libname)
 $(call sm-check-not-empty, ds.third.libpng.libname)
 $(call sm-check-not-empty, ds.third.freetype.libname)
@@ -62,19 +61,27 @@ sm.this.libs += \
 
 #  $(call ds.third.boost.use, system) \
 
+sm.this.depends :=
+
 ifeq ($(sm.os.name),linux)
   sm.this.sources += $(wildcard src/ui/x11/*.cpp)
   sm.this.libs += X11 pthread
-  sm.this.compile.options +=
+  sm.this.compile.options += -DX11=1
+  sm.this.depends += $(sm.out.lib)/libdsui.so
+  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.this.targets)
+	$(call sm.tool.common.ln,$@,$(sm.this.targets))
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
   sm.this.libs += gdi32
-  sm.this.compile.options +=
+  sm.this.compile.options += -mthreads
   sm.this.link.options += \
+    -Wl,--out-implib,$(sm.out.lib)/libdsui.a \
     -Wl,--subsystem,windows \
     -Wl,--enable-runtime-pseudo-reloc \
     -Wl,--enable-auto-import
+  sm.this.depends += $(sm.out.lib)/libdsui.a
+  $(sm.out.lib)/libdsui.a : $(sm.out.lib) $(sm.this.targets)
 else
 ifeq ($(sm.os.name),mac)
   sm.this.sources += $(wildcard src/ui/cocoa/*.cpp)
@@ -82,5 +89,13 @@ endif#mac
 endif#win32
 endif#linux
 
+<<<<<<< HEAD
 $(sm-build-this)
 $(sm-load-subdirs)
+=======
+$(call sm-build-this)
+## use sm.this.dirs to maintain build order
+#sm.this.dirs := tools t examples
+sm.this.dirs := tools examples
+$(call sm-load-subdirs)
+>>>>>>> lite/master
