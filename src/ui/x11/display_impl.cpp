@@ -130,6 +130,8 @@ namespace ds { namespace ui {
         p->create( win );
       }
 
+      dsI( p->_native_win );
+
       XMapWindow( _xdisplay, p->_native_win );
       return true;
     }

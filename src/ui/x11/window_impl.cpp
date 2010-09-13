@@ -224,7 +224,7 @@ namespace ds { namespace ui {
       gcv.graphics_exposures = False;
       _native_gc = XCreateGC( xdisp, _native_win, GCGraphicsExposures, &gcv );
 
-      //disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
+      disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
 
       /* Allow window to be deleted by the window manager */
       XSetWMProtocols( xdisp, _native_win, &disp->_p->WM_DELETE_WINDOW, 1 );

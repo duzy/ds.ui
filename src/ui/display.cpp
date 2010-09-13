@@ -79,7 +79,7 @@ namespace ds { namespace ui {
       if ( _p->map_win_natively( win ) ) {
         // TODO: should insert into _winmap here?
         //       maybe should delay to the MappedNotify or WM_CREATE handler
-        _p->_winmap.insert( std::make_pair( win->_p->_native_win, win ) );
+        //_p->_winmap.insert( std::make_pair( win->_p->_native_win, win ) );
       }
       else {
         dsE( "can't map window: "<<win->_p->_native_win );
