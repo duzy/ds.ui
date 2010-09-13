@@ -179,9 +179,14 @@ namespace ds { namespace ui {
         for (c = 0; c < w; ++c) {
           red = *(s + 0), green = *(s + 1), blue = *(s + 2);
 
+          /*
           red   = (red   & rmask) << rshift;
           green = (green & gmask) << gshift;
           blue  = (blue  & bmask) << bshift;
+          */
+          red   = (red   >> rshift) & rmask;
+          green = (green >> gshift) & gmask;
+          blue  = (blue  >> bshift) & bmask;
 
           pixel = red | green | blue;
 
