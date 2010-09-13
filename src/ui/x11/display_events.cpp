@@ -15,9 +15,9 @@
 #include <ds/debug.hpp>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include "display_impl.h"
-#include "screen_impl.h"
-#include "window_impl.h"
+#include "../window_impl.h"
+#include "../screen_impl.h"
+#include "../display_impl.h"
 
 namespace ds { namespace ui {
 
@@ -188,7 +188,7 @@ namespace ds { namespace ui {
 
       case DestroyNotify: {
         // TODO: should notify the window of the destroy event
-        win->_p->_xwin = NULL;
+        win->_p->_native_win = NULL;
         //win->_p->_display.reset();
         win->_p->_screen.reset();
         _winmap.erase( wit->first );

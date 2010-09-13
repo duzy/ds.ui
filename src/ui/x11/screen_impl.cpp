@@ -11,9 +11,9 @@
 #include <ds/ui/display.hpp>
 #include <ds/ui/window.hpp>
 #include <ds/debug.hpp>
+#include "../window_impl.h"
 #include "../screen_impl.h"
 #include "../display_impl.h"
-#include "../window_impl.h"
 
 namespace ds { namespace ui {
 
@@ -34,7 +34,7 @@ namespace ds { namespace ui {
         screen::IMPL * that = const_cast<screen::IMPL*>( this );
         that->_root.reset( new window );
         that->_root->_p->_screen = s;
-        that->_root->_p->_xwin = XRootWindowOfScreen( _xscrn );
+        that->_root->_p->_native_win = XRootWindowOfScreen( _xscrn );
       }
       return _root;
     }

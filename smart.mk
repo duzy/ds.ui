@@ -68,8 +68,8 @@ ifeq ($(sm.os.name),linux)
   sm.this.libs += X11 pthread
   sm.this.compile.options += -DX11=1
   sm.this.depends += $(sm.out.lib)/libdsui.so
-  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.this.targets)
-	$(call sm.tool.common.ln,$@,$(sm.this.targets))
+  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.var.dsui.targets)
+	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsui.targets),$@)
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
@@ -89,13 +89,10 @@ endif#mac
 endif#win32
 endif#linux
 
-<<<<<<< HEAD
-$(sm-build-this)
-$(sm-load-subdirs)
-=======
 $(call sm-build-this)
 ## use sm.this.dirs to maintain build order
 #sm.this.dirs := tools t examples
-sm.this.dirs := tools examples
+#sm.this.dirs := tools examples
 $(call sm-load-subdirs)
->>>>>>> lite/master
+
+

@@ -35,6 +35,13 @@ namespace ds { namespace ui {
 
     window::IMPL::~IMPL()
     {
+      if (_ximage_pixels) {
+        free(_ximage_pixels);
+      }
+      if (_ximage) {
+        _ximage->data = NULL;
+        XDestroyImage(_ximage);
+      }
     }
 
     Display * window::IMPL::x_display() const
@@ -260,17 +267,6 @@ namespace ds { namespace ui {
       }
     }
 
-    window::IMPL::~IMPL()
-    {
-      if (_ximage_pixels) {
-        free(_ximage_pixels);
-      }
-      if (_ximage) {
-        _ximage->data = NULL;
-        XDestroyImage(_ximage);
-      }
-    }
-
     void window::IMPL::select_input(long mask)
     {
       Display * xdisp  = x_display();
@@ -318,14 +314,14 @@ namespace ds { namespace ui {
       int copyCount = 0;
       Display * xdisp = x_display();
 
-      if ( _dirtyRects.empty() ) {
+      if ( _dirty_rects.empty() ) {
         copyCount = 1;
         XPutImage( xdisp, _native_win, _native_gc, _ximage,
                    dr.x(), dr.y(), dr.x(), dr.y(), dr.width(), dr.height() );
       } else {
         ds::graphics::box r;
         __gnu_cxx::slist<ds::graphics::box>::const_iterator it;
-        for (it = _dirtyRects.begin(); it != _dirtyRects.end(); ++it) {
+        for (it = _dirty_rects.begin(); it != _dirty_rects.end(); ++it) {
           if ( (r = it->intersect(dr)).is_empty() )
             continue;
 
@@ -338,7 +334,7 @@ namespace ds { namespace ui {
           XPutImage( xdisp, _native_win, _native_gc, _ximage,
                      r.x(), r.y(), r.x(), r.y(), r.width(), r.height() );
         }
-        _dirtyRects.clear();
+        _dirty_rects.clear();
       }
 
       if (0 < copyCount) {
