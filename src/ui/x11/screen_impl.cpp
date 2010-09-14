@@ -26,6 +26,10 @@ namespace ds { namespace ui {
 
     screen::IMPL::~IMPL()
     {
+      if (_root) {
+        _root->_p->_native_win = NULL; // prevent destroy native root win
+        _root.reset( NULL );
+      }
     }
 
     window::pointer screen::IMPL::get_root_win( const screen::pointer & s ) const

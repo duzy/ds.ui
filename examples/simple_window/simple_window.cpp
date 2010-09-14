@@ -61,10 +61,10 @@ int main(int argc, char** argv)
 {
   // make a default display connection
   ds::ui::display::pointer disp = ds::ui::display::open();
-  dsL("display-refs: "<<disp->use_count());
+  //dsL("display-refs: "<<disp->use_count());
 
   ds::ui::screen::pointer scrn = disp->default_screen();
-  dsL("screen-refs: "<<scrn->use_count());
+  //dsL("screen-refs: "<<scrn->use_count());
 
   //ds::ui::window win1( disp ); // a window in the display 'disp'
   ds::ui::window::pointer win1( new ds::ui::window(disp) );
@@ -72,22 +72,21 @@ int main(int argc, char** argv)
 
   win1->show();
 
-  //ds::ui::window win2; // a window of no display is trivial
   my_window::pointer win2( new my_window );
   disp->map( win2 );
   assert( disp->has(win2) );
 
   win2->show(); // show it since it's belong to 'disp'
 
-  dsL("display-refs: "<<disp->use_count());
+  //dsL("display-refs: "<<disp->use_count());
 
   int n;
   {
     ds::ui::event_loop loop( disp );
-    dsL("display-refs: "<<disp->use_count());
+    //dsL("display-refs: "<<disp->use_count());
     n = loop.run();
   }
 
-  dsL("display-refs: "<<disp->use_count());
+  //dsL("display-refs: "<<disp->use_count());
   return n;
 }

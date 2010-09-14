@@ -35,6 +35,7 @@ namespace ds { namespace ui {
       bool create_image_if_needed( int w, int h );
       void create( const window::pointer & );
       void destroy();
+      void destroy( Display * xdisplay );
 
       void convert_pixels( int x, int y, int w, int h );
 

@@ -174,7 +174,7 @@ namespace ds { namespace ui {
             event->xclient.data.l[0] == WM_DELETE_WINDOW) {
           /** Window closed */
 
-          dsE("WM_DELETE_WINDOW");
+          dsL4("WM_DELETE_WINDOW");
 
           event::window::close * evt(new event::window::close);
           evt->win = win.get();

@@ -31,10 +31,16 @@ namespace ds { namespace ui {
 
     display::IMPL::~IMPL()
     {
-      if ( _xdisplay ) {
-        XCloseDisplay( _xdisplay );
-        _winmap.clear(); //!< destroy all mapped windows
+      dsI( _xdisplay );
+
+      //!< destroy all mapped windows
+      window_map_t::iterator it = _winmap.begin();
+      for(; it != _winmap.end(); ++it) {
+        it->second->_p->destroy( _xdisplay );
       }
+      _winmap.clear();
+
+      XCloseDisplay( _xdisplay );
 
       delete [] _scrns;
     }

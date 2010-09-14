@@ -35,13 +35,7 @@ namespace ds { namespace ui {
 
     window::IMPL::~IMPL()
     {
-      if (_ximage_pixels) {
-        free(_ximage_pixels);
-      }
-      if (_ximage) {
-        _ximage->data = NULL;
-        XDestroyImage(_ximage);
-      }
+      destroy();
     }
 
     Display * window::IMPL::x_display() const
@@ -179,14 +173,14 @@ namespace ds { namespace ui {
         for (c = 0; c < w; ++c) {
           red = *(s + 0), green = *(s + 1), blue = *(s + 2);
 
-          /*
           red   = (red   & rmask) << rshift;
           green = (green & gmask) << gshift;
           blue  = (blue  & bmask) << bshift;
-          */
+          /*
           red   = (red   >> rshift) & rmask;
           green = (green >> gshift) & gmask;
           blue  = (blue  >> bshift) & bmask;
+          */
 
           pixel = red | green | blue;
 
@@ -228,6 +222,7 @@ namespace ds { namespace ui {
       XGCValues gcv;
       gcv.graphics_exposures = False;
       _native_gc = XCreateGC( xdisp, _native_win, GCGraphicsExposures, &gcv );
+      dsI( _native_gc );
 
       disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
 
@@ -268,7 +263,30 @@ namespace ds { namespace ui {
       if ( _native_win ) {
         screen::pointer scrn( _screen.lock() );         dsI( scrn );
         display::pointer disp( scrn->get_display() );           dsI( disp );
-        XDestroyWindow( disp->_p->_xdisplay, _native_win );
+        destroy( disp->_p->_xdisplay );
+        dsI( _native_win == NULL );
+      }
+    }
+
+    void window::IMPL::destroy( Display * xdisplay )
+    {
+      dsI( xdisplay );
+
+      if (_ximage_pixels) {
+        free(_ximage_pixels);
+        _ximage_pixels = NULL;
+      }
+
+      if (_ximage) {
+        _ximage->data = NULL;
+        XDestroyImage(_ximage);
+        _ximage = NULL;
+      }
+
+      if ( _native_win ) {
+        dsL("destroy: "<<_native_win);
+        XDestroyWindow( xdisplay, _native_win );
+        _native_win = NULL;
       }
     }
 
