@@ -12,6 +12,8 @@
 #include <ds/ui/display.hpp>
 #include "../window_impl.h"
 #include "../screen_impl.h"
+#include "window_creator.h"
+#include <ds/debug.hpp>
 
 namespace ds { namespace ui {
 
@@ -28,8 +30,20 @@ namespace ds { namespace ui {
     {
     }
 
-    void window::IMPL::create( const window::pointer & )
+    bool window::IMPL::create( const display::pointer & disp, const window::pointer & win )
     {
+      dsI( !_native_win );
+      dsI( !_screen.lock() );
+
+      detail::window_creator wc;
+      HWND hwnd = wc.create( disp->_p );
+
+      dsI( hwnd );
+
+      _screen = disp->default_screen();
+      _native_win = hwnd;
+     
+      return _native_win != NULL;
     }
 
     void window::IMPL::destroy()

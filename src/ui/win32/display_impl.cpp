@@ -14,6 +14,7 @@
 #include "../window_impl.h"
 #include "../screen_impl.h"
 #include "../display_impl.h"
+#include "window_class_register.h"
 
 namespace ds { namespace ui {
 
@@ -28,13 +29,34 @@ namespace ds { namespace ui {
       delete [] _scrns;
     }
 
+    const wchar_t * display::IMPL::get_window_class_name( bool regIfNon )
+    {
+      static const wchar_t * s_WindowClassName = NULL;
+      if ( s_WindowClassName == NULL && regIfNon )  {
+        s_WindowClassName = L"ds::ui::window";
+
+        detail::window_class_register wc( s_WindowClassName, wndproc );
+
+        bool ok = wc();
+        dsI( ok );
+      }
+      return s_WindowClassName;
+    }
+
     void display::IMPL::open( const display::pointer & disp, const char * name )
     {
+      dsI( !_scrns );
+      dsI( _winmap.empty() );
+
+      _scrns = new screen::pointer [1];
+      _scrns[0].reset( new screen );
+      _scrns[0]->_p->_display = disp;
     }
 
     bool display::IMPL::map_win_natively( const window::pointer & win )
     {
-      return false;
+      // TODO: ???
+      return true;
     }
 
     bool display::IMPL::unmap_win_natively( const window::pointer & win )
@@ -89,7 +111,7 @@ namespace ds { namespace ui {
       }
     }
 
-    LRESULT CALLBACK display::IMPL::win_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK display::IMPL::wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
       LONG ud = ::GetWindowLong( hWnd, GWL_USERDATA );
 

@@ -7,15 +7,6 @@
  *
  **/
 
-#ifdef _WIN32
-#   include <windows.h>
-#elif defined(X11)
-#   include <X11/Xlib.h>
-#   include <X11/Xutil.h>
-#else
-#   error unsupported platform
-#endif
-
 namespace ds { namespace ui {
 
     struct screen::IMPL

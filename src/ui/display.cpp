@@ -72,14 +72,21 @@ namespace ds { namespace ui {
     
     void display::map( const window::pointer & win )
     {
+      window::IMPL * p = win->_p;
+      if ( !p->_native_win ) {
+        bool ok = p->create( this, win );
+
+        dsI( ok );
+
+        _p->_winmap.insert( std::make_pair( p->_native_win, win ) );
+      }
+
       /**
        *  At this point the win may not really exists natively, the
        *  %map_win_natively is responsibly for creating the win
        */
       if ( _p->map_win_natively( win ) ) {
-        // TODO: should insert into _winmap here?
-        //       maybe should delay to the MappedNotify or WM_CREATE handler
-        //_p->_winmap.insert( std::make_pair( win->_p->_native_win, win ) );
+        // ...
       }
       else {
         dsE( "can't map window: "<<win->_p->_native_win );

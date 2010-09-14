@@ -25,7 +25,7 @@ namespace ds { namespace ui {
     window::window( const display::pointer & disp )
       : _p( new IMPL(disp->default_screen()) )
     {
-      _p->create( this );
+      _p->create( disp, this );
       disp->map( this );
     }
 

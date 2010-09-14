@@ -56,6 +56,10 @@ namespace ds { namespace ui {
 
     void display::IMPL::open( const display::pointer & disp, const char * name )
     {
+      dsI( !_xdisplay );
+      dsI( !_scrns );
+      dsI( _winmap.empty() );
+
       _xdisplay = XOpenDisplay( name );
 
       int scrnCount( XScreenCount( _xdisplay ) );
@@ -123,20 +127,9 @@ namespace ds { namespace ui {
       window::IMPL * p = win->_p;
 
       dsI( p );
-
-      if ( /*!p->_disp ||*/ !p->_native_win ) {
-
-        const int sn = XDefaultScreen( _xdisplay );
-        const int sc = XScreenCount( _xdisplay );
-
-        dsI( 0 <= sn && sn < sc );
-        dsI( _scrns != NULL );
-        
-        p->_screen = _scrns[ sn ];
-        p->create( win );
-      }
-
       dsI( p->_native_win );
+
+      // TODO: check if the window has been mapped in this display
 
       XMapWindow( _xdisplay, p->_native_win );
       return true;

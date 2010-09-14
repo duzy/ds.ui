@@ -73,7 +73,7 @@ ifeq ($(sm.os.name),linux)
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
-  sm.this.libs += gdi32
+  sm.this.libs += gdi32 comctl32
   sm.this.compile.options += -mthreads
   sm.this.link.options += \
     -Wl,--out-implib,$(sm.out.lib)/libdsui.a \
@@ -92,7 +92,7 @@ endif#linux
 $(call sm-build-this)
 ## use sm.this.dirs to maintain build order
 #sm.this.dirs := tools t examples
-#sm.this.dirs := tools examples
+sm.this.dirs := tools examples
 $(call sm-load-subdirs)
 
 

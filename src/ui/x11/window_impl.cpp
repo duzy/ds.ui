@@ -194,12 +194,15 @@ namespace ds { namespace ui {
       }
     }
 
-    void window::IMPL::create( const window::pointer & win )
+    bool window::IMPL::create( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
+      dsI( !_screen );
 
-      screen::pointer scrn( _screen.lock() );           dsI( scrn );
-      display::pointer disp( scrn->get_display());           dsI( disp );
+      //screen::pointer scrn( _screen.lock() );           dsI( scrn );
+      //display::pointer disp( scrn->get_display());           dsI( disp );
+      screen::pointer scrn = disp->default_screen();            dsI( scrn );
+      _screen = scrn; // save the reference of the screen
 
       int x(0), y(0), w(400), h(300), bw(0);
 
@@ -224,7 +227,7 @@ namespace ds { namespace ui {
       _native_gc = XCreateGC( xdisp, _native_win, GCGraphicsExposures, &gcv );
       dsI( _native_gc );
 
-      disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
+      //disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
 
       /* Allow window to be deleted by the window manager */
       XSetWMProtocols( xdisp, _native_win, &disp->_p->WM_DELETE_WINDOW, 1 );
@@ -256,6 +259,8 @@ namespace ds { namespace ui {
         | OwnerGrabButtonMask
         ;
       XSelectInput( xdisp, _native_win, eventMask );
+
+      return true;
     }
 
     void window::IMPL::destroy()

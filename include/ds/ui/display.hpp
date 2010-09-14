@@ -58,13 +58,13 @@ namespace ds { namespace ui {
       display();
       ~display();
 
-      struct IMPL;
-
       friend class screen;
       friend class window;
       friend class event_loop;
 
     public:
+      struct IMPL;
+
       class id
       {
         void * _p;
