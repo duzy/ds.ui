@@ -7,6 +7,7 @@
  *
  **/
 
+#define WIN32_LEAN_AND_MEAN
 #include <ds/ui/screen.hpp>
 #include <ds/ui/display.hpp>
 #include <ds/ui/window.hpp>

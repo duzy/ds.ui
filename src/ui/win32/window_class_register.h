@@ -11,7 +11,7 @@ namespace ds { namespace ui { namespace detail {
 
       struct window_class_register
       {
-        window_class_register( const std::wstring & className, WNDPROC proc );
+        window_class_register( const wchar_t * className, WNDPROC proc );
 
         bool operator()();
 

@@ -47,6 +47,26 @@ namespace ds {
 
       virtual ~shared_object_base() {}
 
+      /**
+       *  Prevent 'this' to be deleted while converting a 'this' into a
+       *  shared_object pointer, because the _usecount maybe zero.
+       */
+      class this_locker
+      {
+        shared_object_base * _so;
+      public:
+        explicit this_locker(shared_object_base * so) : _so(so)
+        {
+          ++so->_usecount;
+        }
+
+        ~this_locker()
+        {
+          BOOST_ASSERT(0 < _so->_usecount);
+          --_so->_usecount;
+        }
+      };//struct this_locker
+
       class weak_ref_base
       {
         shared_object_base * _so;

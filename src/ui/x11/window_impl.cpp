@@ -197,12 +197,13 @@ namespace ds { namespace ui {
     bool window::IMPL::create( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
-      dsI( !_screen );
+      //dsI( !_screen );
 
       //screen::pointer scrn( _screen.lock() );           dsI( scrn );
       //display::pointer disp( scrn->get_display());           dsI( disp );
       screen::pointer scrn = disp->default_screen();            dsI( scrn );
-      _screen = scrn; // save the reference of the screen
+      if ( !_screen.lock() /*!= scrn*/ )
+        _screen = scrn; // save the reference of the screen
 
       int x(0), y(0), w(400), h(300), bw(0);
 

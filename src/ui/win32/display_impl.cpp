@@ -7,6 +7,7 @@
  *
  **/
 
+#define WIN32_LEAN_AND_MEAN
 #include <ds/ui/display.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
@@ -32,8 +33,8 @@ namespace ds { namespace ui {
     const wchar_t * display::IMPL::get_window_class_name( bool regIfNon )
     {
       static const wchar_t * s_WindowClassName = NULL;
-      if ( s_WindowClassName == NULL && regIfNon )  {
-        s_WindowClassName = L"ds::ui::window";
+      if ( s_WindowClassName == NULL && regIfNon ) {
+        s_WindowClassName = L"ds::ui::window.class";
 
         detail::window_class_register wc( s_WindowClassName, wndproc );
 
@@ -66,11 +67,13 @@ namespace ds { namespace ui {
 
     bool display::IMPL::is_win_mapped_natively( const window::pointer & win )
     {
-      return (win->_p->_native_win);
+      return (win->_p->_native_win != NULL);
     }
 
     HWND display::IMPL::default_root() const
     {
+      dsI( _scrns );
+      //return _scrns[ 0 ]->root();
       return NULL;
     }
 
@@ -91,7 +94,9 @@ namespace ds { namespace ui {
 
     screen::pointer display::IMPL::get_screen( int n ) const
     {
-      return NULL;
+      dsI( _scrns );
+      if ( n != 0 ) return NULL;
+      return _scrns[ 0 ];
     }
 
     void display::IMPL::pump_native_events( event_queue * eq )
@@ -104,6 +109,7 @@ namespace ds { namespace ui {
 
         if (msg.message == WM_QUIT) {
           // TODO: post quit message
+          dsL("WM_QUIT");
           break;
         }
 
@@ -113,17 +119,18 @@ namespace ds { namespace ui {
 
     LRESULT CALLBACK display::IMPL::wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
-      LONG ud = ::GetWindowLong( hWnd, GWL_USERDATA );
+      if ( LONG ud = ::GetWindowLong( hWnd, GWL_USERDATA ) ) {
 
-      if ( ud == 0 )
-        return 0;
+        // TODO: think about this?
+        display * d = reinterpret_cast<display*>(ud);
 
-      // TODO: think about this?
-      display * d = reinterpret_cast<display*>(ud);
+        if ( d->_p->push_event( d->get_queue(), hWnd, msg, wParam, lParam ) )
+          return 0;
+      }
 
-      d->_p->push_event( d->get_queue(), hWnd, msg, wParam, lParam );
-      
-      return 0;
+      // NOTE: All other messages must be handled by DefWindowProc, or the
+      //       CreateWindowEx will return NULL for a HWND.
+      return ::DefWindowProc( hWnd, msg, wParam, lParam );
     }
 
   }//namespace ui

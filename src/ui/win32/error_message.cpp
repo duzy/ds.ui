@@ -17,7 +17,7 @@ namespace ds { namespace ui { namespace detail {
       {
         std::wstring errorMessage;
         DWORD errorCode = ::GetLastError();
-        LPVOID error;
+        LPWSTR error;
         if ( ::FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER
                                | FORMAT_MESSAGE_FROM_SYSTEM,
                                NULL,
@@ -25,7 +25,7 @@ namespace ds { namespace ui { namespace detail {
                                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                                (LPWSTR)&error,
                                0, 0 ) ) {
-          errorMessage = (LPWSTR)error;
+          errorMessage = error;
           ::LocalFree( error );
         }
         return errorMessage;

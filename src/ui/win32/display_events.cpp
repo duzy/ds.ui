@@ -17,13 +17,14 @@
 
 namespace ds { namespace ui {
 
-    void display::IMPL::push_event( event_queue * eq, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+    bool display::IMPL::push_event( event_queue * eq, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     {
       window_map_t::iterator wit = _winmap.find( hWnd );
       if (wit == _winmap.end())
-        return;
+        return false;
 
       // TODO: push events into eq
+      return false;
     }
     
   }//namespace ui

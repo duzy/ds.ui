@@ -30,4 +30,15 @@ sm.this.link.options.infile := true
 sm.this.link.options := \
   -Wl,--rpath,$(ds.ui.dir.lib)
 
+ifeq ($(sm.os.name),win32)
+  sm.this.compile.options += -mthreads
+  sm.this.link.options += \
+    -Wl,--enable-runtime-pseudo-reloc \
+    -Wl,--enable-auto-import
+  ifneq ($(sm.config.variant),debug)
+    sm.this.compile.options += -mwindows
+    sm.this.link.options += -mwindows -Wl,--subsystem,windows
+  endif
+endif
+
 $(sm-build-this)

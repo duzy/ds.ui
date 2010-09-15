@@ -23,6 +23,7 @@ sm.this.compile.options := \
 
 sm.this.link.options.infile := true
 sm.this.link.options := \
+  -Wl,--no-undefined \
   -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib))
 
 #sm.this.out_implib := dsui
@@ -73,15 +74,20 @@ ifeq ($(sm.os.name),linux)
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
-  sm.this.libs += gdi32 comctl32
-  sm.this.compile.options += -mthreads
-  sm.this.link.options += \
+  #sm.this.libs += kernel32 user32 gdi32
+  sm.this.libs += comctl32
+  sm.this.compile.options += -mthreads -mwindows
+  sm.this.link.options += -mwindows \
     -Wl,--out-implib,$(sm.out.lib)/libdsui.a \
-    -Wl,--subsystem,windows \
     -Wl,--enable-runtime-pseudo-reloc \
     -Wl,--enable-auto-import
+
   sm.this.depends += $(sm.out.lib)/libdsui.a
   $(sm.out.lib)/libdsui.a : $(sm.out.lib) $(sm.this.targets)
+
+  ifneq ($(sm.config.variant),debug)
+    sm.this.link.options += -Wl,--subsystem,windows
+  endif
 else
 ifeq ($(sm.os.name),mac)
   sm.this.sources += $(wildcard src/ui/cocoa/*.cpp)

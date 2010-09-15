@@ -170,3 +170,13 @@ BOOST_AUTO_TEST_CASE( so_NO_CYCLE )
   }
   BOOST_CHECK( simple_so::instance_count == 0 );
 }
+
+BOOST_AUTO_TEST_CASE( so_shared_from_non_new )
+{
+  // TODO: test case for simple_so::this_locker
+  simple_so so;
+  {
+    simple_so::pointer p1( &so ); // ??
+    BOOST_CHECK( so.use_count() == 1 );
+  }
+}

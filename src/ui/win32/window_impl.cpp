@@ -7,6 +7,7 @@
  *
  **/
 
+#define WIN32_LEAN_AND_MEAN
 #include <ds/ui/window.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/display.hpp>
@@ -33,16 +34,34 @@ namespace ds { namespace ui {
     bool window::IMPL::create( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
-      dsI( !_screen.lock() );
+      //dsI( !_screen.lock() );
+
+      screen::pointer scrn = disp->default_screen();            dsI( scrn );
+      if ( !_screen.lock() /*!= scrn*/ ) _screen = scrn;
+
+      static HWND root = NULL;
+      /*
+      if ( root == NULL ) {
+        detail::window_creator wc;
+        wc.exStyle = wc.style = 0;
+        wc.windowName = L"ds::ui::window::root";
+        root = wc.create( disp->_p );
+        dsI( root );
+      }
+      */
 
       detail::window_creator wc;
+      //wc.exStyle = wc.style = 0;
+      //wc.parent = root;
+      //wc.windowName = L"ds::ui::window";
       HWND hwnd = wc.create( disp->_p );
 
-      dsI( hwnd );
+      dsI( hwnd != NULL );
 
-      _screen = disp->default_screen();
       _native_win = hwnd;
-     
+
+      //disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
+
       return _native_win != NULL;
     }
 

@@ -77,9 +77,14 @@ namespace ds { namespace ui {
         bool ok = p->create( this, win );
 
         dsI( ok );
+        dsI( p->_native_win != NULL );
 
         _p->_winmap.insert( std::make_pair( p->_native_win, win ) );
+
+        dsI( this->has(win) );
       }
+
+      // TODO: _winmap.insert( win ) if alread mapped(maybe by another display)?
 
       /**
        *  At this point the win may not really exists natively, the
@@ -102,6 +107,7 @@ namespace ds { namespace ui {
 
     bool display::has( const window::pointer & win )
     {
+      if ( !win->_p->_native_win) return false;
       if ( _p->_winmap.find( win->_p->_native_win ) != _p->_winmap.end() )
         return _p->is_win_mapped_natively( win );
       return false;

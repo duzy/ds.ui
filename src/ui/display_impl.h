@@ -39,7 +39,7 @@ namespace ds { namespace ui {
       
       static const wchar_t * get_window_class_name( bool regIfNon = false );
       static LRESULT CALLBACK wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-      void push_event( event_queue *, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+      bool push_event( event_queue *, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 #elif defined(X11)
 

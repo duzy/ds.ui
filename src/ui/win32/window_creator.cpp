@@ -7,6 +7,7 @@
  *
  **/
 
+#define WIN32_LEAN_AND_MEAN
 #include <ds/ui/window.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/display.hpp>
@@ -27,11 +28,11 @@ namespace ds { namespace ui { namespace detail {
         : exStyle( WS_EX_APPWINDOW )
         , style( WS_OVERLAPPEDWINDOW )
           //, className( s_strWindowClassName )
-        , windowName( L"TODO: specify window name" )
+        , windowName( L"ds::ui::window.noname" )
         , x( CW_USEDEFAULT )
         , y( CW_USEDEFAULT )
-        , width( 500 )
-        , height( 430 )
+        , width( CW_USEDEFAULT )
+        , height( CW_USEDEFAULT )
         , parent( NULL )
         , menu( NULL )
         , instance( NULL )
@@ -60,8 +61,7 @@ namespace ds { namespace ui { namespace detail {
         //!< Initialize Win32 common controls
         ::InitCommonControls();
 
-        const wchar_t * wc = disp->get_window_class_name( true );
-        dsI( wc );
+        const wchar_t * wc = disp->get_window_class_name( true );  dsI( wc );
 
         HWND hWnd =
           ::CreateWindowExW( exStyle,
@@ -76,9 +76,11 @@ namespace ds { namespace ui { namespace detail {
                              );
 
         if ( hWnd == NULL ) {
+          std::wstring lem = detail::get_last_error_message();
           std::wstring errorMessage( L"Failed to create window!" );
-          errorMessage += L"\nReason: \n  ";
-          errorMessage += detail::get_last_error_message();
+          errorMessage += L"\n  ";
+          errorMessage += lem;
+          std::wcerr<<"error: "<<lem<<std::endl;
           detail::error_message_box( errorMessage, L"Fatal" );
           //throw std::runtime_error( "Failed to create Win32 window!" );
         }

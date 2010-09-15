@@ -25,8 +25,13 @@ namespace ds { namespace ui {
     window::window( const display::pointer & disp )
       : _p( new IMPL(disp->default_screen()) )
     {
-      _p->create( disp, this );
-      disp->map( this );
+      // at this point the use_count of the window is zero,
+      // after convert this into a window::pointer, 'this' will be
+      // deleted, 'this' must be prevented to be deleted
+      this_locker hold(this);
+
+      //_p->create( disp, this );
+      disp->map( this );                        dsI( disp->has(this) );
     }
 
     window::~window()
