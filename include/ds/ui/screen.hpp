@@ -23,6 +23,7 @@ namespace ds { namespace ui {
 
       struct IMPL;
       friend class display;
+      friend class window;
 
     public:
       shared_object<display>::pointer get_display() const;

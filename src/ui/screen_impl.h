@@ -29,7 +29,10 @@ namespace ds { namespace ui {
 
 #ifdef _WIN32
 #elif defined(X11)
+      XVisualInfo _vi;
       Screen * _xscrn;
+
+      XVisualInfo * get_visual_info();
 #else
 #   error unsupported platform
 #endif

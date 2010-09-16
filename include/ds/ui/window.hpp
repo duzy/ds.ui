@@ -67,7 +67,7 @@ namespace ds { namespace ui {
     protected:
       virtual void on_shown( const event::window::shown & );
       virtual void on_hidden( const event::window::hidden & );
-      virtual void on_exposed( const event::window::exposed & );
+      virtual void on_expose( const event::window::expose & );
       virtual void on_moved( const event::window::moved & );
       virtual void on_resized( const event::window::resized & );
       virtual void on_minimized( const event::window::minimized & );

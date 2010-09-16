@@ -92,16 +92,19 @@ namespace ds { namespace ui {
       return _p->get_rect();
     }
 
-    void window::on_exposed( const event::window::exposed & a )
+    void window::on_expose( const event::window::expose & a )
     {
-      ds::graphics::image * img( _p->get_image_for_render() );
-      if ( img == NULL ) {
-        return;
-      }
+      dsL("expose: "<<a.x()<<","<<a.y()<<","<<a.width()<<","<<a.height());
 
       ds::graphics::box dr( boost::geometry::make<graphics::box>( a.x(), a.y(), a.width(), a.height() ) );
       if ( dr.is_empty() ) {
         dsE("empty dirty rect");
+        return;
+      }
+
+      ds::graphics::image * img( _p->get_image_for_render() );
+      if ( img == NULL ) {
+        dsE("null render image");
         return;
       }
 
@@ -120,13 +123,6 @@ namespace ds { namespace ui {
     void window::on_hidden( const event::window::hidden & a )
     {
     }
-
-    /*
-    void window::on_exposed( const event::window::exposed & a )
-    {
-      dsL("winact: "<<a.win);
-    }
-    */
 
     void window::on_moved( const event::window::moved & a )
     {

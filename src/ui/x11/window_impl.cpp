@@ -16,6 +16,7 @@
 #include <ds/debug.hpp>
 #include <boost/geometry/algorithms/make.hpp>
 #include "../window_impl.h"
+#include "../screen_impl.h"
 #include "../display_impl.h"
 
 namespace ds { namespace ui {
@@ -26,11 +27,9 @@ namespace ds { namespace ui {
       , _dirty_rects()
       , _native_win( NULL )
       , _native_gc( NULL )
-      , _vi()
       , _ximage( NULL )
       , _ximage_pixels( NULL )
     {
-      std::memset( &_vi, 0, sizeof(_vi) );
     }
 
     window::IMPL::~IMPL()
@@ -40,44 +39,9 @@ namespace ds { namespace ui {
 
     Display * window::IMPL::x_display() const
     {
-      screen::pointer scrn(_screen.lock());                  dsI(scrn);
+      screen::pointer scrn(_screen.lock());                    dsI(scrn);
       display::pointer disp(scrn->get_display());              dsI(disp);
       return disp->_p->_xdisplay;
-    }
-
-    bool window::IMPL::get_visual_info( const screen::pointer & scrn )
-    {
-      display::pointer disp( scrn->get_display() );             dsI( disp );
-      Display * xdisp = disp->_p->_xdisplay;
-
-      VisualID vid = 0;
-      if (vid) {
-        XVisualInfo *vi, temp;
-        int n;
-        std::memset( &temp, 0, sizeof(temp) );
-        temp.visualid = vid;
-        if (vi = XGetVisualInfo(xdisp, VisualIDMask, &temp, &n)) {
-          _vi = *vi;
-          XFree(vi);
-          return false;
-        }
-      }
-
-      int screen = scrn->number();
-      int depth = scrn->depth();
-
-      dsL("screen depth: "<<depth);
-
-      bool useDirectColorVisual = false;
-      if ((useDirectColorVisual &&
-           XMatchVisualInfo(xdisp, screen, depth, DirectColor, &_vi)) ||
-          XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_vi) ||
-          XMatchVisualInfo(xdisp, screen, depth, PseudoColor, &_vi) ||
-          XMatchVisualInfo(xdisp, screen, depth, StaticColor, &_vi) )
-        return true;
-
-      std::memset( &_vi, 0, sizeof(_vi) );
-      return false;
     }
 
     bool window::IMPL::create_image_if_needed( int w, int h )
@@ -99,14 +63,17 @@ namespace ds { namespace ui {
         _ximage = NULL;
       }
 
-      Display * xdisp = x_display();
+      screen::pointer scrn(_screen.lock());                     dsI(scrn);
+      display::pointer disp(scrn->get_display());               dsI(disp);
+      Display * xdisp = disp->_p->_xdisplay;                    dsI(xdisp);
+      XVisualInfo *vi = scrn->_p->get_visual_info();            dsI( vi );
 
       dsI( xdisp != NULL );
-      dsI( _vi.visual != NULL );
-      dsI( 0 < _vi.depth );
+      dsI( vi->visual != NULL );
+      dsI( 0 < vi->depth );
 
-      _ximage_pixels = malloc( h * w * (_vi.depth / 8) );
-      _ximage = XCreateImage( xdisp, _vi.visual, _vi.depth, ZPixmap, 0,
+      _ximage_pixels = malloc( h * w * (vi->depth / 8) );
+      _ximage = XCreateImage( xdisp, vi->visual, vi->depth, ZPixmap, 0,
                               reinterpret_cast<char*>(_ximage_pixels),//( _image.pixels() ),
                               _image.width(), _image.height(),
                               _image.pixel_size() * 8,/* bitmap pad */
@@ -152,8 +119,10 @@ namespace ds { namespace ui {
       while ((gmask & 1) == 0) { ++gshift; gmask >>= 1; }
       while ((bmask & 1) == 0) { ++bshift; bmask >>= 1; }
 
-      uint32_t ncolors = _vi.colormap_size;
-      uint32_t bpp = _vi.depth / 8;
+      screen::pointer scrn(_screen.lock());                     dsI(scrn);
+      XVisualInfo *vi = scrn->_p->get_visual_info();            dsI( vi );
+      uint32_t ncolors = vi->colormap_size;
+      uint32_t bpp = vi->depth / 8;
 
       dsL("rmask: "<<rmask);
       dsL("gmask: "<<gmask);
@@ -161,10 +130,15 @@ namespace ds { namespace ui {
       dsL("rshift: "<<rshift);
       dsL("gshift: "<<gshift);
       dsL("bshift: "<<bshift);
-      dsL("colormap-size: "<<ncolors<<", "<<_vi.visual->map_entries);
+      dsL("color-bits: "<<_ximage->bits_per_pixel);
+      dsL("colormap-size: "<<ncolors<<", "<<vi->visual->map_entries);
 
       s += y * _image.width() * _image.pixel_size();
       d += y * _image.width() * bpp;
+
+      rmask = _ximage->red_mask;
+      gmask = _ximage->green_mask;
+      bmask = _ximage->blue_mask;
 
       int red, green, blue, pixel, n, c;
       for (n = 0; n < h; ++n) {
@@ -207,14 +181,12 @@ namespace ds { namespace ui {
 
       int x(0), y(0), w(400), h(300), bw(0);
 
-      bool isVisualOK = get_visual_info( scrn );
-
-      dsLif("cannot get visual", !isVisualOK);
+      XVisualInfo *vi = scrn->_p->get_visual_info();            dsI( vi );
 
       unsigned fc = scrn->black_pixel();
       unsigned bc = scrn->white_pixel();
  
-      window::pointer root = scrn->root();           dsI(root);
+      window::pointer root = scrn->root();                      dsI(root);
 
       Window pr = root->_p->_native_win;
       register Display * const xdisp( disp->_p->_xdisplay );
@@ -270,7 +242,7 @@ namespace ds { namespace ui {
         screen::pointer scrn( _screen.lock() );         dsI( scrn );
         display::pointer disp( scrn->get_display() );           dsI( disp );
         destroy( disp->_p->_xdisplay );
-        dsI( _native_win == NULL );
+        dsI( !_native_win );
       }
     }
 
@@ -305,10 +277,13 @@ namespace ds { namespace ui {
 
     ds::graphics::box window::IMPL::get_rect() const
     {
+      Display * xdisp = x_display();                         dsI( xdisp );
       XWindowAttributes a;
-      std::memset( &a, 0, sizeof(a) );
 
-      XGetWindowAttributes( x_display(), _native_win, &a );
+      //std::memset( &a, 0, sizeof(a) );
+
+      dsI( _native_win );
+      XGetWindowAttributes( xdisp, _native_win, &a );
 
       return boost::geometry::make<graphics::box>( a.x, a.y, a.width, a.height );
     }
@@ -317,7 +292,7 @@ namespace ds { namespace ui {
     {
       const graphics::box wr( this->get_rect() );
       if ( wr.is_empty() ) {
-        dsE("empty window: "<<_native_win);
+        dsE("empty window rect: "<<_native_win);
         return NULL;
       }
 
@@ -368,7 +343,9 @@ namespace ds { namespace ui {
 
       if (0 < copyCount) {
         //XFlushGC( xdisp, _p->_native_gc );
+        XFlush( xdisp );
         XSync( xdisp, False );
+        return true;
       }
 
       return false;

@@ -33,7 +33,8 @@ namespace ds { namespace ui {
     {
       dsI( _xdisplay );
 
-      //!< destroy all mapped windows
+      //!< destroy all mapped windows, all window::pointer references will
+      //!< be invalid
       window_map_t::iterator it = _winmap.begin();
       for(; it != _winmap.end(); ++it) {
         it->second->_p->destroy( _xdisplay );

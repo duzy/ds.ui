@@ -44,7 +44,7 @@ namespace ds { namespace ui {
 
         struct shown;
         struct hidden;
-        struct exposed;
+        struct expose;
         struct moved;
         struct resized;
         struct minimized;
@@ -71,7 +71,7 @@ namespace ds { namespace ui {
       {
       };
 
-      struct window::exposed : window::act<window::exposed, 3>
+      struct window::expose : window::act<window::expose, 3>
       {
         int x() const { return param1; }
         int y() const { return param2; }

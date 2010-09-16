@@ -32,6 +32,44 @@ namespace ds { namespace ui {
       }
     }
 
+    XVisualInfo * screen::IMPL::get_visual_info()
+    {
+      if (_vi.visual /* TODO: check _vi.visualid */ )
+        return &_vi;
+
+      display::pointer disp( _display.lock() );                 dsI( disp );
+      Display * xdisp = disp->_p->_xdisplay;                    dsI( xdisp);
+
+      VisualID vid = 0;
+      if (vid) {
+        XVisualInfo *vi, temp;
+        int n;
+        std::memset( &temp, 0, sizeof(temp) );
+        temp.visualid = vid;
+        if (vi = XGetVisualInfo(xdisp, VisualIDMask, &temp, &n)) {
+          _vi = *vi;
+          XFree(vi);
+          return NULL;
+        }
+      }
+
+      int screen = this->number();
+      int depth = this->depth();
+
+      dsL("screen depth: "<<depth);
+
+      bool useDirectColorVisual = false;
+      if ((useDirectColorVisual &&
+           XMatchVisualInfo(xdisp, screen, depth, DirectColor, &_vi)) ||
+          XMatchVisualInfo(xdisp, screen, depth, TrueColor, &_vi) ||
+          XMatchVisualInfo(xdisp, screen, depth, PseudoColor, &_vi) ||
+          XMatchVisualInfo(xdisp, screen, depth, StaticColor, &_vi) )
+        return &_vi;
+
+      std::memset( &_vi, 0, sizeof(_vi) );
+      return NULL;
+    }
+
     window::pointer screen::IMPL::get_root_win( const screen::pointer & s ) const
     {
       if ( !_root ) {

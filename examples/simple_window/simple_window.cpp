@@ -27,6 +27,7 @@ struct my_window : ds::ui::window
 protected:
   void on_render( ds::graphics::canvas & canvas )
   {
+    dsL("simple render");
     using namespace boost::geometry;
     polygon_2d poly;
     {

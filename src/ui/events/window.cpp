@@ -31,7 +31,7 @@ namespace ds { namespace ui {
 
       ON_ACT(shown);
       ON_ACT(hidden);
-      ON_ACT(exposed);
+      ON_ACT(expose);
       ON_ACT(moved);
       ON_ACT(resized);
       ON_ACT(minimized);
@@ -64,9 +64,9 @@ namespace ds { namespace ui {
         window::on::hidden(a);
       } break;
 
-      case event::window::exposed::ActionValue: {
-        const event::window::exposed & a = reinterpret_cast<const event::window::exposed&>(e);
-        window::on::exposed(a);
+      case event::window::expose::ActionValue: {
+        const event::window::expose & a = reinterpret_cast<const event::window::expose&>(e);
+        window::on::expose(a);
       } break;
 
       case event::window::moved::ActionValue: {

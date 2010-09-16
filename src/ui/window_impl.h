@@ -54,12 +54,10 @@ namespace ds { namespace ui {
 
 #ifdef _WIN32
 #elif defined(X11)
-      XVisualInfo _vi;
       XImage * _ximage;
       void * _ximage_pixels;
 
       Display * x_display() const;
-      bool get_visual_info( const screen::pointer & scrn );
 
       void destroy( Display * xdisplay );
 #else

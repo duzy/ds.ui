@@ -69,7 +69,8 @@ namespace ds { namespace ui {
       } break;
 
       case Expose: {
-        event::window::exposed *evt( new event::window::exposed );
+        dsL("expose");
+        event::window::expose *evt( new event::window::expose );
         evt->win = win.get();
         evt->param1 = event->xexpose.x;
         evt->param2 = event->xexpose.y;
