@@ -100,11 +100,14 @@ namespace ds { namespace ui {
 
     void window::on_expose( const event::window::expose & a )
     {
+      dsI( a.win == this );
+      dsI( _p->_native_gc != NULL ); //!< win32: _native_gc only valid in here
+
       dsL("expose: "<<a.x()<<","<<a.y()<<","<<a.width()<<","<<a.height());
 
-      ds::graphics::box dr( boost::geometry::make<graphics::box>( a.x(), a.y(), a.width(), a.height() ) );
+      ds::graphics::box dr( boost::geometry::make<graphics::box>( a.x(), a.y(), a.x()+a.width(), a.y()+a.height() ) );
       if ( dr.is_empty() ) {
-        dsE("empty dirty rect");
+        dsE("empty dirty rect: "<<dr.x()<<","<<dr.y()<<","<<dr.width()<<","<<dr.height());
         return;
       }
 
@@ -113,6 +116,8 @@ namespace ds { namespace ui {
         dsE("null render image");
         return;
       }
+
+      // TODO: drawing for Win32 WM_PAINT
 
       ds::graphics::canvas canvas( *img );
       canvas.clip( dr );

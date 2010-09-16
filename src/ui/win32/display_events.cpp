@@ -14,6 +14,7 @@
 #include "../window_impl.h"
 #include "../screen_impl.h"
 #include "../display_impl.h"
+#include "paint_buffer.h"
 
 namespace ds { namespace ui {
 
@@ -25,6 +26,9 @@ namespace ds { namespace ui {
 
       window::pointer win( wit->second );
       dsI( win );
+
+      //!< Unset the paint DC
+      win->_p->_native_gc = NULL;
 
       switch (msg) {
 
@@ -50,10 +54,39 @@ namespace ds { namespace ui {
           eq->push(new ds::event::quit);
         }
         break;
+
+      case WM_PAINT: {
+        // TODO: ...
+        PAINTSTRUCT ps;
+        HDC dc = ::BeginPaint(hWnd, &ps);
+        win->_p->_native_gc = dc;
+
+        /*
+        event::window::expose *evt( new event::window::expose );
+        evt->win = win.get();
+        evt->param1 = ps.rcPaint.left;
+        evt->param2 = ps.rcPaint.top;
+        evt->param3 = ps.rcPaint.right - ps.rcPaint.left;
+        evt->param4 = ps.rcPaint.bottom - ps.rcPaint.top;
+        eq->push( evt );
+        */
+        event::window::expose evt;
+        evt.win = win.get();
+        evt.param1 = ps.rcPaint.left;
+        evt.param2 = ps.rcPaint.top;
+        evt.param3 = ps.rcPaint.right - ps.rcPaint.left;
+        evt.param4 = ps.rcPaint.bottom - ps.rcPaint.top;
+
+        // FIXME: using eq->push, and wait until it's been handled
+        evt.win->on_expose( evt ); //!< NOTE: not pushed into the event_queue
+
+        win->_p->_paint_buffer.flush( dc, NULL, NULL );//, &ps.rcPaint, &ps.rcPaint );
+        win->_p->_native_gc = NULL;
+        ::EndPaint(hWnd, &ps);
+      } break;
         
       }//switch (msg)
 
-      // TODO: push events into eq
       return false;
     }
     

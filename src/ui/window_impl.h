@@ -14,6 +14,7 @@
 
 #ifdef _WIN32
 #    include <windows.h>
+#    include "win32/paint_buffer.h"
 typedef HWND    native_window_t;
 typedef HDC     native_gc_t;
 #elif defined(X11)
@@ -26,13 +27,12 @@ typedef GC      native_gc_t;
 #endif
 
 namespace ds { namespace ui {
-    
+
     struct window::IMPL
     {
       IMPL( const screen::pointer & d );
       ~IMPL();
 
-      bool create_image_if_needed( int w, int h );
       bool create( const display::pointer &, const window::pointer & );
       void destroy( display::IMPL * disp );
 
@@ -42,6 +42,7 @@ namespace ds { namespace ui {
 
       ds::graphics::box get_rect() const;
 
+      bool create_image_if_needed( int w, int h );
       ds::graphics::image * get_image_for_render();
       bool commit_image( const ds::graphics::box & dr );
 
@@ -50,14 +51,19 @@ namespace ds { namespace ui {
       __gnu_cxx::slist<ds::graphics::box> _dirty_rects;
 
       native_window_t _native_win;
-      native_gc_t _native_gc;
+      native_gc_t _native_gc; //!< win32: only availible within BeginPaint/EndPaint
 
 #ifdef _WIN32
+
+      detail::paint_buffer _paint_buffer;
+
 #elif defined(X11)
+
       XImage * _ximage;
       void * _ximage_pixels;
 
       Display * x_display() const;
+
 #else
 #   error unsupported platform
 #endif
