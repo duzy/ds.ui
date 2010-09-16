@@ -51,22 +51,35 @@ namespace ds { namespace ui {
       */
 
       detail::window_creator wc;
-      //wc.exStyle = wc.style = 0;
-      //wc.parent = root;
-      //wc.windowName = L"ds::ui::window";
+      wc.style |= WS_VISIBLE;
+      wc.param = reinterpret_cast<LPVOID>( disp.get() );
       HWND hwnd = wc.create( disp->_p );
 
       dsI( hwnd != NULL );
 
-      _native_win = hwnd;
+      //::SetWindowLong( hwnd, GWL_USERDATA, reinterpret_cast<LONG>(disp.get()) );
 
-      //disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
+      _native_win = hwnd;
 
       return _native_win != NULL;
     }
 
-    void window::IMPL::destroy()
+    void window::IMPL::destroy( display::IMPL * disp )
     {
+      dsI( disp );
+
+      /**
+       *  the display will invoke this when it's closed/destroyed
+       */
+      if ( _native_win ) {
+        dsL("destroy: "<<_native_win);
+
+        // FIXME: let WM_DESTROY handler do this?
+        ::SetWindowLong( _native_win, GWL_USERDATA, NULL );
+
+        ::DestroyWindow( _native_win );
+        _native_win = NULL;
+      }
     }
 
     void window::IMPL::convert_pixels( int x, int y, int w, int h )

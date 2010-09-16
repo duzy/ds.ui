@@ -26,6 +26,16 @@ namespace ds { namespace ui {
 
     display::~display()
     {
+      dsI( _p );
+
+      //!< destroy all mapped windows, all window::pointer references will
+      //!< be invalid
+      IMPL::window_map_t::iterator it = _p->_winmap.begin();
+      for(; it != _p->_winmap.end(); ++it) {
+        it->second->_p->destroy( _p );
+      }
+      _p->_winmap.clear();
+
       delete _p;
     }
 

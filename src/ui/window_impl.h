@@ -34,7 +34,7 @@ namespace ds { namespace ui {
 
       bool create_image_if_needed( int w, int h );
       bool create( const display::pointer &, const window::pointer & );
-      void destroy();
+      void destroy( display::IMPL * disp );
 
       void convert_pixels( int x, int y, int w, int h );
 
@@ -58,8 +58,6 @@ namespace ds { namespace ui {
       void * _ximage_pixels;
 
       Display * x_display() const;
-
-      void destroy( Display * xdisplay );
 #else
 #   error unsupported platform
 #endif

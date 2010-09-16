@@ -36,7 +36,8 @@ namespace ds { namespace ui {
 
     window::~window()
     {
-      _p->destroy();
+      //_p->destroy();
+      this->destroy();
       _p->_screen.reset();
       delete _p;
     }
@@ -53,7 +54,12 @@ namespace ds { namespace ui {
 
     void window::destroy()
     {
-      _p->destroy();
+      if ( _p->_native_win ) {
+        screen::pointer scrn( _p->_screen.lock() );             dsI( scrn );
+        display::pointer disp( scrn->get_display() );           dsI( disp );
+        _p->destroy( disp->_p );
+        dsI( !_p->_native_win );
+      }
     }
 
     void window::show()

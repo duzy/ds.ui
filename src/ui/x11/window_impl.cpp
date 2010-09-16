@@ -202,8 +202,6 @@ namespace ds { namespace ui {
       _native_gc = XCreateGC( xdisp, _native_win, GCGraphicsExposures, &gcv );
       dsI( _native_gc );
 
-      //disp->_p->_winmap.insert( std::make_pair( _native_win, win ) );
-
       /* Allow window to be deleted by the window manager */
       XSetWMProtocols( xdisp, _native_win, &disp->_p->WM_DELETE_WINDOW, 1 );
 
@@ -238,19 +236,10 @@ namespace ds { namespace ui {
       return true;
     }
 
-    void window::IMPL::destroy()
+    void window::IMPL::destroy( display::IMPL * disp )
     {
-      if ( _native_win ) {
-        screen::pointer scrn( _screen.lock() );                 dsI( scrn );
-        display::pointer disp( scrn->get_display() );           dsI( disp );
-        destroy( disp->_p->_xdisplay );
-        dsI( !_native_win );
-      }
-    }
-
-    void window::IMPL::destroy( Display * xdisplay )
-    {
-      dsI( xdisplay );
+      dsI( disp );
+      dsI( disp->xdisplay );
 
       if (_ximage_pixels) {
         free(_ximage_pixels);
@@ -265,7 +254,7 @@ namespace ds { namespace ui {
 
       if ( _native_win ) {
         dsL("destroy: "<<_native_win);
-        XDestroyWindow( xdisplay, _native_win );
+        XDestroyWindow( disp->xdisplay, _native_win );
         _native_win = NULL;
       }
     }

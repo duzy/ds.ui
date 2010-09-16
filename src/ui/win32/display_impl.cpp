@@ -108,8 +108,11 @@ namespace ds { namespace ui {
         ::TranslateMessage( &msg );
 
         if (msg.message == WM_QUIT) {
-          // TODO: post quit message
-          dsL("WM_QUIT");
+          /**
+           *  NOTE: after all windows is closed, the quit event will also
+           *        be pushed in the WM_DESTROY handler
+           */
+          eq->push(new ds::event::quit);
           break;
         }
 
@@ -119,6 +122,19 @@ namespace ds { namespace ui {
 
     LRESULT CALLBACK display::IMPL::wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
+      /**
+       *  The CreateWindowEx sends WM_NCCREATE, WM_NCCALSIZE, WM_CREATE.
+       *
+       *  FIXME: any message sent before WM_NCCREATE will be losed.
+       */
+      if ( msg == WM_NCCREATE ) {
+        //!< @see http://msdn.microsoft.com/en-us/library/ms632680(VS.85).aspx
+        CREATESTRUCT * cs = reinterpret_cast<CREATESTRUCT*>( lParam );
+        dsI( cs );
+        dsI( cs->lpCreateParams );
+        ::SetWindowLong( hWnd, GWL_USERDATA, reinterpret_cast<LONG>(cs->lpCreateParams) );
+      }
+
       if ( LONG ud = ::GetWindowLong( hWnd, GWL_USERDATA ) ) {
 
         // TODO: think about this?
@@ -126,6 +142,8 @@ namespace ds { namespace ui {
 
         if ( d->_p->push_event( d->get_queue(), hWnd, msg, wParam, lParam ) )
           return 0;
+      } else {
+        dsE( "missed: ("<<hWnd<<") "<<msg );
       }
 
       // NOTE: All other messages must be handled by DefWindowProc, or the
