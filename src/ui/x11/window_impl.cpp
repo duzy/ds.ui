@@ -136,9 +136,11 @@ namespace ds { namespace ui {
       s += y * _image.width() * _image.pixel_size();
       d += y * _image.width() * bpp;
 
+      /*
       rmask = _ximage->red_mask;
       gmask = _ximage->green_mask;
       bmask = _ximage->blue_mask;
+      */
 
       int red, green, blue, pixel, n, c;
       for (n = 0; n < h; ++n) {
@@ -239,7 +241,7 @@ namespace ds { namespace ui {
     void window::IMPL::destroy()
     {
       if ( _native_win ) {
-        screen::pointer scrn( _screen.lock() );         dsI( scrn );
+        screen::pointer scrn( _screen.lock() );                 dsI( scrn );
         display::pointer disp( scrn->get_display() );           dsI( disp );
         destroy( disp->_p->_xdisplay );
         dsI( !_native_win );
@@ -283,16 +285,18 @@ namespace ds { namespace ui {
       //std::memset( &a, 0, sizeof(a) );
 
       dsI( _native_win );
-      XGetWindowAttributes( xdisp, _native_win, &a );
+      Status ok = XGetWindowAttributes( xdisp, _native_win, &a );
+      dsI( ok );
+      dsI( !(a.width == 0 && a.height == 0) );
 
-      return boost::geometry::make<graphics::box>( a.x, a.y, a.width, a.height );
+      return boost::geometry::make<graphics::box>( a.x, a.y, a.x+a.width, a.y+a.height );
     }
 
     ds::graphics::image * window::IMPL::get_image_for_render()
     {
       const graphics::box wr( this->get_rect() );
       if ( wr.is_empty() ) {
-        dsE("empty window rect: "<<_native_win);
+        dsE("empty window rect: "<<_native_win<<", "<<wr.x()<<","<<wr.y()<<","<<wr.width()<<","<<wr.height());
         return NULL;
       }
 
