@@ -23,8 +23,10 @@ namespace ds { namespace ui {
       : _screen( d )
       , _image()
       , _dirty_rects()
+      , _pended_updates()
       , _native_win( NULL )
       , _native_gc( NULL )
+      , _paint_buffer()
     {
     }
 
@@ -40,18 +42,8 @@ namespace ds { namespace ui {
       screen::pointer scrn = disp->default_screen();            dsI( scrn );
       if ( !_screen.lock() /*!= scrn*/ ) _screen = scrn;
 
-      /*
-      static HWND root = NULL;
-      if ( root == NULL ) {
-        detail::window_creator wc;
-        wc.exStyle = wc.style = 0;
-        wc.windowName = L"ds::ui::window::root";
-        root = wc.create( disp->_p );
-        dsI( root );
-      }
-      */
-
       detail::window_creator wc;
+      //wc.exStyle |= WS_EX_TRANSPARENT;
       wc.style |= WS_VISIBLE;
       wc.param = reinterpret_cast<LPVOID>( disp.get() );
       HWND hwnd = wc.create( disp->_p );
@@ -104,53 +96,65 @@ namespace ds { namespace ui {
 
     bool window::IMPL::create_image_if_needed( int w, int h )
     {
-      if ( _image.width() == w && _image.height() == h ) {
-        dsI( _paint_buffer.buffer() != NULL );
-        return &_image;
+      if ( w <= _image.width() && h <= _image.height() ) {
+        dsI( _paint_buffer.ptr() != NULL );
+        return _paint_buffer.ptr() && _image.pixels() ;
       }
 
       _paint_buffer.destroy();
       _paint_buffer.create( w, h, 32 );
+      dsI( _paint_buffer.ptr() );
+      dsI( _paint_buffer.width() == w );
+      dsI( _paint_buffer.height() == h );
 
-      _image.create(w, h, ds::graphics::image::ARGB_8888_PIXEL, _paint_buffer.buffer());
+      _image.create(w, h, ds::graphics::image::ARGB_8888_PIXEL, _paint_buffer.ptr());
       dsI( _image.is_valid() );
       dsI( _image.width() == w );
       dsI( _image.height() == h );
       dsI( _image.pixels() != NULL );
       dsI( _image.pixel_type() == ds::graphics::image::ARGB_8888_PIXEL );
       dsI( _image.pixel_size() == 4 );
-      dsI( _paint_buffer.buffer() );
+      dsI( _paint_buffer.ptr() == _image.pixels() );
       
-      return &_image;
+      return _paint_buffer.ptr() != NULL;
     }
 
-    ds::graphics::image * window::IMPL::get_image_for_render()
+    /**
+     *  Put all dirty rects onto the screen.
+     *
+     *  @return true if any dirty rects has been push onto the screen.
+     */
+    bool window::IMPL::commit_updates()
     {
-      const graphics::box wr( this->get_rect() );
-      if ( wr.is_empty() ) {
-        dsE("empty window rect: "<<_native_win<<", "<<wr.x()<<","<<wr.y()<<","<<wr.width()<<","<<wr.height());
-        return NULL;
+      //dsI( _native_gc ); //!< the _native_gc is a Paint DC
+
+      if ( _pended_updates.empty() ) {
+        dsL("no dirties");
+        return false;
       }
 
-      if (!create_image_if_needed(wr.width(), wr.height())) {
-        dsE("Failed to create renderring buffer");
-        return NULL;
-      }
+      HDC dc = _native_gc ? _native_gc : ::GetDC( _native_win ) ;
 
-      dsI( _image.is_valid() );
-      dsI( 0 < _image.width() );
-      dsI( 0 < _image.height() );
-      dsI( wr.width() == _image.width() );
-      dsI( wr.height() == _image.height() );
-      dsI( _paint_buffer.buffer() );
+      dsL("commit-updates: "<<_pended_updates.size());
 
-      return &_image;
-    }
+      // TODO: only flush pended update rects
 
-    bool window::IMPL::commit_image( const ds::graphics::box & dr )
-    {
-      // TODO: ...
-      return true;
+      dsI( _paint_buffer.ptr() );
+      
+#if 0
+      RECT r;
+      r.left   = dr.left();
+      r.top    = dr.top();
+      r.right  = dr.right();
+      r.bottom = dr.bottom();
+      _paint_buffer.flush( dc, &r, &r );
+#else
+      bool ok = _paint_buffer.flush( dc, NULL, NULL );
+      dsL( "commited: "<<ok );
+#endif
+
+      _pended_updates.clear();
+      return _pended_updates.empty();
     }
     
   }//namespace ui

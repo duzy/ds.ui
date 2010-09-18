@@ -117,7 +117,7 @@ namespace ds { namespace ui {
 
     bool display::has( const window::pointer & win )
     {
-      if ( !win->_p->_native_win) return false;
+      if ( !win->_p->_native_win ) return false;
       if ( _p->_winmap.find( win->_p->_native_win ) != _p->_winmap.end() )
         return _p->is_win_mapped_natively( win );
       return false;
@@ -126,6 +126,9 @@ namespace ds { namespace ui {
     void display::pump_events()
     {
       _p->pump_native_events( event_pump::get_queue() );
+
+      // TODO: think about move this task somewhere better
+      _p->redraw_dirty_wins( this );
     }
 
   }//namespace ui

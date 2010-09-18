@@ -40,6 +40,10 @@ namespace ds { namespace ui {
        *  messages.
        */
       _display->pump(); // Pump some events
+
+      // TODO:(1) check for dirty rects and draw for them, don't force the
+      //          drawn rects onto the screen, native paint event should do
+      //          that instead
     }
 
     void event_loop::on_event(const ds::event & evt)

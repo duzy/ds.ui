@@ -10,10 +10,10 @@
 #include <ds/ui/window.hpp>
 #include <ds/ui/screen.hpp>
 #include <ds/ui/display.hpp>
-#include <ds/graphics/canvas.hpp>
 #include <ds/debug.hpp>
 #include <boost/geometry/algorithms/make.hpp>
 #include "window_impl.h"
+#include "display_impl.h"
 
 namespace ds { namespace ui {
 
@@ -30,13 +30,11 @@ namespace ds { namespace ui {
       // deleted, 'this' must be prevented to be deleted
       this_locker hold(this);
 
-      //_p->create( disp, this );
       disp->map( this );                        dsI( disp->has(this) );
     }
 
     window::~window()
     {
-      //_p->destroy();
       this->destroy();
       _p->_screen.reset();
       delete _p;
@@ -98,33 +96,35 @@ namespace ds { namespace ui {
       return _p->get_rect();
     }
 
+    /**
+     *  Request to redraw a area.
+     *
+     *  @see window::IMPL::set_dirty
+     */
+    void window::request_update( const ds::graphics::box & ub )
+    {
+      // (1) mark the area scoped by 'ub' as dirty, which will be drawn
+      //     later and then moved into _pended_updates
+      //          
+      _p->set_dirty( ub );
+
+      dsI( !(_p->_dirty_rects.empty()) );
+
+      screen::pointer scrn( _p->_screen.lock() );               dsI( scrn );
+      display::pointer disp( scrn->get_display() );             dsI( disp );
+      disp->_p->set_win_dirty( this );
+
+      dsL("request_update: "<<_p->_native_win<<", ["<<ub.x()<<","<<ub.y()<<","<<ub.width()<<","<<ub.height()<<"]");
+    }
+
+    /**
+     *  This is happened after dirties cleaned
+     *
+     *  TODO: rename 'on_expose' -> 'on_exposed' since it's 'after' redraw
+     */
     void window::on_expose( const event::window::expose & a )
     {
       dsI( a.win == this );
-      dsI( _p->_native_gc != NULL ); //!< win32: _native_gc only valid in here
-
-      dsL("expose: "<<a.x()<<","<<a.y()<<","<<a.width()<<","<<a.height());
-
-      ds::graphics::box dr( boost::geometry::make<graphics::box>( a.x(), a.y(), a.x()+a.width(), a.y()+a.height() ) );
-      if ( dr.is_empty() ) {
-        dsE("empty dirty rect: "<<dr.x()<<","<<dr.y()<<","<<dr.width()<<","<<dr.height());
-        return;
-      }
-
-      ds::graphics::image * img( _p->get_image_for_render() );
-      if ( img == NULL ) {
-        dsE("null render image");
-        return;
-      }
-
-      // TODO: drawing for Win32 WM_PAINT
-
-      ds::graphics::canvas canvas( *img );
-      canvas.clip( dr );
-
-      this->on_render( canvas );
-
-      _p->commit_image( dr );
     }
 
     void window::on_shown( const event::window::shown & a )
@@ -179,7 +179,6 @@ namespace ds { namespace ui {
 
     void window::on_render( ds::graphics::canvas & canvas )
     {
-      dsL("TODO:render: "<<this);
       // TODO: draw each child view, support BSP view
     }
     

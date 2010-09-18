@@ -59,6 +59,8 @@ namespace ds { namespace ui {
       void move( int x, int y );
       void resize( int w, int h );
 
+      void request_update( const ds::graphics::box & ub );
+
       graphics::box rect() const;
 
     public:

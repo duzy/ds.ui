@@ -23,30 +23,32 @@ namespace ds { namespace ui { namespace detail {
         void create( unsigned w, unsigned h, unsigned bitsPerPixel );
         void destroy();
 
-        void flush(HDC dc, const RECT *dst, const RECT *src) const;
+        bool flush(HDC dc, const RECT *dst, const RECT *src) const;
 
-        uint8_t * buffer() const { return _buffer; }
+        BITMAPINFO * bitmap_info() const { return _bmp; }
+        uint8_t * ptr() const { return _ptr; }
 
         std::size_t width() const
         {
-          if ( _bi == NULL ) return 0;
-          return _bi->bmiHeader.biWidth; //!< NOTICE: signed to unsigned
+          if ( _bmp == NULL ) return 0;
+          return _bmp->bmiHeader.biWidth; //!< NOTICE: signed to unsigned
         }
 
         std::size_t height() const
         {
-          if ( _bi == NULL ) return 0;
-          return std::abs(_bi->bmiHeader.biHeight);
+          if ( _bmp == NULL ) return 0;
+          return std::abs(_bmp->bmiHeader.biHeight);
         }
 
         std::size_t stride() const //!< bytes per line
         {
-          if ( _bi == NULL ) return 0;
-          return _bi->bmiHeader.biWidth * _bi->bmiHeader.biBitCount;
+          if ( _bmp == NULL ) return 0;
+          return _bmp->bmiHeader.biWidth * _bmp->bmiHeader.biBitCount;
         }
 
-        BITMAPINFO        *_bi;
-        uint8_t           *_buffer;
+      private:
+        BITMAPINFO        *_bmp;
+        uint8_t           *_ptr;
       };//struct paint_buffer
 
     }//namespace detail

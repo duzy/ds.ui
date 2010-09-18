@@ -15,6 +15,7 @@
 #include "../screen_impl.h"
 #include "../display_impl.h"
 #include "paint_buffer.h"
+#include <boost/geometry/algorithms/make.hpp>
 
 namespace ds { namespace ui {
 
@@ -55,32 +56,38 @@ namespace ds { namespace ui {
         }
         break;
 
+      case WM_ERASEBKGND:
+        return 1; //!< ignore this
+
       case WM_PAINT: {
-        // TODO: ...
         PAINTSTRUCT ps;
-        HDC dc = ::BeginPaint(hWnd, &ps);
-        win->_p->_native_gc = dc;
 
-        /*
-        event::window::expose *evt( new event::window::expose );
-        evt->win = win.get();
-        evt->param1 = ps.rcPaint.left;
-        evt->param2 = ps.rcPaint.top;
-        evt->param3 = ps.rcPaint.right - ps.rcPaint.left;
-        evt->param4 = ps.rcPaint.bottom - ps.rcPaint.top;
-        eq->push( evt );
-        */
-        event::window::expose evt;
-        evt.win = win.get();
-        evt.param1 = ps.rcPaint.left;
-        evt.param2 = ps.rcPaint.top;
-        evt.param3 = ps.rcPaint.right - ps.rcPaint.left;
-        evt.param4 = ps.rcPaint.bottom - ps.rcPaint.top;
+        dsI( win->_p->_native_gc == NULL );
+        win->_p->_native_gc = ::BeginPaint(hWnd, &ps);
 
-        // FIXME: using eq->push, and wait until it's been handled
-        evt.win->on_expose( evt ); //!< NOTE: not pushed into the event_queue
+        /**
+         *  %_pended_updates holds a list of rects which has been drawn
+         *  and pending for update onto the screen.
+         */
+        if ( win->_p->_pended_updates.empty() ) {
+          /**
+           *  If nothing drawn, we make a request for that.
+           *
+           *  FIXME: skip empty ps.rcPaint
+           */
+          graphics::box ub = boost::geometry::make<graphics::box>
+            ( ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right, ps.rcPaint.bottom );
+          win->request_update( ub );
+        }
+        else {
+          /**
+           *  If any rects dirty(something has been drawn), we need to commit
+           *  the image.
+           */
+          win->_p->commit_updates();
+          dsI( win->_p->_pended_updates.empty() );
+        }
 
-        win->_p->_paint_buffer.flush( dc, NULL, NULL );//, &ps.rcPaint, &ps.rcPaint );
         win->_p->_native_gc = NULL;
         ::EndPaint(hWnd, &ps);
       } break;

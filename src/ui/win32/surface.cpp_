@@ -1,0 +1,135 @@
+/**
+ *    Copyright 2008-06-15 DuzySoft.com, by Duzy Chan£¨Õ²ÐÀÃú£©
+ *    All rights reserved by Duzy Chan
+ *    Email: <duzy@duzy.ws, duzy.chan@gmail.com>
+ *
+ *    $Id: surface.cpp 178 2008-06-25 14:23:36Z duzy $
+ *
+ **/
+
+#include <ds/gui/surface.hpp>
+
+
+/**
+
+        bool on_draw( const gui::events::draw_event & ev ) {
+          int x = 0, y = 0, w = 100, h = 30;
+          gui::drawer const & dr = ev.drawer();
+          native::drawing_device_handle hdd = dr.handle();
+
+          void * bits = 0;
+          BITMAPINFO bi;
+          std::memset( &bi, 0, sizeof(BITMAP) );
+          bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+          bi.bmiHeader.biWidth = w;
+          bi.bmiHeader.biHeight = -h;
+          bi.bmiHeader.biPlanes = 1;
+          bi.bmiHeader.biBitCount = 32;
+          bi.bmiHeader.biCompression = BI_RGB;
+          bi.bmiHeader.biSizeImage = w * h * 4;
+
+          enum { F = DIB_RGB_COLORS };
+
+          HDC hdc = ::CreateCompatibleDC( hdd );
+          HBITMAP dib = ::CreateDIBSection( hdc, &bi, F, &bits, 0, 0 );
+          HGDIOBJ hobjOld = ::SelectObject( hdc, dib );
+
+          typedef typename graphics_base::image_view_t view_t;
+          typedef typename graphics_base::pixel_t pixel_t;
+          using boost::gil::interleaved_view;
+          const view_t v = interleaved_view( w, h, (pixel_t*)bits, w*4 );
+          this->render( v, x, y, w, h );
+
+          ::BitBlt( hdd, x, y, w, h, hdc, 0, 0, SRCCOPY );//!< copy to hdd
+
+          ::SelectObject( hdc, hobjOld );
+          ::DeleteDC( hdc );
+          ::DeleteObject( dib );
+        }
+
+ */
+
+
+namespace ds { namespace gui {
+
+    enum {
+      BitsPerByte               = 8,
+      DefaultBitCount           = 32,
+      DefaultBytesPerPixel      = DefaultBitCount / BitsPerByte,
+    };
+
+    struct surface::impl
+    {
+      BITMAPINFO        bmInfo_;
+      void *            bits_;
+      HBITMAP           dibHandle_;
+      HGDIOBJ           oldBitmapHandle_;
+    };
+
+    surface::surface( native::drawing_device_handle hdd, int x, int y, int w, int h )
+      : impl_( new impl )
+    {
+      BITMAPINFO & bi = impl_->bmInfo_;
+      std::memset( &bi, 0, sizeof(BITMAP) );
+      bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+      bi.bmiHeader.biWidth = w;
+      bi.bmiHeader.biHeight = -h; //!< top-side-down
+      bi.bmiHeader.biPlanes = 1;
+      bi.bmiHeader.biBitCount = DefaultBitCount;
+      bi.bmiHeader.biCompression = BI_RGB;
+      bi.bmiHeader.biSizeImage = w * h * DefaultBytesPerPixel;
+
+      enum { F = DIB_RGB_COLORS };
+      deviceHandle_ = ::CreateCompatibleDC( hdd );
+      impl_->dibHandle_ = ::CreateDIBSection( deviceHandle_, &bi, F, &impl_->bits_, 0, 0 );
+      impl_->oldBitmapHandle_ = ::SelectObject( deviceHandle_, impl_->dibHandle_ );
+
+#     if false
+      ::BitBlt( deviceHandle_, 0, 0, width(), height(),
+                hdd, x, y, SRCCOPY );//!< copy to deviceHandle_
+#     else
+      std::memset( static_cast<unsigned char*>( impl_->bits_ ),
+                   255, bi.bmiHeader.biSizeImage );
+#     endif
+    }
+
+    surface::~surface()
+    {
+      ::SelectObject( deviceHandle_, impl_->oldBitmapHandle_ );
+      ::DeleteDC( deviceHandle_ );
+      ::DeleteObject( impl_->dibHandle_ );
+      delete impl_;
+    }
+    
+    void surface::flush( native::drawing_device_handle hdd,
+                         /* dst */ int x, int y, int w, int h,
+                         /* sur */ int sx, int sy ) const
+    {
+      if ( w <= 0 ) w = width();
+      if ( h <= 0 ) w = height();
+      //!< copy from deviceHandle_ to hdd
+      ::BitBlt( hdd, x, y, w, h, deviceHandle_, sx, sy, SRCCOPY );
+    }
+    
+    unsigned char * surface::buffer() const
+    {
+      return static_cast<unsigned char*>( impl_->bits_ );
+    }
+    
+    std::size_t surface::width() const
+    {
+      return impl_->bmInfo_.bmiHeader.biWidth; //!< NOTICE: signed to unsigned
+    }
+
+    std::size_t surface::height() const
+    {
+      return std::abs(impl_->bmInfo_.bmiHeader.biHeight);
+    }
+
+    std::size_t surface::stride() const
+    {
+      return impl_->bmInfo_.bmiHeader.biWidth * DefaultBytesPerPixel;
+    }
+
+  }//namespace gui
+}//namespace ds

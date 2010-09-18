@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <cstring> // std::memset
 #include "paint_buffer.h"
+#include <ds/debug.hpp>
 
 /**
 
@@ -60,15 +61,9 @@
 
 namespace ds { namespace ui { namespace detail {
 
-      enum {
-        BitsPerByte               = 8,
-        DefaultBitCount           = 32,
-        DefaultBytesPerPixel      = DefaultBitCount / BitsPerByte,
-      };
-
       paint_buffer::paint_buffer()
-        : _bi( NULL )
-        , _buffer( NULL )
+        : _bmp( NULL )
+        , _ptr( NULL )
       {
       }
 
@@ -140,49 +135,47 @@ namespace ds { namespace ui { namespace detail {
         unsigned rgbSize = get_palette_size( 0, bitsPerPixel ) * sizeof(RGBQUAD);
         unsigned fullSize = sizeof(BITMAPINFOHEADER) + rgbSize + imageSize;
         
-        BITMAPINFO * _bi = (BITMAPINFO*) new uint8_t[fullSize];
+        _bmp = (BITMAPINFO*) new uint8_t[fullSize];
+        _bmp->bmiHeader.biSize   = sizeof(BITMAPINFOHEADER);
+        _bmp->bmiHeader.biWidth  = w;
+        _bmp->bmiHeader.biHeight = -h; // up-side-down
+        _bmp->bmiHeader.biPlanes = 1;
+        _bmp->bmiHeader.biBitCount = (unsigned short)bitsPerPixel;
+        _bmp->bmiHeader.biCompression = BI_RGB;
+        _bmp->bmiHeader.biSizeImage = imageSize;
+        _bmp->bmiHeader.biXPelsPerMeter = 0;
+        _bmp->bmiHeader.biYPelsPerMeter = 0;
+        _bmp->bmiHeader.biClrUsed = 0;
+        _bmp->bmiHeader.biClrImportant = 0;
 
-        _bi->bmiHeader.biSize   = sizeof(BITMAPINFOHEADER);
-        _bi->bmiHeader.biWidth  = w;
-        _bi->bmiHeader.biHeight = h;
-        _bi->bmiHeader.biPlanes = 1;
-        _bi->bmiHeader.biBitCount = (unsigned short)bitsPerPixel;
-        _bi->bmiHeader.biCompression = 0; //BI_RGB
-        _bi->bmiHeader.biSizeImage = imageSize;
-        _bi->bmiHeader.biXPelsPerMeter = 0;
-        _bi->bmiHeader.biYPelsPerMeter = 0;
-        _bi->bmiHeader.biClrUsed = 0;
-        _bi->bmiHeader.biClrImportant = 0;
-
-        _buffer = ((uint8_t*)_bi) + sizeof(BITMAPINFOHEADER) + rgbSize;
-
-        std::memset( _buffer, 0, imageSize );
+        _ptr = ((uint8_t*)_bmp) + sizeof(BITMAPINFOHEADER) + rgbSize;
       }
 
       void paint_buffer::destroy()
       {
-        if ( _bi ) {
-          delete [] (uint8_t*) _bi;
-        }
+        delete [] (uint8_t*) _bmp;
 
-        _bi = NULL;
-        _buffer = NULL;
+        _bmp = NULL;
+        _ptr = NULL;
       }
-    
-      void paint_buffer::flush(HDC dc, const RECT *dstRect, const RECT *srcRect) const
+
+      bool paint_buffer::flush(HDC dc, const RECT *dstRect, const RECT *srcRect) const
       {
-        if(_bi == 0 || _buffer == 0) return;
+        if (_bmp == 0 || _ptr == 0) {
+          dsE("paint buffer is null");
+          return false;
+        }
 
         unsigned srcX = 0;
         unsigned srcY = 0;
-        unsigned srcW = _bi->bmiHeader.biWidth;
-        unsigned srcH = _bi->bmiHeader.biHeight;
+        unsigned srcW = _bmp->bmiHeader.biWidth;
+        unsigned srcH = _bmp->bmiHeader.biHeight;
         unsigned dstX = 0;
         unsigned dstY = 0; 
-        unsigned dstW = _bi->bmiHeader.biWidth;
-        unsigned dstH = _bi->bmiHeader.biHeight;
+        unsigned dstW = _bmp->bmiHeader.biWidth;
+        unsigned dstH = _bmp->bmiHeader.biHeight;
         
-        if(srcRect) {
+        if (srcRect) {
           srcX = srcRect->left;
           srcY = srcRect->top;
           srcW = srcRect->right  - srcRect->left;
@@ -194,33 +187,34 @@ namespace ds { namespace ui { namespace detail {
         dstW = srcW;
         dstH = srcH;
 
-        if(dstRect) {
+        if (dstRect) {
           dstX = dstRect->left;
           dstY = dstRect->top;
           dstW = dstRect->right  - dstRect->left;
           dstH = dstRect->bottom - dstRect->top;
         }
 
+        int n = 0;
         if (dstW != srcW || dstH != srcH) {
           ::SetStretchBltMode(dc, COLORONCOLOR);
-          ::StretchDIBits
-              ( dc,            // handle of device context 
-                dstX,           // x-coordinate of upper-left corner of source rect. 
-                dstY,           // y-coordinate of upper-left corner of source rect. 
-                dstW,       // width of source rectangle 
-                dstH,      // height of source rectangle 
-                srcX,
-                srcY,           // x, y -coordinates of upper-left corner of dest. rect. 
-                srcW,       // width of destination rectangle 
-                srcH,      // height of destination rectangle 
-                _buffer,           // address of bitmap bits 
-                _bi,           // address of bitmap data 
-                DIB_RGB_COLORS,  // usage 
-                SRCCOPY          // raster operation code 
-                );
+          n = ::StretchDIBits
+            ( dc,      // handle of device context 
+              dstX,    // x-coordinate of upper-left corner of source rect. 
+              dstY,    // y-coordinate of upper-left corner of source rect. 
+              dstW,    // width of source rectangle 
+              dstH,    // height of source rectangle 
+              srcX,
+              srcY,    // x, y -coordinates of upper-left corner of dest. rect. 
+              srcW,    // width of destination rectangle 
+              srcH,    // height of destination rectangle 
+              _ptr,    // address of bitmap bits 
+              _bmp,    // address of bitmap data 
+              DIB_RGB_COLORS,  // usage 
+              SRCCOPY          // raster operation code 
+              );
         }
         else {
-          ::SetDIBitsToDevice
+          n = ::SetDIBitsToDevice
             ( dc,       // handle to device context
               dstX,     // x-coordinate of upper-left corner of 
               dstY,     // y-coordinate of upper-left corner of 
@@ -230,11 +224,12 @@ namespace ds { namespace ui { namespace detail {
               srcY,     // y-coordinate of lower-left corner of 
               0,        // first scan line in array
               srcH,     // number of scan lines
-              _buffer,  // address of array with DIB bits
-              _bi,      // address of structure with bitmap info.
+              _ptr,     // address of array with DIB bits
+              _bmp,     // address of structure with bitmap info.
               DIB_RGB_COLORS   // RGB or palette indexes
               );
         }
+        return (n != 0);
       }
     
     }//namespace detail

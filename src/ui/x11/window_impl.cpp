@@ -46,7 +46,7 @@ namespace ds { namespace ui {
 
     bool window::IMPL::create_image_if_needed( int w, int h )
     {
-      if ( _image.width() == w && _image.height() == h )
+      if ( w <= _image.width() && h <= _image.height() )
         return ( _ximage != NULL );
 
       _image.create(w, h, ds::graphics::image::ARGB_8888_PIXEL);
@@ -279,29 +279,6 @@ namespace ds { namespace ui {
       dsI( !(a.width == 0 && a.height == 0) );
 
       return boost::geometry::make<graphics::box>( a.x, a.y, a.x+a.width, a.y+a.height );
-    }
-
-    ds::graphics::image * window::IMPL::get_image_for_render()
-    {
-      const graphics::box wr( this->get_rect() );
-      if ( wr.is_empty() ) {
-        dsE("empty window rect: "<<_native_win<<", "<<wr.x()<<","<<wr.y()<<","<<wr.width()<<","<<wr.height());
-        return NULL;
-      }
-
-      if (!create_image_if_needed(wr.width(), wr.height())) {
-        dsE("Failed to create renderring buffer");
-        return NULL;
-      }
-
-      dsI( _image.is_valid() );
-      dsI( 0 < _image.width() );
-      dsI( 0 < _image.height() );
-      dsI( wr.width() == _image.width() );
-      dsI( wr.height() == _image.height() );
-      dsI( _ximage );
-
-      return &_image;
     }
 
     bool window::IMPL::commit_image( const ds::graphics::box & dr )

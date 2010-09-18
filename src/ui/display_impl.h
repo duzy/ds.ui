@@ -8,6 +8,8 @@
  **/
 
 #include <map>
+//#include <ext/slist>
+#include <list>
 
 namespace ds { namespace ui {
 
@@ -17,6 +19,8 @@ namespace ds { namespace ui {
     struct display::IMPL
     {
       typedef std::map<native_window_t, shared_object<window>::pointer> window_map_t;
+      //typedef __gnu_cxx::slist<window::pointer> dirty_wins_t;
+      typedef std::list<window::pointer> dirty_wins_t;
 
       IMPL();
       ~IMPL();
@@ -32,6 +36,11 @@ namespace ds { namespace ui {
       native_window_t default_root() const;
       bool is_default_root( const shared_object<window>::pointer & w ) const;
 
+      void set_win_dirty( const window::pointer & );
+      void redraw_dirty_wins( const display::pointer & );
+
+      dirty_wins_t _dirty_wins;
+      
       shared_object<screen>::pointer * _scrns;
       window_map_t _winmap;
 

@@ -143,6 +143,14 @@ namespace ds { namespace graphics {
           && o.top() < bottom() && top() < o.bottom()
           ;
       }
+
+      bool contains(const box & o) const
+      {
+        return (!is_empty())
+          && left() <= o.left() && o.right() <= right()
+          && top() <= o.top() && o.bottom() <= bottom()
+          ;
+      }
     };//struct box
     
   }//namespace graphics
