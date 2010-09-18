@@ -25,7 +25,7 @@ namespace ds { namespace ui {
       dsI( !( w->_p->_dirty_rects.empty() ) );
 
       if ( std::find( _dirty_wins.begin(), _dirty_wins.end(), w ) == _dirty_wins.end() ) {
-        dsL( "set-window-dirty: "<<w->_p->_native_win );
+        dsL4( "set-window-dirty: "<<w->_p->_native_win );
         _dirty_wins.push_back( w );
       }
     }
@@ -34,10 +34,12 @@ namespace ds { namespace ui {
     {
       dirty_wins_t::iterator it = _dirty_wins.begin();
       for (; it != _dirty_wins.end(); ++it) {
-        dsL( "redraw-window: "<<(*it)->_p->_native_win );
+        dsL4( "redraw-window: "<<(*it)->_p->_native_win );
+
         (*it)->_p->redraw_dirties( disp, *it );
         dsI( (*it)->_p->_dirty_rects.empty() );
         (*it)->_p->commit_updates();
+        dsI( (*it)->_p->_pended_updates.empty() );
       }
 
       _dirty_wins.clear(); //!< all windows are clean

@@ -20,6 +20,58 @@
 
 namespace ds { namespace ui {
 
+    template<typename Boxes>
+    static bool combine_boxes( Boxes & boxes, const ds::graphics::box & bx )
+    {
+      if ( bx.is_empty() ) return false;
+
+      typename Boxes::iterator it = boxes.begin();
+
+      ds::graphics::box bound;
+      if ( boxes.empty() ) {
+        boxes.push_back( bound = bx ); //!< the first is the bounding box
+        boxes.push_back( bx );
+        return true;
+      }
+
+      bound = *it++; //!< read and skip the bounding box
+
+      while ( it != boxes.end() ) {
+        if ( bx.contains( *it ) ) {
+          it = boxes.erase( it );
+          continue;
+        }
+        if ( it->contains( bx ) ) {
+          //!< just ignore the box because it's been contained
+          return false;
+        }
+        if ( !it->intersects( bx ) ) {
+          //!< just a new seperated box
+          break;
+        }
+
+        if ( bx.x() < it->x() ) {
+          if ( bx.y() < it->y() ) {
+            
+          }
+        }
+
+        ++it;
+      }//while
+
+      // TODO: _dirty_rects should be sorted, not just 'push_back' here
+      it = boxes.insert( it, bx );
+
+      dsI( it != boxes.end() );
+
+      if ( it->x() < bound.x() ) bound.x( it->x() );
+      if ( it->y() < bound.y() ) bound.y( it->y() );
+      if ( bound.right()  < it->right()  ) bound.right( it->right() );
+      if ( bound.bottom() < it->bottom() ) bound.bottom( it->bottom() );
+
+      return true;
+    }
+
     /**
      *  Mark a area as dirty which is required for renderring.
      *
@@ -28,21 +80,19 @@ namespace ds { namespace ui {
     void window::IMPL::set_dirty( const ds::graphics::box & dirty )
     {
       // (1) add dirty rect into the _dirty_rects list(sorted)
-      // 
-      // TODO: think of a better algorithm for updating the dirty rects
-      // 
-      box_list_t::const_iterator it = _dirty_rects.begin();
-      for (; it != _dirty_rects.end(); ++it) {
-        if ( it->intersects(dirty) ) {
-          // TODO: ...
-        }
-        else if ( it->contains(dirty) ) {
-          return; //!< just ignore the request because it's been dirty
-        }
-      }
+      combine_boxes( _dirty_rects, dirty );
+    }
 
-      // TODO: _dirty_rects should be sorted, not just 'push_back' here
-      _dirty_rects.push_back( dirty );
+    /**
+     *  @see window::IMPL::commit_updates()
+     */
+    void window::IMPL::pend_update( const ds::graphics::box & b )
+    {
+      dsL5("mark-updated: ["<<b.x()<<","<<b.y()<<","<<b.width()<<","<<b.height()<<"]");
+
+      if ( combine_boxes( _pended_updates, b ) ) {
+        //commit_updates();
+      }
     }
 
     /**
@@ -74,8 +124,11 @@ namespace ds { namespace ui {
       dsI( 0 < _image.height() );
 
       ds::graphics::canvas canvas( _image );
-
+      ds::graphics::box bound;
       box_list_t::const_iterator it = _dirty_rects.begin();
+      
+      bound = *it++;                       dsI( it != _dirty_rects.end() );
+      
       for ( ; it != _dirty_rects.end(); ++it ) {
         dsL5("redraw: ["<<it->x()<<","<<it->y()<<","<<it->width()<<","<<it->height()<<"]");
 
@@ -89,18 +142,6 @@ namespace ds { namespace ui {
       }
 
       _dirty_rects.clear(); //!< the window is cleaned
-    }
-
-    /**
-     *  @see window::IMPL::commit_updates()
-     */
-    void window::IMPL::pend_update( const ds::graphics::box & b )
-    {
-      // TODO: same algorithm as set_dirty
-      dsL5("mark-updated: ["<<b.x()<<","<<b.y()<<","<<b.width()<<","<<b.height()<<"]");
-      _pended_updates.push_back( b );
-
-      //commit_updates();
     }
 
   }//namespace ui

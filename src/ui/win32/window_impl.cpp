@@ -70,6 +70,8 @@ namespace ds { namespace ui {
         // FIXME: let WM_DESTROY handler do this?
         ::SetWindowLong( _native_win, GWL_USERDATA, NULL );
 
+        // TODO: remove this window from the _dirty_wins list
+
         ::DestroyWindow( _native_win );
         _native_win = NULL;
       }
@@ -126,16 +128,18 @@ namespace ds { namespace ui {
      */
     bool window::IMPL::commit_updates()
     {
-      //dsI( _native_gc ); //!< the _native_gc is a Paint DC
-
       if ( _pended_updates.empty() ) {
-        dsL("no dirties");
+        dsL4("window is updated");
         return false;
       }
 
       HDC dc = _native_gc ? _native_gc : ::GetDC( _native_win ) ;
 
-      dsL("commit-updates: "<<_pended_updates.size());
+      dsL("commit-updates: "<<_pended_updates.size()-1);
+
+      ds::graphics::box bound;
+      box_list_t::const_iterator it = _pended_updates.begin();
+      bound = *it++;                    dsI( it != _pended_updates.end() );
 
       // TODO: only flush pended update rects
 
@@ -143,14 +147,14 @@ namespace ds { namespace ui {
       
 #if 0
       RECT r;
-      r.left   = dr.left();
-      r.top    = dr.top();
-      r.right  = dr.right();
-      r.bottom = dr.bottom();
+      r.left   = bound.left();
+      r.top    = bound.top();
+      r.right  = bound.right();
+      r.bottom = bound.bottom();
       _paint_buffer.flush( dc, &r, &r );
 #else
       bool ok = _paint_buffer.flush( dc, NULL, NULL );
-      dsL( "commited: "<<ok );
+      dsL4( "commited: "<<ok );
 #endif
 
       _pended_updates.clear();

@@ -103,18 +103,18 @@ namespace ds { namespace ui {
      */
     void window::request_update( const ds::graphics::box & ub )
     {
-      // (1) mark the area scoped by 'ub' as dirty, which will be drawn
-      //     later and then moved into _pended_updates
-      //          
-      _p->set_dirty( ub );
+      /** (1) mark the area scoped by 'ub' as dirty, which will be drawn
+       *      later and then moved into _pended_updates
+       */          
+      _p->set_dirty( ub );                 dsI( !_p->_dirty_rects.empty() );
 
-      dsI( !(_p->_dirty_rects.empty()) );
-
+      /** (2) add the current window into the dirty window list
+       */
       screen::pointer scrn( _p->_screen.lock() );               dsI( scrn );
       display::pointer disp( scrn->get_display() );             dsI( disp );
       disp->_p->set_win_dirty( this );
 
-      dsL("request_update: "<<_p->_native_win<<", ["<<ub.x()<<","<<ub.y()<<","<<ub.width()<<","<<ub.height()<<"]");
+      dsL4("request: "<<_p->_native_win<<", ["<<ub.x()<<","<<ub.y()<<","<<ub.width()<<","<<ub.height()<<"]");
     }
 
     /**

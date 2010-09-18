@@ -166,14 +166,14 @@ namespace ds { namespace ui { namespace detail {
           return false;
         }
 
-        unsigned srcX = 0;
-        unsigned srcY = 0;
-        unsigned srcW = _bmp->bmiHeader.biWidth;
-        unsigned srcH = _bmp->bmiHeader.biHeight;
-        unsigned dstX = 0;
-        unsigned dstY = 0; 
-        unsigned dstW = _bmp->bmiHeader.biWidth;
-        unsigned dstH = _bmp->bmiHeader.biHeight;
+        int srcX = 0;
+        int srcY = 0;
+        int srcW = std::abs(_bmp->bmiHeader.biWidth);
+        int srcH = std::abs(_bmp->bmiHeader.biHeight);
+        int dstX = 0;
+        int dstY = 0; 
+        int dstW = std::abs(_bmp->bmiHeader.biWidth);
+        int dstH = std::abs(_bmp->bmiHeader.biHeight);
         
         if (srcRect) {
           srcX = srcRect->left;
@@ -194,7 +194,14 @@ namespace ds { namespace ui { namespace detail {
           dstH = dstRect->bottom - dstRect->top;
         }
 
-        int n = 0;
+        dsI( 0 < srcW );
+        dsI( 0 < srcH );
+        dsI( 0 < dstW );
+        dsI( 0 < dstH );
+        dsL4("commit: src["<<srcX<<","<<srcY<<","<<srcW<<","<<srcH<<"]");
+        dsL4("commit: dst["<<dstX<<","<<dstY<<","<<dstW<<","<<dstH<<"]");
+
+        int n = 0; //!< number of scanlines copied to device
         if (dstW != srcW || dstH != srcH) {
           ::SetStretchBltMode(dc, COLORONCOLOR);
           n = ::StretchDIBits
