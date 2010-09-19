@@ -90,6 +90,8 @@ namespace ds { namespace ui {
 
         win->_p->_native_gc = NULL;
         ::EndPaint(hWnd, &ps);
+
+        // TODO: send event::window::exposed
       } break;
         
       }//switch (msg)

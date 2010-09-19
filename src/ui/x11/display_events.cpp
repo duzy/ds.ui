@@ -18,6 +18,7 @@
 #include "../window_impl.h"
 #include "../screen_impl.h"
 #include "../display_impl.h"
+#include <boost/geometry/algorithms/make.hpp>
 
 namespace ds { namespace ui {
 
@@ -70,6 +71,30 @@ namespace ds { namespace ui {
 
       case Expose: {
         dsL("expose");
+
+        /**
+         *  %_pended_updates holds a list of rects which has been drawn
+         *  and pending for update onto the screen.
+         */
+        if ( win->_p->_pended_updates.empty() ) {
+          /**
+           *  If nothing drawn, we make a request for that.
+           *
+           *  FIXME: skip empty ps.rcPaint
+           */
+          graphics::box ub = boost::geometry::make<graphics::box>
+            ( event->xexpose.x, event->xexpose.y, event->xexpose.x+event->xexpose.width, event->xexpose.y+event->xexpose.height );
+          win->request_update( ub );
+        }
+        else {
+          /**
+           *  If any rects dirty(something has been drawn), we need to commit
+           *  the image.
+           */
+          win->_p->commit_updates();
+          dsI( win->_p->_pended_updates.empty() );
+        }
+        
         event::window::expose *evt( new event::window::expose );
         evt->win = win.get();
         evt->param1 = event->xexpose.x;

@@ -34,7 +34,6 @@ namespace ds { namespace ui {
 
     window::IMPL::~IMPL()
     {
-      destroy();
     }
 
     Display * window::IMPL::x_display() const
@@ -239,7 +238,7 @@ namespace ds { namespace ui {
     void window::IMPL::destroy( display::IMPL * disp )
     {
       dsI( disp );
-      dsI( disp->xdisplay );
+      dsI( disp->_xdisplay );
 
       if (_ximage_pixels) {
         free(_ximage_pixels);
@@ -254,7 +253,7 @@ namespace ds { namespace ui {
 
       if ( _native_win ) {
         dsL("destroy: "<<_native_win);
-        XDestroyWindow( disp->xdisplay, _native_win );
+        XDestroyWindow( disp->_xdisplay, _native_win );
         _native_win = NULL;
       }
     }
@@ -281,22 +280,33 @@ namespace ds { namespace ui {
       return boost::geometry::make<graphics::box>( a.x, a.y, a.x+a.width, a.y+a.height );
     }
 
-    bool window::IMPL::commit_image( const ds::graphics::box & dr )
+    bool window::IMPL::commit_updates()
     {
-      convert_pixels( dr.x(), dr.y(), dr.width(), dr.height() );
+      if ( _pended_updates.empty() ) {
+        dsL4("window is updated");
+        return false;
+      }
+
+      dsL("commit-updates: "<<_pended_updates.size()-1);
+
+      ds::graphics::box bound;
+      box_list_t::const_iterator it = _pended_updates.begin();
+      bound = *it++;                    dsI( it != _pended_updates.end() );
+
+      convert_pixels( bound.x(), bound.y(), bound.width(), bound.height() );
 
       int copyCount = 0;
       Display * xdisp = x_display();
 
       if ( _dirty_rects.empty() ) {
         copyCount = 1;
-        XPutImage( xdisp, _native_win, _native_gc, _ximage,
-                   dr.x(), dr.y(), dr.x(), dr.y(), dr.width(), dr.height() );
+        XPutImage( xdisp, _native_win, _native_gc, _ximage, bound.x(), bound.y(),
+                   bound.x(), bound.y(), bound.width(), bound.height() );
       } else {
         ds::graphics::box r;
-        __gnu_cxx::slist<ds::graphics::box>::const_iterator it;
+        box_list_t::const_iterator it;
         for (it = _dirty_rects.begin(); it != _dirty_rects.end(); ++it) {
-          if ( (r = it->intersect(dr)).is_empty() )
+          if ( (r = it->intersect(bound)).is_empty() )
             continue;
 
           ++copyCount;
