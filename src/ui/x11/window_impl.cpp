@@ -298,14 +298,17 @@ namespace ds { namespace ui {
       int copyCount = 0;
       Display * xdisp = x_display();
 
+      /*
       if ( _dirty_rects.empty() ) {
         copyCount = 1;
         XPutImage( xdisp, _native_win, _native_gc, _ximage, bound.x(), bound.y(),
                    bound.x(), bound.y(), bound.width(), bound.height() );
-      } else {
+      } else
+      */
+      {
         ds::graphics::box r;
         box_list_t::const_iterator it;
-        for (it = _dirty_rects.begin(); it != _dirty_rects.end(); ++it) {
+        for (it = _pended_updates.begin(); it != _pended_updates.end(); ++it) {
           if ( (r = it->intersect(bound)).is_empty() )
             continue;
 
@@ -318,7 +321,7 @@ namespace ds { namespace ui {
           XPutImage( xdisp, _native_win, _native_gc, _ximage,
                      r.x(), r.y(), r.x(), r.y(), r.width(), r.height() );
         }
-        _dirty_rects.clear();
+        _pended_updates.clear();
       }
 
       if (0 < copyCount) {
