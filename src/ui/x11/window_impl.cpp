@@ -293,6 +293,11 @@ namespace ds { namespace ui {
       box_list_t::const_iterator it = _pended_updates.begin();
       bound = *it++;                    dsI( it != _pended_updates.end() );
 
+      if ( bound.is_empty() ) {
+        dsE("empty update bounds");
+        return false;
+      }
+
       convert_pixels( bound.x(), bound.y(), bound.width(), bound.height() );
 
       int copyCount = 0;
@@ -300,11 +305,12 @@ namespace ds { namespace ui {
 
       /*
       if ( _dirty_rects.empty() ) {
-        copyCount = 1;
-        XPutImage( xdisp, _native_win, _native_gc, _ximage, bound.x(), bound.y(),
-                   bound.x(), bound.y(), bound.width(), bound.height() );
-      } else
       */
+      copyCount = 1;
+      XPutImage( xdisp, _native_win, _native_gc, _ximage, bound.x(), bound.y(),
+                 bound.x(), bound.y(), bound.width(), bound.height() );
+      /*
+      } else
       {
         ds::graphics::box r;
         box_list_t::const_iterator it;
@@ -313,16 +319,16 @@ namespace ds { namespace ui {
             continue;
 
           ++copyCount;
-          /*
-            XCopyArea( _display->_xdisplay, _drawable, _native_win, _native_gc,
-            r.x, r.y, r.w, r.h,
-            r.x, r.y );
-          */
+          // XCopyArea( _display->_xdisplay, _drawable, _native_win, _native_gc,
+          // r.x, r.y, r.w, r.h,
+          // r.x, r.y );
           XPutImage( xdisp, _native_win, _native_gc, _ximage,
                      r.x(), r.y(), r.x(), r.y(), r.width(), r.height() );
         }
-        _pended_updates.clear();
       }
+      */
+
+      _pended_updates.clear();
 
       if (0 < copyCount) {
         //XFlushGC( xdisp, _p->_native_gc );
