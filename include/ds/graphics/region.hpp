@@ -22,6 +22,9 @@ namespace ds { namespace graphics {
       region( const region & );
       explicit region( const box & );
 
+      const box & bounds() const { return _bounds; }
+      const std::vector<box> & boxes() const { return _boxes; }
+
       region & operator |= ( const box & );
       region & operator &= ( const box & );
       region & operator -= ( const box & );
@@ -38,11 +41,11 @@ namespace ds { namespace graphics {
       const region operator & ( const region & ) const;
       const region operator - ( const region & ) const;
 
-      void dump( std::ostream & );
+      void dump( std::ostream & ) const;
 
     private:
       class rasterizer;
-      class operation;
+      template<int> class operation;
 
       box _bounds;
       std::vector<box> _boxes;

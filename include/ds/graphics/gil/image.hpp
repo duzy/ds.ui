@@ -49,10 +49,10 @@ namespace ds { namespace graphics { namespace gil {
 
       struct image : public any_image_t
       {
-        image();
+        image() : any_image_t() {}
 
         template<typename T>
-        image(const T & o) : any_image_t(o) {}
+        explicit image(const T & o) : any_image_t(o) {}
 
         const any_image_t & any() const { return *this; }
         any_image_t & any() { return *this; }

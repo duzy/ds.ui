@@ -23,10 +23,6 @@ extern "C" {
 
 namespace ds { namespace graphics { namespace gil {
 
-      image::image() : any_image_t()
-      {
-      }
-
       bool image::load_png( const std::string & file )
       {
         try {

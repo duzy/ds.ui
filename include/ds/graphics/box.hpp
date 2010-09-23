@@ -114,8 +114,8 @@ namespace ds { namespace graphics {
 
       void left(coordinate_t v)   { x(v); }
       void top(coordinate_t v)    { y(v); }
-      void right(coordinate_t v)  { max_corner().x(); }
-      void bottom(coordinate_t v) { max_corner().y(); }
+      void right(coordinate_t v)  { max_corner().x(v); }
+      void bottom(coordinate_t v) { max_corner().y(v); }
 
       coordinate_t width() const  { return max_corner().x() - min_corner().x(); }
       coordinate_t height() const { return max_corner().y() - min_corner().y(); }

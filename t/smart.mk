@@ -19,6 +19,7 @@ sm.this.includes := \
 sm.this.sources := \
   boost_test_stuff.cpp \
   shared_object.t \
+  box.t \
   region.t \
   png_reader.t \
   streambuf.t \
@@ -39,11 +40,13 @@ sm.this.link.options := \
 
 sm.this.libdirs := \
   $(ds.ui.dir.lib) \
+  $(ds.third.dir.lib) \
   $(ds.third.boost.dir.lib)
 
 sm.this.libs := dsui \
   $(call ds.third.boost.use, system) \
   $(call ds.third.boost.use, filesystem) \
+  $(ds.third.libpng.libname) \
 
 $(sm-build-this)
 
