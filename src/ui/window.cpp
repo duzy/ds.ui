@@ -106,7 +106,7 @@ namespace ds { namespace ui {
       /** (1) mark the area scoped by 'ub' as dirty, which will be drawn
        *      later and then moved into _pended_updates
        */          
-      _p->set_dirty( ub );                 dsI( !_p->_dirty_rects.empty() );
+      _p->set_dirty( ub );                 dsI( !_p->_dirty_region.empty() );
 
       /** (2) add the current window into the dirty window list
        */

@@ -22,7 +22,7 @@ namespace ds { namespace ui {
     window::IMPL::IMPL( const screen::pointer & d )
       : _screen( d )
       , _image()
-      , _dirty_rects()
+      , _dirty_region()
       , _pended_updates()
       , _native_win( NULL )
       , _native_gc( NULL )
@@ -137,9 +137,8 @@ namespace ds { namespace ui {
 
       dsL("commit-updates: "<<_pended_updates.size()-1);
 
-      ds::graphics::box bound;
-      box_list_t::const_iterator it = _pended_updates.begin();
-      bound = *it++;                    dsI( it != _pended_updates.end() );
+      ds::graphics::box bound = _pended_updates.bounds();
+      ds::graphics::region::const_iterator it = _pended_updates.begin();
 
       // TODO: only flush pended update rects
 

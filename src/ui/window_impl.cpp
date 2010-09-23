@@ -20,6 +20,7 @@
 
 namespace ds { namespace ui {
 
+    /*
     template<typename Boxes>
     static bool combine_boxes( Boxes & boxes, const ds::graphics::box & bx )
     {
@@ -71,6 +72,7 @@ namespace ds { namespace ui {
 
       return true;
     }
+    */
 
     /**
      *  Mark a area as dirty which is required for renderring.
@@ -80,7 +82,8 @@ namespace ds { namespace ui {
     void window::IMPL::set_dirty( const ds::graphics::box & dirty )
     {
       // (1) add dirty rect into the _dirty_rects list(sorted)
-      combine_boxes( _dirty_rects, dirty );
+      //combine_boxes( _dirty_rects, dirty );
+      _dirty_region |= dirty;
     }
 
     /**
@@ -90,9 +93,10 @@ namespace ds { namespace ui {
     {
       dsL5("mark-updated: ["<<b.x()<<","<<b.y()<<","<<b.width()<<","<<b.height()<<"]");
 
-      if ( combine_boxes( _pended_updates, b ) ) {
-        //commit_updates();
-      }
+      // if ( combine_boxes( _pended_updates, b ) ) {
+      //   //commit_updates();
+      // }
+      _pended_updates |= b;
     }
 
     /**
@@ -102,13 +106,13 @@ namespace ds { namespace ui {
     {
       // TODO:(1) redraw the dirty rects, and mark each as _pended_updates
 
-      if ( _dirty_rects.empty() ) {
+      if ( _dirty_region.empty() ) {
         dsL5("nothing dirty");
         return;
       }
 
       const graphics::box wr( get_rect() ); // TODO: get_client_rect()
-      if ( wr.is_empty() ) {
+      if ( wr.empty() ) {
         dsE("empty window rect: "<<_native_win<<", "<<wr.x()<<","<<wr.y()<<","<<wr.width()<<","<<wr.height());
         return;
       }
@@ -124,12 +128,10 @@ namespace ds { namespace ui {
       dsI( 0 < _image.height() );
 
       ds::graphics::canvas canvas( _image );
-      ds::graphics::box bound;
-      box_list_t::const_iterator it = _dirty_rects.begin();
+      ds::graphics::box bound = _dirty_region.bounds();
+      ds::graphics::region::const_iterator it = _dirty_region.begin();
       
-      bound = *it++;                       dsI( it != _dirty_rects.end() );
-      
-      for ( ; it != _dirty_rects.end(); ++it ) {
+      for ( ; it != _dirty_region.end(); ++it ) {
         dsL5("redraw: ["<<it->x()<<","<<it->y()<<","<<it->width()<<","<<it->height()<<"]");
 
         //TODO: dispatch drawing to widgets
@@ -141,7 +143,7 @@ namespace ds { namespace ui {
         pend_update( *it );
       }
 
-      _dirty_rects.clear(); //!< the window is cleaned
+      _dirty_region.clear(); //!< the window is cleaned
     }
 
   }//namespace ui

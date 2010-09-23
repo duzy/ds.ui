@@ -73,7 +73,7 @@ namespace ds { namespace graphics {
           do {
             int inside = spannerInner.next(current);//.next(current.left, current.right);
             if ((OP >> inside) & 1) {
-              if (!current.is_empty()) {
+              if (!current.empty()) {
                 rasterizer(current);
               }
             }

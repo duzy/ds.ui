@@ -7,11 +7,9 @@
  *
  **/
 
-#include <ds/graphics/box.hpp>
+#include <ds/graphics/region.hpp>
 #include <ds/graphics/image.hpp>
 #include <cstring>
-//#include <ext/slist>
-#include <list>
 
 #ifdef _WIN32
 #    include <windows.h>
@@ -31,9 +29,6 @@ namespace ds { namespace ui {
 
     struct window::IMPL
     {
-      //typedef __gnu_cxx::slist<ds::graphics::box> box_list_t;
-      typedef std::list<ds::graphics::box> box_list_t;
-
       IMPL( const screen::pointer & d );
       ~IMPL();
 
@@ -59,13 +54,13 @@ namespace ds { namespace ui {
       /**
        *  %_dirty_rects holds a list of rectangles required to be redrawn
        */
-      box_list_t _dirty_rects; //!< the first one is the bounding
+      ds::graphics::region _dirty_region; //!< the first one is the bounding
 
       /**
        *  %_pended_updates holds a list of rectangles which has been redrawn
        *  and pending for updating onto the screen.
        */
-      box_list_t _pended_updates; //!< the first one is the bounding
+      ds::graphics::region _pended_updates; //!< the first one is the bounding
 
       native_window_t _native_win;
       native_gc_t _native_gc; //!< win32: only availible within BeginPaint/EndPaint

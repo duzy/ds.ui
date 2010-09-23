@@ -87,7 +87,7 @@ namespace ds { namespace graphics {
         traits::coord_access<K>::get(this);
       }
 
-      bool is_empty() const
+      bool empty() const
       {
         return min_corner().x() >= max_corner().x()
           ||   min_corner().y() >= max_corner().y() ;
@@ -128,7 +128,7 @@ namespace ds { namespace graphics {
       {
         box o;
         o.set_empty();
-        if ( r.is_empty() ) return o;
+        if ( r.empty() ) return o;
         o.left  ( left()   < r.left()   ? r.left() : left() );
         o.top   ( top()    < r.top()    ? r.top()  : top() );
         o.right ( right()  < r.right()  ? right()  : r.right() );
@@ -138,7 +138,7 @@ namespace ds { namespace graphics {
 
       bool intersects(const box & o) const
       {
-        return (!is_empty())
+        return (!empty())
           && o.left() < right() && left() < o.right()
           && o.top() < bottom() && top() < o.bottom()
           ;
@@ -146,7 +146,7 @@ namespace ds { namespace graphics {
 
       bool contains(const box & o) const
       {
-        return (!is_empty())
+        return (!empty())
           && left() <= o.left() && o.right() <= right()
           && top() <= o.top() && o.bottom() <= bottom()
           ;

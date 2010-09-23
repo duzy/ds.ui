@@ -289,11 +289,10 @@ namespace ds { namespace ui {
 
       dsL("commit-updates: "<<_pended_updates.size()-1);
 
-      ds::graphics::box bound;
+      ds::graphics::box bound = _pended_updates.bounds();
       box_list_t::const_iterator it = _pended_updates.begin();
-      bound = *it++;                    dsI( it != _pended_updates.end() );
 
-      if ( bound.is_empty() ) {
+      if ( bound.empty() ) {
         dsE("empty update bounds");
         return false;
       }

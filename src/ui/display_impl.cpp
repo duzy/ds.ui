@@ -22,7 +22,7 @@ namespace ds { namespace ui {
 
     void display::IMPL::set_win_dirty( const window::pointer & w )
     {
-      dsI( !( w->_p->_dirty_rects.empty() ) );
+      dsI( !( w->_p->_dirty_region.empty() ) );
 
       if ( std::find( _dirty_wins.begin(), _dirty_wins.end(), w ) == _dirty_wins.end() ) {
         dsL4( "set-window-dirty: "<<w->_p->_native_win );
@@ -37,7 +37,7 @@ namespace ds { namespace ui {
         dsL4( "redraw-window: "<<(*it)->_p->_native_win );
 
         (*it)->_p->redraw_dirties( disp, *it );
-        dsI( (*it)->_p->_dirty_rects.empty() );
+        dsI( (*it)->_p->_dirty_region.empty() );
         (*it)->_p->commit_updates();
         dsI( (*it)->_p->_pended_updates.empty() );
       }
