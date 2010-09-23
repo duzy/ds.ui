@@ -8,6 +8,8 @@
  **/
 
 #include <ds/graphics/region.hpp>
+#include <algorithm>
+#include <iterator>
 #include <stdint.h>
 //#include <sys/types.h>
 
@@ -66,15 +68,21 @@ namespace ds { namespace graphics {
       void operator()(region_rasterizer& rasterizer) {
         RECT current;
         do {
+          TYPE top(current.top()), bot(current.bottom());
           SpannerInner spannerInner(spanner.lhs, spanner.rhs);
-          int inside = spanner.next(current.top, current.bottom);
+          //int inside = spanner.next(current.top(), current.bottom());
+          int inside = spanner.next(top, bot);
+          current.top(top), current.bottom(bot);
           spannerInner.prepare(inside);
           do {
-            TYPE left, right;
-            int inside = spannerInner.next(current.left, current.right);
+            //TYPE left, right;
+            //int inside = spannerInner.next(current.left(), current.right());
+            TYPE left(current.left()), right(current.right());
+            int inside = spannerInner.next(left, right);
+            current.left(left), current.right(right);
             if ((op_mask >> inside) & 1) {
-              if (current.left < current.right && 
-                  current.top < current.bottom) {
+              if (current.left() < current.right() && 
+                  current.top() < current.bottom()) {
                 rasterizer(current);
               }
             }
@@ -152,10 +160,10 @@ namespace ds { namespace graphics {
         inline Spanner(const region& lhs, const region& rhs)
           : lhs(lhs), rhs(rhs) 
         {
-          SpannerBase::lhs_head = lhs.rects->top      + lhs.dy;
-          SpannerBase::lhs_tail = lhs.rects->bottom   + lhs.dy;
-          SpannerBase::rhs_head = rhs.rects->top      + rhs.dy;
-          SpannerBase::rhs_tail = rhs.rects->bottom   + rhs.dy;
+          SpannerBase::lhs_head = lhs.rects->top()      + lhs.dy;
+          SpannerBase::lhs_tail = lhs.rects->bottom()   + lhs.dy;
+          SpannerBase::rhs_head = rhs.rects->top()      + rhs.dy;
+          SpannerBase::rhs_tail = rhs.rects->bottom()   + rhs.dy;
         }
 
         inline bool isDone() const {
@@ -183,14 +191,14 @@ namespace ds { namespace graphics {
           size_t count = reg.count;
           RECT const * rects = reg.rects;
           RECT const * const end = rects + count;
-          const int top = rects->top;
-          while (rects != end && rects->top == top) {
+          const int top = rects->top();
+          while (rects != end && rects->top() == top) {
             rects++;
             count--;
           }
           if (rects != end) {
-            aTop    = rects->top    + reg.dy;
-            aBottom = rects->bottom + reg.dy;
+            aTop    = rects->top()    + reg.dy;
+            aBottom = rects->bottom() + reg.dy;
           } else {
             aTop    = max_value;
             aBottom = max_value;
@@ -213,20 +221,20 @@ namespace ds { namespace graphics {
 
         inline void prepare(int inside) {
           if (inside == SpannerBase::lhs_before_rhs) {
-            SpannerBase::lhs_head = lhs.rects->left  + lhs.dx;
-            SpannerBase::lhs_tail = lhs.rects->right + lhs.dx;
+            SpannerBase::lhs_head = lhs.rects->left()  + lhs.dx;
+            SpannerBase::lhs_tail = lhs.rects->right() + lhs.dx;
             SpannerBase::rhs_head = max_value;
             SpannerBase::rhs_tail = max_value;
           } else if (inside == SpannerBase::lhs_after_rhs) {
             SpannerBase::lhs_head = max_value;
             SpannerBase::lhs_tail = max_value;
-            SpannerBase::rhs_head = rhs.rects->left  + rhs.dx;
-            SpannerBase::rhs_tail = rhs.rects->right + rhs.dx;
+            SpannerBase::rhs_head = rhs.rects->left()  + rhs.dx;
+            SpannerBase::rhs_tail = rhs.rects->right() + rhs.dx;
           } else {
-            SpannerBase::lhs_head = lhs.rects->left  + lhs.dx;
-            SpannerBase::lhs_tail = lhs.rects->right + lhs.dx;
-            SpannerBase::rhs_head = rhs.rects->left  + rhs.dx;
-            SpannerBase::rhs_tail = rhs.rects->right + rhs.dx;
+            SpannerBase::lhs_head = lhs.rects->left()  + lhs.dx;
+            SpannerBase::lhs_tail = lhs.rects->right() + lhs.dx;
+            SpannerBase::rhs_head = rhs.rects->left()  + rhs.dx;
+            SpannerBase::rhs_tail = rhs.rects->right() + rhs.dx;
           }
         }
 
@@ -253,15 +261,15 @@ namespace ds { namespace graphics {
         static inline 
         void advance(region& reg, TYPE& left, TYPE& right) {
           if (reg.rects && reg.count) {
-            const int cur_span_top = reg.rects->top;
+            const int cur_span_top = reg.rects->top();
             reg.rects++;
             reg.count--;
-            if (!reg.count || reg.rects->top != cur_span_top) {
+            if (!reg.count || reg.rects->top() != cur_span_top) {
               left  = max_value;
               right = max_value;
             } else {
-              left  = reg.rects->left  + reg.dx;
-              right = reg.rects->right + reg.dx;
+              left  = reg.rects->left()  + reg.dx;
+              right = reg.rects->right() + reg.dx;
             }
           }
         }
@@ -318,7 +326,6 @@ namespace ds { namespace graphics {
           }
         }
         span.push_back(rect); //span.add(rect);
-        //cur = span.editArray() + (span.size() - 1);
         cur = &span[0] + (span.size() - 1);
       }
     private:
@@ -350,56 +357,71 @@ namespace ds { namespace graphics {
             r++;
           }
         } else {
-          bounds.left( min(span[0].left(), bounds.left()) );
+          bounds.left( min(span.front().left(), bounds.left()) );
           bounds.right( max(span.back().right(), bounds.right()) );
-          storage.appendVector(span);
+          //storage.appendVector(span);
+          std::copy( span.begin(), span.end(), std::back_inserter(storage) );
           //tail = storage.editArray() + storage.size();
           tail = &storage[0] + storage.size();
           head = tail - span.size();
         }
         span.clear();
       }
-    };//class rasterizer
+    };//class region::rasterizer
 
-    static void boolean_operation(int op, region& dst,
-                                  const region& lhs,
-                                  const region& rhs, int dx, int dy)
+    class region::operation
     {
-      size_t lhs_count;
-      box const * const lhs_rects = lhs.getArray(&lhs_count);
-
-      size_t rhs_count;
-      box const * const rhs_rects = rhs.getArray(&rhs_count);
-
-      region_operator<box>::region lhs_region(lhs_rects, lhs_count);
-      region_operator<box>::region rhs_region(rhs_rects, rhs_count, dx, dy);
-      region_operator<box> operation(op, lhs_region, rhs_region);
-      { // scope for rasterizer (dtor has side effects)
-        rasterizer r(dst);
-        operation(r);
+      static box const * const get_array( const region & r, size_t * c )
+      {
+        if ( r._boxes.empty() ) {
+          if (c) *c = 1;
+          return &r._bounds;
+        } else {
+          if (c) *c = r._boxes.size();
+          return &r._boxes[0];
+        }
       }
-    }
 
-    static void boolean_operation(int op, region& dst,
-                                  const region& lhs,
-                                  const box& rhs, int dx, int dy)
-    {
+    public:
+      static void boolean_operation(int op, region& dst,
+                                    const region& lhs,
+                                    const region& rhs, int dx, int dy)
+      {
+        size_t lhs_count;
+        box const * const lhs_rects = get_array(lhs, &lhs_count);
+
+        size_t rhs_count;
+        box const * const rhs_rects = get_array(rhs, &rhs_count);
+
+        region_operator<box>::region lhs_region(lhs_rects, lhs_count);
+        region_operator<box>::region rhs_region(rhs_rects, rhs_count, dx, dy);
+        region_operator<box> oper(op, lhs_region, rhs_region);
+        { // scope for rasterizer (dtor has side effects)
+          rasterizer r(dst);
+          oper(r);
+        }
+      }
+
+      static void boolean_operation(int op, region& dst,
+                                    const region& lhs,
+                                    const box& rhs, int dx, int dy)
+      {
 #if VALIDATE_WITH_CORECG || VALIDATE_REGIONS
-      boolean_operation(op, dst, lhs, region(rhs), dx, dy);
+        boolean_operation(op, dst, lhs, region(rhs), dx, dy);
 #else
-      size_t lhs_count;
-      box const * const lhs_rects = lhs.getArray(&lhs_count);
+        size_t lhs_count;
+        box const * const lhs_rects = get_array(lhs, &lhs_count);
 
-      region_operator<box>::region lhs_region(lhs_rects, lhs_count);
-      region_operator<box>::region rhs_region(&rhs, 1, dx, dy);
-      region_operator<box> operation(op, lhs_region, rhs_region);
-      { // scope for rasterizer (dtor has side effects)
-        rasterizer r(dst);
-        operation(r);
-      }
-
+        region_operator<box>::region lhs_region(lhs_rects, lhs_count);
+        region_operator<box>::region rhs_region(&rhs, 1, dx, dy);
+        region_operator<box> oper(op, lhs_region, rhs_region);
+        { // scope for rasterizer (dtor has side effects)
+          rasterizer r(dst);
+          oper(r);
+        }
 #endif
-    }
+      }
+    };//class region::operation
 
     //=======================================================================
     
@@ -407,6 +429,60 @@ namespace ds { namespace graphics {
       : _bounds()
       , _boxes()
     {
+    }
+
+    region::region( const region & o )
+      : _bounds( o._bounds )
+      , _boxes( o._boxes )
+    {
+    }
+
+    region::region( const box & b )
+      : _bounds(b)
+      , _boxes()
+    {
+    }
+
+    region & region::operator |= ( const box & rhs )
+    {
+      region lhs(*this);
+      operation::boolean_operation( region_operator<box>::op_or, *this, lhs, rhs, 0, 0 );
+      return *this;
+    }
+
+    region & region::operator &= ( const box & rhs )
+    {
+      region lhs(*this);
+      operation::boolean_operation( region_operator<box>::op_and, *this, lhs, rhs, 0, 0 );
+      return *this;
+    }
+
+    region & region::operator -= ( const box & rhs )
+    {
+      region lhs(*this);
+      operation::boolean_operation( region_operator<box>::op_nand, *this, lhs, rhs, 0, 0 );
+      return *this;
+    }
+
+    const region region::operator | ( const box & rhs ) const
+    {
+      region res;
+      operation::boolean_operation( region_operator<box>::op_or, res, *this, rhs, 0, 0 );
+      return res;
+    }
+
+    const region region::operator & ( const box & rhs ) const
+    {
+      region res;
+      operation::boolean_operation( region_operator<box>::op_and, res, *this, rhs, 0, 0 );
+      return res;
+    }
+
+    const region region::operator - ( const box & rhs ) const
+    {
+      region res;
+      operation::boolean_operation( region_operator<box>::op_nand, res, *this, rhs, 0, 0 );
+      return res;
     }
 
     region & region::operator |= ( const region & )
@@ -424,19 +500,19 @@ namespace ds { namespace graphics {
       return *this;
     }
 
-    const region region::operator |= ( const region & ) const
+    const region region::operator | ( const region & ) const
     {
       region r;
       return r;
     }
 
-    const region region::operator &= ( const region & ) const
+    const region region::operator & ( const region & ) const
     {
       region r;
       return r;
     }
 
-    const region region::operator -= ( const region & ) const
+    const region region::operator - ( const region & ) const
     {
       region r;
       return r;

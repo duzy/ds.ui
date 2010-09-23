@@ -2,7 +2,6 @@
 #
 
 $(call sm-new-module, dsrc, executable)
-
 include $(sm.this.dir)/check-deps.mk
 
 sm.this.verbose := true

@@ -1,6 +1,6 @@
 #
 
-$(call sm-new-module, simple_window, executable)
+$(call sm-new-module, simple, executable)
 
 sm.this.verbose := true
 sm.this.toolset := gcc
@@ -22,7 +22,7 @@ sm.this.libdirs := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 
-sm.this.sources := simple_window.cpp
+sm.this.sources := main.cpp
 
 sm.this.libs := dsui
 

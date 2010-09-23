@@ -13,19 +13,24 @@ sm.this.includes := \
   $(ds.third.dir.inc) \
   $(ds.third.dir.inc)/zlib \
   $(ds.third.dir.inc)/libpng \
-  $(ds.third.boost.dir)
+  $(ds.third.boost.dir) \
+  $(ds.third.boost.geometry)
 
 sm.this.sources := \
   boost_test_stuff.cpp \
   shared_object.t \
-  streambuf.t \
+  region.t \
   png_reader.t \
+  streambuf.t \
 
 sm.this.sources.external := \
   $(sm.out.tmp)/dsrc_test_stub.cpp
 
+EXE := $(if $(sm.os.linux),,.exe)
+
 $(sm.out.tmp)/dsrc_test_stub.cpp: \
-  $(sm.this.dir)/dsrc_test.xml | $(sm.out.bin)/dsrc
+  $(sm.this.dir)/dsrc_test.xml \
+  $(sm.out.bin)/dsrc$(EXE)
 	@$(sm.out.bin)/dsrc -o $@ $<
 
 sm.this.link.options := \
