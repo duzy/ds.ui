@@ -304,28 +304,23 @@ namespace ds { namespace ui {
 
       /*
       if ( _dirty_rects.empty() ) {
-      */
       copyCount = 1;
       XPutImage( xdisp, _native_win, _native_gc, _ximage, bound.x(), bound.y(),
                  bound.x(), bound.y(), bound.width(), bound.height() );
-      /*
       } else
+      */
       {
-        ds::graphics::box r;
-        box_list_t::const_iterator it;
-        for (it = _pended_updates.begin(); it != _pended_updates.end(); ++it) {
-          if ( (r = it->intersect(bound)).is_empty() )
-            continue;
-
+        ds::graphics::region::const_iterator end = _pended_updates.end();
+        for (; it != _pended_updates.end(); ++it) {
           ++copyCount;
           // XCopyArea( _display->_xdisplay, _drawable, _native_win, _native_gc,
-          // r.x, r.y, r.w, r.h,
-          // r.x, r.y );
+          // it->x, it->y, it->w, it->h,
+          // it->x, it->y );
           XPutImage( xdisp, _native_win, _native_gc, _ximage,
-                     r.x(), r.y(), r.x(), r.y(), r.width(), r.height() );
+                     it->x(), it->y(),
+                     it->x(), it->y(), it->width(), it->height() );
         }
       }
-      */
 
       _pended_updates.clear();
 

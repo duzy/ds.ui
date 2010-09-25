@@ -137,20 +137,23 @@ namespace ds { namespace ui {
 
       dsL("commit-updates: "<<_pended_updates.size()-1);
 
-      ds::graphics::box bound = _pended_updates.bounds();
+      ds::graphics::box const & bound = _pended_updates.bounds();
       ds::graphics::region::const_iterator it = _pended_updates.begin();
+      ds::graphics::region::const_iterator const end = _pended_updates.end();
 
       // TODO: only flush pended update rects
 
       dsI( _paint_buffer.ptr() );
       
-#if 0
+#if 1
       RECT r;
-      r.left   = bound.left();
-      r.top    = bound.top();
-      r.right  = bound.right();
-      r.bottom = bound.bottom();
-      _paint_buffer.flush( dc, &r, &r );
+      for (; it != end; ++it) {
+        r.left   = it->left();
+        r.top    = it->top();
+        r.right  = it->right();
+        r.bottom = it->bottom();
+        _paint_buffer.flush( dc, &r, &r );
+      }
 #else
       bool ok = _paint_buffer.flush( dc, NULL, NULL );
       dsL4( "commited: "<<ok );
