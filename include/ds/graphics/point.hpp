@@ -26,6 +26,11 @@ namespace ds { namespace graphics {
       point(coordinate_t x, coordinate_t y)
         : base_point(x, y)
       {}
+
+      bool operator == ( const point & rhs ) const
+      {
+        return x() == rhs.x() && y() == rhs.y() ;
+      }
     };
     
   }//namespace graphics

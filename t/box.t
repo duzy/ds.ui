@@ -39,3 +39,24 @@ BOOST_AUTO_TEST_CASE( box_assign )
   BOOST_CHECK( b.width()  == 95 );
   BOOST_CHECK( b.height() == 95 );
 }
+
+BOOST_AUTO_TEST_CASE( box_intersect )
+{
+  box b1 = make<box>( 10, 10, 110, 110 );
+  box b2 = make<box>( 50, 50, 150, 150 );
+  BOOST_CHECK( b1.intersects(b2) );
+
+  box b3 = b1.intersect( b2 );
+  BOOST_CHECK( !b3.empty() );
+  BOOST_CHECK( b3.x() == 50 );
+  BOOST_CHECK( b3.y() == 50 );
+  BOOST_CHECK( b3.right() == 110 );
+  BOOST_CHECK( b3.bottom() == 110 );
+}
+
+BOOST_AUTO_TEST_CASE( box_contains )
+{
+  box b1 = make<box>( 10, 10, 110, 110 );
+  box b2 = make<box>( 20, 20, 100, 100 );
+  BOOST_CHECK( b1.contains(b2) );
+}

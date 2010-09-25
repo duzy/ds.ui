@@ -124,6 +124,12 @@ namespace ds { namespace graphics {
 
       void resize(coordinate_t w, coordinate_t h) { width(w), height(h); }
 
+      bool operator == ( const box & rhs ) const
+      {
+        return min_corner() == rhs.min_corner()
+          &&   max_corner() == rhs.max_corner() ;
+      }
+
       box intersect(const box & r) const
       {
         box o;
