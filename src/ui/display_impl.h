@@ -61,6 +61,7 @@ namespace ds { namespace ui {
 #elif defined(QT)
 
       QApplication * _app;
+      void push_event( event_queue *, QEvent * event );
 
 #else
 #   error unsupported platform
