@@ -33,6 +33,10 @@ namespace ds { namespace ui {
       Screen * _xscrn;
 
       XVisualInfo * get_visual_info();
+#elif defined(QT)
+
+      
+      
 #else
 #   error unsupported platform
 #endif

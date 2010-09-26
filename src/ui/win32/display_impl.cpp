@@ -92,13 +92,6 @@ namespace ds { namespace ui {
       return 0;
     }
 
-    screen::pointer display::IMPL::get_screen( int n ) const
-    {
-      dsI( _scrns );
-      if ( n != 0 ) return NULL;
-      return _scrns[ 0 ];
-    }
-
     void display::IMPL::pump_native_events( event_queue * eq )
     {
       MSG msg;

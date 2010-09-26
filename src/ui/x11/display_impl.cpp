@@ -173,13 +173,5 @@ namespace ds { namespace ui {
       return XDefaultScreen( _xdisplay );
     }
 
-    screen::pointer display::IMPL::get_screen( int n ) const
-    {
-      if ( 0 <= n && n < screen_count() ) {
-        dsI( _scrns );
-        return _scrns[n];
-      }
-      return NULL;
-    }
   }//namespace ui
 }//namespace ds

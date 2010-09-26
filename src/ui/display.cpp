@@ -6,15 +6,15 @@
  *    $Id$
  *
  **/
-#include <ds/ui/display.hpp>
-#include <ds/ui/screen.hpp>
 #include <ds/ui/window.hpp>
-#include <ds/ui/events.hpp>
-#include <ds/event_queue.hpp>
-#include <ds/debug.hpp>
+#include <ds/ui/screen.hpp>
+#include <ds/ui/display.hpp>
 #include "window_impl.h"
 #include "screen_impl.h"
 #include "display_impl.h"
+#include <ds/ui/events.hpp>
+#include <ds/event_queue.hpp>
+#include <ds/debug.hpp>
 
 namespace ds { namespace ui {
 

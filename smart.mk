@@ -5,6 +5,7 @@ $(call sm-new-module, dsui, shared)
 
 ds.ui.dir := $(sm.this.dir)
 ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
+ds.ui.qt_based := true
 
 include $(ds.ui.dir)/check-deps.mk
 
@@ -64,6 +65,15 @@ sm.this.libs += \
 
 sm.this.depends :=
 
+ifeq ($(ds.ui.qt_based),true)
+  sm.this.sources += $(wildcard src/ui/qt/*.cpp)
+  sm.this.libs += QtCore QtGui pthread
+  sm.this.compile.options += -DQT=1
+  sm.this.includes += /usr/include/qt4
+  sm.this.depends += $(sm.out.lib)/libdsui.so
+  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.var.dsui.targets)
+	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsui.targets),$@)
+else
 ifeq ($(sm.os.name),linux)
   sm.this.sources += $(wildcard src/ui/x11/*.cpp)
   sm.this.libs += X11 pthread
@@ -94,6 +104,7 @@ ifeq ($(sm.os.name),mac)
 endif#mac
 endif#win32
 endif#linux
+endif#qt-based
 
 $(call sm-build-this)
 ## use sm.this.dirs to maintain build order

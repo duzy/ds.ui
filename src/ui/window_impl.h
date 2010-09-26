@@ -7,10 +7,6 @@
  *
  **/
 
-#include <ds/graphics/region.hpp>
-#include <ds/graphics/image.hpp>
-#include <cstring>
-
 #ifdef _WIN32
 #    include <windows.h>
 #    include "win32/paint_buffer.h"
@@ -21,9 +17,16 @@ typedef HDC     native_gc_t;
 #    include <X11/Xutil.h>
 typedef Window  native_window_t;
 typedef GC      native_gc_t;
+#elif defined(QT)
+#    include <QtGui/QApplication>
+#    include <QtGui/QWidget>
+typedef QWidget*  native_window_t;
 #else
 #    error unsupported platform
 #endif
+#include <ds/graphics/region.hpp>
+#include <ds/graphics/image.hpp>
+#include <cstring>
 
 namespace ds { namespace ui {
 
@@ -63,19 +66,24 @@ namespace ds { namespace ui {
       ds::graphics::region _pended_updates; //!< the first one is the bounding
 
       native_window_t _native_win;
-      native_gc_t _native_gc; //!< win32: only availible within BeginPaint/EndPaint
 
 #ifdef _WIN32
 
+      native_gc_t _native_gc; //!< win32: only availible within BeginPaint/EndPaint
       detail::paint_buffer _paint_buffer;
 
 #elif defined(X11)
 
+      native_gc_t _native_gc;
       XImage * _ximage;
       void * _ximage_pixels;
 
       Display * x_display() const;
 
+#elif defined(QT)
+
+      
+      
 #else
 #   error unsupported platform
 #endif

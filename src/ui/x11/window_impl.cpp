@@ -310,8 +310,8 @@ namespace ds { namespace ui {
       } else
       */
       {
-        ds::graphics::region::const_iterator end = _pended_updates.end();
-        for (; it != _pended_updates.end(); ++it) {
+        ds::graphics::region::const_iterator const end = _pended_updates.end();
+        for (; it != end; ++it) {
           ++copyCount;
           // XCopyArea( _display->_xdisplay, _drawable, _native_win, _native_gc,
           // it->x, it->y, it->w, it->h,
