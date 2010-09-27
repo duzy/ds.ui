@@ -60,6 +60,7 @@ namespace ds { namespace ui {
         _screen = scrn; // save the reference of the screen
 
       _native_win = new QWidget( NULL, Qt::Window );
+      //_native_win->show();
       
       return _native_win != NULL;
     }

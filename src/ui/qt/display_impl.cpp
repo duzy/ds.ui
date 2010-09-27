@@ -19,6 +19,23 @@
 
 namespace ds { namespace ui {
 
+    class ds_app : public QApplication
+    {
+    public:
+      ds_app(int & argc, char ** argv)
+        : QApplication(argc, argv)
+      {
+      }
+
+    protected:
+      bool event( QEvent * );
+    };
+
+    bool ds_app::event( QEvent * e )
+    {
+      dsL("event: "<<e->type());
+    }
+
     display::IMPL::IMPL()
       : _app( NULL )
     {
@@ -44,13 +61,24 @@ namespace ds { namespace ui {
       }
 
       int argc = 0;
-      _app = new QApplication(argc, NULL);
+      _app = new ds_app(argc, NULL); //QApplication(argc, NULL);
 
       _winmap.clear();
     }
 
     void display::IMPL::pump_native_events( event_queue * eq )
     {
+      dsI( _app );
+
+      // //_app->processEvents( QEventLoop::AllEvents );
+      //if ( _app->hasPendingEvents() ) {
+      //  _app->sendPostedEvents();
+      //}
+
+      //QEventLoop l;
+      //l.processEvents( QEventLoop::AllEvents );
+
+      //_app->exec();
     }
 
     bool display::IMPL::map_win_natively( const window::pointer & win )
