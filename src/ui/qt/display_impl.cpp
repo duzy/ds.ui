@@ -61,7 +61,11 @@ namespace ds { namespace ui {
       }
 
       int argc = 0;
-      _app = new ds_app(argc, NULL); //QApplication(argc, NULL);
+      char * argv[] = {
+        "/home/duzy/.v/out/debug/bin/simple",
+        NULL,
+      };
+      _app = new ds_app(argc, argv);
 
       _winmap.clear();
     }
@@ -70,7 +74,8 @@ namespace ds { namespace ui {
     {
       dsI( _app );
 
-      // //_app->processEvents( QEventLoop::AllEvents );
+      _app->processEvents( QEventLoop::AllEvents );
+
       //if ( _app->hasPendingEvents() ) {
       //  _app->sendPostedEvents();
       //}

@@ -21,6 +21,7 @@
 #include <boost/geometry/geometries/adapted/c_array_cartesian.hpp>
 #include <ds/debug.hpp>
 #include <cassert>
+#include <iostream>
 
 struct my_window : ds::ui::window
 {
@@ -60,6 +61,10 @@ protected:
 
 int main(int argc, char** argv)
 {
+  for (int n=0; n < argc; ++n) {
+    std::clog<<"arg["<<n<<"]: "<<argv[n]<<std::endl;
+  }
+
   // make a default display connection
   ds::ui::display::pointer disp = ds::ui::display::open();
   //dsL("display-refs: "<<disp->use_count());

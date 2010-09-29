@@ -68,8 +68,10 @@ sm.this.depends :=
 ifeq ($(ds.ui.qt_based),true)
   sm.this.sources += $(wildcard src/ui/qt/*.cpp)
   sm.this.libs += QtCore QtGui pthread
+  sm.this.libdirs += /usr/local/Trolltech/Qt-4.7.1/lib
   sm.this.compile.options += -DQT=1
-  sm.this.includes += /usr/include/qt4
+  sm.this.includes += /usr/local/Trolltech/Qt-4.7.1/include
+  sm.this.link.options += -Wl,--rpath,/usr/local/Trolltech/Qt-4.7.1/lib
   sm.this.depends += $(sm.out.lib)/libdsui.so
   $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.var.dsui.targets)
 	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsui.targets),$@)
