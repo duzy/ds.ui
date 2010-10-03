@@ -20,9 +20,30 @@
 
 namespace ds { namespace ui {
 
-    void display::IMPL::push_event( event_queue *eq, QEvent * event )
+    bool display::IMPL::push_event( event_queue *eq, QObject * receiver, QEvent * event )
     {
-      
+      if ( !receiver->isWidgetType() )
+        return false;
+
+      window_map_t::iterator wit = _winmap.find( qobject_cast<QWidget*>(receiver) );
+      if (wit == _winmap.end())
+        return false;
+
+      window::pointer win( wit->second );                         dsI( win );
+
+      switch ( event->type() ) {
+      case QEvent::Close:
+        dsL("close");
+        // TODO: should notify the window of the close event
+        break;
+
+      case QEvent::Destroy:
+        dsL("destroy");
+        erase_destroyed_window( eq, win );
+        dsI( win->_p->_native_win == NULL );
+        break;
+      }
+      return false;
     }
 
   }//namespace ui

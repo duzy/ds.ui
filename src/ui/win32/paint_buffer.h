@@ -9,6 +9,7 @@
 
 #ifndef _DS_UI_DETAIL_PAINT_BUFFER_
 #define _DS_UI_DETAIL_PAINT_BUFFER_ 1
+#       include <ds/graphics/box.hpp>
 
 namespace ds { namespace ui { namespace detail {
 
@@ -23,7 +24,7 @@ namespace ds { namespace ui { namespace detail {
         void create( unsigned w, unsigned h, unsigned bitsPerPixel );
         void destroy();
 
-        bool flush(HDC dc, const RECT *dst, const RECT *src) const;
+        bool flush(HDC dc, const ds::graphics::box * dst, const ds::graphics::box * src) const;
 
         BITMAPINFO * bitmap_info() const { return _bmp; }
         uint8_t * ptr() const { return _ptr; }

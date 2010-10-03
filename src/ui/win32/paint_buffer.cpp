@@ -159,7 +159,7 @@ namespace ds { namespace ui { namespace detail {
         _ptr = NULL;
       }
 
-      bool paint_buffer::flush(HDC dc, const RECT *dstRect, const RECT *srcRect) const
+      bool paint_buffer::flush(HDC dc, const ds::graphics::box * dst, const ds::graphics::box * src) const
       {
         if (_bmp == 0 || _ptr == 0) {
           dsE("paint buffer is null");
@@ -175,11 +175,11 @@ namespace ds { namespace ui { namespace detail {
         int dstW = std::abs(_bmp->bmiHeader.biWidth);
         int dstH = std::abs(_bmp->bmiHeader.biHeight);
         
-        if (srcRect) {
-          srcX = srcRect->left;
-          srcY = srcRect->top;
-          srcW = srcRect->right  - srcRect->left;
-          srcH = srcRect->bottom - srcRect->top;
+        if (src) {
+          srcX = src->x();//srcRect->left;
+          srcY = src->y();//srcRect->top;
+          srcW = src->width();//srcRect->right  - srcRect->left;
+          srcH = src->height();//srcRect->bottom - srcRect->top;
         }
 
         dstX = srcX;
@@ -187,11 +187,11 @@ namespace ds { namespace ui { namespace detail {
         dstW = srcW;
         dstH = srcH;
 
-        if (dstRect) {
-          dstX = dstRect->left;
-          dstY = dstRect->top;
-          dstW = dstRect->right  - dstRect->left;
-          dstH = dstRect->bottom - dstRect->top;
+        if (dst) {
+          dstX = dst->x();//dstRect->left;
+          dstY = dst->y();//dstRect->top;
+          dstW = dst->width();//dstRect->right  - dstRect->left;
+          dstH = dst->height();//dstRect->bottom - dstRect->top;
         }
 
         dsI( 0 < srcW );

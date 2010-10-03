@@ -54,5 +54,16 @@ namespace ds { namespace ui {
       return NULL;
     }
 
+    void display::IMPL::erase_destroyed_window( event_queue *eq, const window::pointer & win )
+    {
+      const native_window_t nw = win->_p->_native_win;
+      win->_p->_native_win = NULL;
+      win->_p->_screen.reset();
+      _winmap.erase( nw );
+      if ( _winmap.empty() ) {
+        eq->push( new ds::event::quit );
+      }
+    }
+
   }//namespace ui
 }//namespace ds

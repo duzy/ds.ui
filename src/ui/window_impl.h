@@ -7,7 +7,11 @@
  *
  **/
 
-#ifdef _WIN32
+#  if defined(QT)
+#    include <QtGui/QApplication>
+#    include <QtGui/QWidget>
+typedef QWidget*  native_window_t;
+#elif defined(_WIN32)
 #    include <windows.h>
 #    include "win32/paint_buffer.h"
 typedef HWND    native_window_t;
@@ -17,10 +21,6 @@ typedef HDC     native_gc_t;
 #    include <X11/Xutil.h>
 typedef Window  native_window_t;
 typedef GC      native_gc_t;
-#elif defined(QT)
-#    include <QtGui/QApplication>
-#    include <QtGui/QWidget>
-typedef QWidget*  native_window_t;
 #else
 #    error unsupported platform
 #endif
@@ -35,8 +35,8 @@ namespace ds { namespace ui {
       IMPL( const screen::pointer & d );
       ~IMPL();
 
-      bool create( const display::pointer &, const window::pointer & );
-      void destroy( display::IMPL * disp );
+      bool create_natively( const display::pointer &, const window::pointer & );
+      void destroy_natively( display::IMPL * disp );
 
       void convert_pixels( int x, int y, int w, int h );
 
@@ -49,6 +49,8 @@ namespace ds { namespace ui {
       void pend_update( const ds::graphics::box & );
 
       bool create_image_if_needed( int w, int h );
+      bool commit_update_natively( const ds::graphics::box & b );
+      bool sync_updates_natively();
       bool commit_updates();
 
       screen::weak_ref _screen;
@@ -67,7 +69,8 @@ namespace ds { namespace ui {
 
       native_window_t _native_win;
 
-#ifdef _WIN32
+#  if defined(QT)
+#elif defined(_WIN32)
 
       native_gc_t _native_gc; //!< win32: only availible within BeginPaint/EndPaint
       detail::paint_buffer _paint_buffer;
@@ -80,10 +83,6 @@ namespace ds { namespace ui {
 
       Display * x_display() const;
 
-#elif defined(QT)
-
-      
-      
 #else
 #   error unsupported platform
 #endif

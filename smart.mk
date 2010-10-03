@@ -5,7 +5,7 @@ $(call sm-new-module, dsui, shared)
 
 ds.ui.dir := $(sm.this.dir)
 ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
-ds.ui.qt_based := true
+ds.ui.qt_based := false
 
 include $(ds.ui.dir)/check-deps.mk
 
@@ -66,15 +66,15 @@ sm.this.libs += \
 sm.this.depends :=
 
 ifeq ($(ds.ui.qt_based),true)
+  QT := $(if $(sm.os.name.linux),/usr/local/Trolltech/Qt-4.7.1,c:/Qt/4.7.0)
+  $(call sm-check-target-exists,$(QT))
+
   sm.this.sources += $(wildcard src/ui/qt/*.cpp)
-  sm.this.libs += QtCore QtGui pthread
-  sm.this.libdirs += /usr/local/Trolltech/Qt-4.7.1/lib
+  sm.this.libs += $(if $(sm.os.name.win32),QtCored4 QtGuid4,QtCore QtGui pthread)
+  sm.this.libdirs += $(QT)/lib
   sm.this.compile.options += -DQT=1
-  sm.this.includes += /usr/local/Trolltech/Qt-4.7.1/include
-  sm.this.link.options += -Wl,--rpath,/usr/local/Trolltech/Qt-4.7.1/lib
-  sm.this.depends += $(sm.out.lib)/libdsui.so
-  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.var.dsui.targets)
-	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsui.targets),$@)
+  sm.this.includes += $(QT)/include
+  sm.this.link.options += -Wl,--rpath,$(if $(sm.os.name.win32),$(QT)/bin,$(QT)/lib)
 else
 ifeq ($(sm.os.name),linux)
   sm.this.sources += $(wildcard src/ui/x11/*.cpp)
@@ -88,18 +88,6 @@ ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
   #sm.this.libs += kernel32 user32 gdi32
   sm.this.libs += comctl32
-  sm.this.compile.options += -mthreads -mwindows
-  sm.this.link.options += -mwindows \
-    -Wl,--out-implib,$(sm.out.lib)/libdsui.a \
-    -Wl,--enable-runtime-pseudo-reloc \
-    -Wl,--enable-auto-import
-
-  sm.this.depends += $(sm.out.lib)/libdsui.a
-  $(sm.out.lib)/libdsui.a : $(sm.out.lib) $(sm.this.targets)
-
-  ifneq ($(sm.config.variant),debug)
-    sm.this.link.options += -Wl,--subsystem,windows
-  endif
 else
 ifeq ($(sm.os.name),mac)
   sm.this.sources += $(wildcard src/ui/cocoa/*.cpp)
@@ -108,8 +96,27 @@ endif#win32
 endif#linux
 endif#qt-based
 
+
+ifeq ($(sm.os.name),linux)
+  sm.this.depends += $(sm.out.lib)/libdsui.so
+  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.var.dsui.targets)
+	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsui.targets),$@)
+else
+ifeq ($(sm.os.name),win32)
+  sm.this.compile.options += -mwindows
+  sm.this.link.options += -mwindows \
+    -Wl,--out-implib,$(sm.out.lib)/libdsui.a \
+    -Wl,--enable-runtime-pseudo-reloc \
+    -Wl,--enable-auto-import
+  sm.this.depends += $(sm.out.lib)/libdsui.a
+  $(sm.out.lib)/libdsui.a : $(sm.out.lib) $(sm.this.targets)
+
+  ifneq ($(sm.config.variant),debug)
+    sm.this.link.options += -Wl,--subsystem,windows
+  endif
+endif#win32
+endif#linux
+
+
 $(call sm-build-this)
-## use sm.this.dirs to maintain build order
-#sm.this.dirs := tools t examples
-#sm.this.dirs := tools examples
 $(call sm-load-subdirs)

@@ -146,6 +146,42 @@ namespace ds { namespace ui {
       _dirty_region.clear(); //!< the window is cleaned
     }
 
+    /**
+     *  Put all dirty rects onto the screen.
+     *
+     *  @return true if any dirty rects has been push onto the screen.
+     */
+    bool window::IMPL::commit_updates()
+    {
+      if ( _pended_updates.empty() ) {
+        dsL4("window is updated");
+        return false;
+      }
+
+      dsL("commit-updates: "<<_pended_updates.size()-1);
+
+      ds::graphics::box const & bound = _pended_updates.bounds();
+      if ( bound.empty() ) {
+        dsE("empty update bounds");
+        return false;
+      }
+
+      ds::graphics::region::const_iterator it = _pended_updates.begin();
+      ds::graphics::region::const_iterator const end = _pended_updates.end();
+
+      int count = 0;
+      for (; it != end; ++it) {
+        if ( commit_update_natively( *it ) ) ++count;
+      }
+
+      if ( 0 < count ) {
+        sync_updates_natively();
+      }
+
+      _pended_updates.clear();
+      return _pended_updates.empty();
+    }
+
   }//namespace ui
 }//namespace ds
 

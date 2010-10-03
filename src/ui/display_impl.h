@@ -30,10 +30,12 @@ namespace ds { namespace ui {
       bool map_win_natively( const shared_object<window>::pointer & win );
       bool unmap_win_natively( const shared_object<window>::pointer & win );
       bool is_win_mapped_natively( const shared_object<window>::pointer & win );
+      void erase_destroyed_window( event_queue *eq, const window::pointer & win );
+
       int screen_count() const;
       int default_screen_number() const;
       shared_object<screen>::pointer get_screen( int n ) const;
-      native_window_t default_root() const;
+      //native_window_t default_root() const;
       bool is_default_root( const shared_object<window>::pointer & w ) const;
 
       void set_win_dirty( const window::pointer & );
@@ -44,7 +46,17 @@ namespace ds { namespace ui {
       shared_object<screen>::pointer * _scrns;
       window_map_t _winmap;
 
-#ifdef _WIN32
+#  if defined(QT)
+
+      QApplication * _app;
+
+      bool push_event( event_queue *, QObject *, QEvent * );
+      static bool push_event( const display::pointer &disp, QObject *receiver, QEvent * event )
+      {
+        return disp->_p->push_event( disp->get_queue(), receiver, event );
+      }
+
+#elif defined(_WIN32)
       
       static const wchar_t * get_window_class_name( bool regIfNon = false );
       static LRESULT CALLBACK wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -57,11 +69,6 @@ namespace ds { namespace ui {
       void init_atoms();
       bool pending();
       void push_event( event_queue *, XEvent * event );
-
-#elif defined(QT)
-
-      QApplication * _app;
-      void push_event( event_queue *, QEvent * event );
 
 #else
 #   error unsupported platform

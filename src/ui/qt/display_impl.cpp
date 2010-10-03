@@ -19,21 +19,38 @@
 
 namespace ds { namespace ui {
 
-    class ds_app : public QApplication
+    class qapp : public QApplication
     {
     public:
-      ds_app(int & argc, char ** argv)
-        : QApplication(argc, argv)
+      qapp( const display::pointer & disp, int & argc, char ** argv )
+        : QApplication( argc, argv )
+        , _display( disp )
       {
+        dsI( disp );
       }
+
+      bool notify(QObject *receiver, QEvent *event);
 
     protected:
       bool event( QEvent * );
+
+    private:
+      display::weak_ref _display;
     };
 
-    bool ds_app::event( QEvent * e )
+    bool qapp::event( QEvent * e )
     {
       dsL("event: "<<e->type());
+      return QApplication::event(e);
+    }
+
+    bool qapp::notify(QObject *receiver, QEvent *e)
+    {
+      //dsL("notify: "<<e->type());
+      display::pointer disp = _display.lock();                  dsI( disp );
+      if ( display::IMPL::push_event( disp, receiver, e ) )
+        return true;
+      return QApplication::notify(receiver, e);
     }
 
     display::IMPL::IMPL()
@@ -61,34 +78,28 @@ namespace ds { namespace ui {
       }
 
       int argc = 0;
+      /*
       char * argv[] = {
         "/home/duzy/.v/out/debug/bin/simple",
         NULL,
       };
-      _app = new ds_app(argc, argv);
+      _app = new qapp(argc, argv);
+      */
+      _app = new qapp(disp, argc, NULL);
 
       _winmap.clear();
     }
 
-    void display::IMPL::pump_native_events( event_queue * eq )
+    void display::IMPL::pump_native_events( event_queue * /*eq*/ )
     {
       dsI( _app );
 
       _app->processEvents( QEventLoop::AllEvents );
-
-      //if ( _app->hasPendingEvents() ) {
-      //  _app->sendPostedEvents();
-      //}
-
-      //QEventLoop l;
-      //l.processEvents( QEventLoop::AllEvents );
-
-      //_app->exec();
     }
 
     bool display::IMPL::map_win_natively( const window::pointer & win )
     {
-      return false;
+      return win->_p->_native_win != NULL;
     }
 
     bool display::IMPL::unmap_win_natively( const window::pointer & win )

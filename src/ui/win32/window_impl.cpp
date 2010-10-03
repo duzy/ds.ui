@@ -34,7 +34,7 @@ namespace ds { namespace ui {
     {
     }
 
-    bool window::IMPL::create( const display::pointer & disp, const window::pointer & win )
+    bool window::IMPL::create_natively( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
       //dsI( !_screen.lock() );
@@ -57,7 +57,7 @@ namespace ds { namespace ui {
       return _native_win != NULL;
     }
 
-    void window::IMPL::destroy( display::IMPL * disp )
+    void window::IMPL::destroy_natively( display::IMPL * disp )
     {
       dsI( disp );
 
@@ -122,47 +122,31 @@ namespace ds { namespace ui {
     }
 
     /**
-     *  Put all dirty rects onto the screen.
-     *
-     *  @return true if any dirty rects has been push onto the screen.
+     *  push a box onto the screen
      */
-    bool window::IMPL::commit_updates()
+    bool window::IMPL::commit_update_natively( const ds::graphics::box & b )
     {
-      if ( _pended_updates.empty() ) {
-        dsL4("window is updated");
-        return false;
-      }
+      if ( b.empty() ) { dsL5("ignore empty box"); return false; }
+
+      dsI( _paint_buffer.ptr() );
 
       HDC dc = _native_gc ? _native_gc : ::GetDC( _native_win ) ;
 
-      dsL("commit-updates: "<<_pended_updates.size()-1);
-
-      ds::graphics::box const & bound = _pended_updates.bounds();
-      ds::graphics::region::const_iterator it = _pended_updates.begin();
-      ds::graphics::region::const_iterator const end = _pended_updates.end();
-
-      // TODO: only flush pended update rects
-
-      dsI( _paint_buffer.ptr() );
-      
 #if 1
-      RECT r;
-      for (; it != end; ++it) {
-        r.left   = it->left();
-        r.top    = it->top();
-        r.right  = it->right();
-        r.bottom = it->bottom();
-        _paint_buffer.flush( dc, &r, &r );
-      }
+      bool ok = _paint_buffer.flush( dc, &b, &b );
 #else
       bool ok = _paint_buffer.flush( dc, NULL, NULL );
-      dsL4( "commited: "<<ok );
 #endif
 
-      _pended_updates.clear();
-      return _pended_updates.empty();
+      return ok;
     }
-    
+
+    bool window::IMPL::sync_updates_natively()
+    {
+      // each single commit_update_natively does 'sync' already
+      return true;
+    }
+
   }//namespace ui
 }//namespace ds
 

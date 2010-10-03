@@ -27,15 +27,20 @@ namespace ds { namespace ui {
       display::weak_ref _display;
       window::pointer _root; // TODO: avoid using window::pointer ??
 
-#ifdef _WIN32
+#  if defined(QT)
+
+      
+      
+#elif defined(_WIN32)
+
+      
+      
 #elif defined(X11)
+
       XVisualInfo _vi;
       Screen * _xscrn;
 
       XVisualInfo * get_visual_info();
-#elif defined(QT)
-
-      
       
 #else
 #   error unsupported platform

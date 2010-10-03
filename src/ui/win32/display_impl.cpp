@@ -54,10 +54,16 @@ namespace ds { namespace ui {
       _scrns[0]->_p->_display = disp;
     }
 
+    bool display::IMPL::is_win_mapped_natively( const window::pointer & win )
+    {
+      dsI( win->_p );
+      return ( win->_p->_native_win != NULL );
+    }
+
     bool display::IMPL::map_win_natively( const window::pointer & win )
     {
-      // TODO: ???
-      return true;
+      dsI( win->_p );
+      return ( win->_p->_native_win != NULL );
     }
 
     bool display::IMPL::unmap_win_natively( const window::pointer & win )
@@ -65,21 +71,21 @@ namespace ds { namespace ui {
       return false;
     }
 
-    bool display::IMPL::is_win_mapped_natively( const window::pointer & win )
-    {
-      return (win->_p->_native_win != NULL);
-    }
-
+    /*
     HWND display::IMPL::default_root() const
     {
+      const int dsn = default_screen_number();
       dsI( _scrns );
-      //return _scrns[ 0 ]->root();
-      return NULL;
+      dsI( 0 < screen_count() );
+      dsI( 0 <= dsn && dsn < screen_count() );
+      return _scrns[ dsn ]->root();
     }
+    */
 
     bool display::IMPL::is_default_root( const window::pointer & w ) const
     {
-      return false;
+      // TODO: ...
+      return true;
     }
     
     int display::IMPL::screen_count() const
@@ -95,8 +101,6 @@ namespace ds { namespace ui {
     void display::IMPL::pump_native_events( event_queue * eq )
     {
       MSG msg;
-      //memset( &msg, 0, sizeof(msg) );
-
       while (::PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         ::TranslateMessage( &msg );
 
@@ -110,7 +114,7 @@ namespace ds { namespace ui {
         }
 
         ::DispatchMessage( &msg );
-      }
+      }//while
     }
 
     LRESULT CALLBACK display::IMPL::wndproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

@@ -55,7 +55,7 @@ namespace ds { namespace ui {
       if ( _p->_native_win ) {
         screen::pointer scrn( _p->_screen.lock() );             dsI( scrn );
         display::pointer disp( scrn->get_display() );           dsI( disp );
-        _p->destroy( disp->_p );
+        _p->destroy_natively( disp->_p );
         dsI( !_p->_native_win );
       }
     }
@@ -103,10 +103,12 @@ namespace ds { namespace ui {
      */
     void window::request_update( const ds::graphics::box & ub )
     {
+      if ( ub.empty() ) { dsL("ignore request for empty update"); return; }
+
       /** (1) mark the area scoped by 'ub' as dirty, which will be drawn
        *      later and then moved into _pended_updates
        */          
-      _p->set_dirty( ub );                 dsI( !_p->_dirty_region.empty() );
+      _p->set_dirty( ub );                dsI( !_p->_dirty_region.empty() );
 
       /** (2) add the current window into the dirty window list
        */

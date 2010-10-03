@@ -8,16 +8,5 @@
  **/
 
 #ifndef __DS_GRAPHICS_LINESTRING__hpp____by_Duzy_Chan__
-#define __DS_GRAPHICS_LINESTRING__hpp____by_Duzy_Chan__ 1
-#       include <boost/geometry/geometries/linestring.hpp>
-#       include "point.hpp"
-
-namespace ds { namespace graphics {
-
-    typedef boost::geometry::linestring<point> linestring;
-    
-  }//namespace graphics
-}//namespace ds
-
-
+#       include "bits/linestring.h"
 #endif//__DS_GRAPHICS_LINESTRING__hpp____by_Duzy_Chan__

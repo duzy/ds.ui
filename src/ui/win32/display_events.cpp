@@ -25,8 +25,7 @@ namespace ds { namespace ui {
       if (wit == _winmap.end())
         return false;
 
-      window::pointer win( wit->second );
-      dsI( win );
+      window::pointer win( wit->second );                        dsI( win );
 
       //!< Unset the paint DC
       win->_p->_native_gc = NULL;
@@ -48,12 +47,7 @@ namespace ds { namespace ui {
       case WM_DESTROY:
         dsL5("WM_DESTROY");
         // TODO: should notify the window of the destroy event
-        win->_p->_native_win = NULL;
-        win->_p->_screen.reset();
-        _winmap.erase( wit->first );
-        if ( _winmap.empty() ) {
-          eq->push(new ds::event::quit);
-        }
+        erase_destroyed_window( eq, win );
         break;
 
       case WM_ERASEBKGND:

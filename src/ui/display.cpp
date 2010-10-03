@@ -32,7 +32,7 @@ namespace ds { namespace ui {
       //!< be invalid
       IMPL::window_map_t::iterator it = _p->_winmap.begin();
       for(; it != _p->_winmap.end(); ++it) {
-        it->second->_p->destroy( _p );
+        it->second->_p->destroy_natively( _p );
       }
       _p->_winmap.clear();
 
@@ -84,7 +84,7 @@ namespace ds { namespace ui {
     {
       window::IMPL * p = win->_p;
       if ( !p->_native_win ) {
-        bool ok = p->create( this, win );
+        bool ok = p->create_natively( this, win );
 
         dsI( ok );
         dsI( p->_native_win != NULL );

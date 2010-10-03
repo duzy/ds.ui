@@ -169,7 +169,7 @@ namespace ds { namespace ui {
       }
     }
 
-    bool window::IMPL::create( const display::pointer & disp, const window::pointer & win )
+    bool window::IMPL::create_natively( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
       //dsI( !_screen );
@@ -235,7 +235,7 @@ namespace ds { namespace ui {
       return true;
     }
 
-    void window::IMPL::destroy( display::IMPL * disp )
+    void window::IMPL::destroy_natively( display::IMPL * disp )
     {
       dsI( disp );
       dsI( disp->_xdisplay );
@@ -280,59 +280,34 @@ namespace ds { namespace ui {
       return boost::geometry::make<graphics::box>( a.x, a.y, a.x+a.width, a.y+a.height );
     }
 
-    bool window::IMPL::commit_updates()
+    /**
+     *  push a box onto the screen
+     */
+    bool window::IMPL::commit_update_natively( const ds::graphics::box & b )
     {
-      if ( _pended_updates.empty() ) {
-        dsL4("window is updated");
-        return false;
-      }
+      convert_pixels( b.x(), b.y(), b.width(), b.height() );
 
-      dsL("commit-updates: "<<_pended_updates.size()-1);
-
-      ds::graphics::box bound = _pended_updates.bounds();
-      ds::graphics::region::const_iterator it = _pended_updates.begin();
-
-      if ( bound.empty() ) {
-        dsE("empty update bounds");
-        return false;
-      }
-
-      convert_pixels( bound.x(), bound.y(), bound.width(), bound.height() );
-
-      int copyCount = 0;
       Display * xdisp = x_display();
-
-      /*
-      if ( _dirty_rects.empty() ) {
-      copyCount = 1;
-      XPutImage( xdisp, _native_win, _native_gc, _ximage, bound.x(), bound.y(),
-                 bound.x(), bound.y(), bound.width(), bound.height() );
-      } else
-      */
       {
-        ds::graphics::region::const_iterator const end = _pended_updates.end();
-        for (; it != end; ++it) {
-          ++copyCount;
-          // XCopyArea( _display->_xdisplay, _drawable, _native_win, _native_gc,
-          // it->x, it->y, it->w, it->h,
-          // it->x, it->y );
-          XPutImage( xdisp, _native_win, _native_gc, _ximage,
-                     it->x(), it->y(),
-                     it->x(), it->y(), it->width(), it->height() );
-        }
+        // XCopyArea( _display->_xdisplay, _drawable, _native_win, _native_gc,
+        // b.x, b.y, b.w, b.h,
+        // b.x, b.y );
+        XPutImage( xdisp, _native_win, _native_gc, _ximage,
+                   b.x(), b.y(),
+                   b.x(), b.y(), b.width(), b.height() );
       }
 
-      _pended_updates.clear();
-
-      if (0 < copyCount) {
-        //XFlushGC( xdisp, _p->_native_gc );
-        XFlush( xdisp );
-        XSync( xdisp, False );
-        return true;
-      }
-
-      return false;
+      return true;
     }
+
+    bool window::IMPL::sync_updates_natively()
+    {
+      Display * xdisp = x_display();
+      //XFlushGC( xdisp, _p->_native_gc );
+      XFlush( xdisp );
+      XSync( xdisp, False );
+      return true;
+    }    
 
   }// namespace ui
 }//namespace ds

@@ -50,7 +50,7 @@ namespace ds { namespace ui {
       return false;
     }
 
-    bool window::IMPL::create( const display::pointer & disp, const window::pointer & win )
+    bool window::IMPL::create_natively( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
       //dsI( !_screen );
@@ -60,14 +60,16 @@ namespace ds { namespace ui {
         _screen = scrn; // save the reference of the screen
 
       _native_win = new QWidget( NULL, Qt::Window );
-      //_native_win->show();
+      _native_win->show();
       
       return _native_win != NULL;
     }
 
-    void window::IMPL::destroy( display::IMPL * disp )
+    void window::IMPL::destroy_natively( display::IMPL * disp )
     {
       dsI( disp );
+      delete _native_win;
+      _native_win = NULL;
     }
 
     void window::IMPL::select_input(long mask)
@@ -76,7 +78,8 @@ namespace ds { namespace ui {
 
     ds::graphics::box window::IMPL::get_rect() const
     {
-      return boost::geometry::make<graphics::box>( 0, 0, 0, 0 );
+      QRect r = _native_win->rect();
+      return boost::geometry::make<graphics::box>( r.x(), r.y(), r.x()+r.width(), r.y()+r.height() );
     }
 
     bool window::IMPL::commit_updates()
