@@ -174,12 +174,14 @@ namespace ds { namespace ui { namespace detail {
         int dstY = 0; 
         int dstW = std::abs(_bmp->bmiHeader.biWidth);
         int dstH = std::abs(_bmp->bmiHeader.biHeight);
+
+        int H = srcH;
         
         if (src) {
-          srcX = src->x();//srcRect->left;
-          srcY = src->y();//srcRect->top;
-          srcW = src->width();//srcRect->right  - srcRect->left;
-          srcH = src->height();//srcRect->bottom - srcRect->top;
+          srcX = src->x();
+          srcY = src->y();
+          srcW = src->width();
+          srcH = src->height();
         }
 
         dstX = srcX;
@@ -188,18 +190,19 @@ namespace ds { namespace ui { namespace detail {
         dstH = srcH;
 
         if (dst) {
-          dstX = dst->x();//dstRect->left;
-          dstY = dst->y();//dstRect->top;
-          dstW = dst->width();//dstRect->right  - dstRect->left;
-          dstH = dst->height();//dstRect->bottom - dstRect->top;
+          dstX = dst->x();
+          dstY = dst->y();
+          dstW = dst->width();
+          dstH = dst->height();
         }
+
+        dsL5("commit: src["<<srcX<<","<<srcY<<","<<srcW<<","<<srcH<<"]");
+        dsL5("commit: dst["<<dstX<<","<<dstY<<","<<dstW<<","<<dstH<<"]");
 
         dsI( 0 < srcW );
         dsI( 0 < srcH );
         dsI( 0 < dstW );
         dsI( 0 < dstH );
-        dsL4("commit: src["<<srcX<<","<<srcY<<","<<srcW<<","<<srcH<<"]");
-        dsL4("commit: dst["<<dstX<<","<<dstY<<","<<dstW<<","<<dstH<<"]");
 
         int n = 0; //!< number of scanlines copied to device
         if (dstW != srcW || dstH != srcH) {
@@ -221,17 +224,18 @@ namespace ds { namespace ui { namespace detail {
               );
         }
         else {
+          uint8_t * p = _ptr + srcY * get_row_size( _bmp->bmiHeader.biWidth, _bmp->bmiHeader.biBitCount );
           n = ::SetDIBitsToDevice
             ( dc,       // handle to device context
-              dstX,     // x-coordinate of upper-left corner of 
-              dstY,     // y-coordinate of upper-left corner of 
+              dstX,     // x-coordinate of the destination
+              dstY,     // y-coordinate of the destination
               dstW,     // source rectangle width
               dstH,     // source rectangle height
-              srcX,     // x-coordinate of lower-left corner of 
-              srcY,     // y-coordinate of lower-left corner of 
-              srcY,     // first scan line in array
+              srcX,     // x-coordinate of the image
+              srcY,     // y-coordinate of the image
+              srcY/*0*/,     // first scan line in array
               srcH,     // number of scan lines
-              _ptr,     // address of array with DIB bits
+              p,     // address of array with DIB bits
               _bmp,     // address of structure with bitmap info.
               DIB_RGB_COLORS   // RGB or palette indexes
               );
