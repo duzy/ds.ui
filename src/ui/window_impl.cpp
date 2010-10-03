@@ -69,7 +69,7 @@ namespace ds { namespace ui {
       dsI( 0 < _image.height() );
 
       ds::graphics::canvas canvas( _image );
-      ds::graphics::box bound = _dirty_region.bounds();
+      ds::graphics::box const bounds = _dirty_region.bounds();
       ds::graphics::region::const_iterator it = _dirty_region.begin();
       
       for ( ; it != _dirty_region.end(); ++it ) {
@@ -101,8 +101,8 @@ namespace ds { namespace ui {
 
       dsL5("commit-updates: "<<_pended_updates.size()-1);
 
-      ds::graphics::box const & bound = _pended_updates.bounds();
-      if ( bound.empty() ) {
+      ds::graphics::box const & bounds = _pended_updates.bounds();
+      if ( bounds.empty() ) {
         dsE("empty update bounds");
         return false;
       }
