@@ -19,7 +19,7 @@ namespace ds { namespace graphics {
     struct point : base_point
     {
       point()
-        : base_point()
+        : base_point(0, 0)
       {}
 
       point(coordinate_t x, coordinate_t y)

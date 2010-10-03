@@ -20,60 +20,6 @@
 
 namespace ds { namespace ui {
 
-    /*
-    template<typename Boxes>
-    static bool combine_boxes( Boxes & boxes, const ds::graphics::box & bx )
-    {
-      if ( bx.is_empty() ) return false;
-
-      typename Boxes::iterator it = boxes.begin();
-
-      ds::graphics::box bound;
-      if ( boxes.empty() ) {
-        boxes.push_back( bound = bx ); //!< the first is the bounding box
-        boxes.push_back( bx );
-        return true;
-      }
-
-      bound = *it++; //!< read and skip the bounding box
-
-      while ( it != boxes.end() ) {
-        if ( bx.contains( *it ) ) {
-          it = boxes.erase( it );
-          continue;
-        }
-        if ( it->contains( bx ) ) {
-          //!< just ignore the box because it's been contained
-          return false;
-        }
-        if ( !it->intersects( bx ) ) {
-          //!< just a new seperated box
-          break;
-        }
-
-        if ( bx.x() < it->x() ) {
-          if ( bx.y() < it->y() ) {
-            
-          }
-        }
-
-        ++it;
-      }//while
-
-      // TODO: _dirty_rects should be sorted, not just 'push_back' here
-      it = boxes.insert( it, bx );
-
-      dsI( it != boxes.end() );
-
-      if ( it->x() < bound.x() ) bound.x( it->x() );
-      if ( it->y() < bound.y() ) bound.y( it->y() );
-      if ( bound.right()  < it->right()  ) bound.right( it->right() );
-      if ( bound.bottom() < it->bottom() ) bound.bottom( it->bottom() );
-
-      return true;
-    }
-    */
-
     /**
      *  Mark a area as dirty which is required for renderring.
      *
@@ -82,7 +28,6 @@ namespace ds { namespace ui {
     void window::IMPL::set_dirty( const ds::graphics::box & dirty )
     {
       // (1) add dirty rect into the _dirty_rects list(sorted)
-      //combine_boxes( _dirty_rects, dirty );
       _dirty_region |= dirty;
     }
 
@@ -92,10 +37,6 @@ namespace ds { namespace ui {
     void window::IMPL::pend_update( const ds::graphics::box & b )
     {
       dsL5("mark-updated: ["<<b.x()<<","<<b.y()<<","<<b.width()<<","<<b.height()<<"]");
-
-      // if ( combine_boxes( _pended_updates, b ) ) {
-      //   //commit_updates();
-      // }
       _pended_updates |= b;
     }
 
@@ -158,7 +99,7 @@ namespace ds { namespace ui {
         return false;
       }
 
-      dsL("commit-updates: "<<_pended_updates.size()-1);
+      dsL5("commit-updates: "<<_pended_updates.size()-1);
 
       ds::graphics::box const & bound = _pended_updates.bounds();
       if ( bound.empty() ) {
@@ -168,6 +109,8 @@ namespace ds { namespace ui {
 
       ds::graphics::region::const_iterator it = _pended_updates.begin();
       ds::graphics::region::const_iterator const end = _pended_updates.end();
+
+      //_pended_updates.dump( std::cout << "updates: " );
 
       int count = 0;
       for (; it != end; ++it) {

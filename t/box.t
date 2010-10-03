@@ -11,13 +11,18 @@ using boost::geometry::make;
 
 BOOST_AUTO_TEST_CASE( box_assign )
 {
-  box b = make<box>( 10, 10, 110, 110 );
+  {
+    box nil;
+    BOOST_CHECK( nil.empty() );
+  }
+
+  box b = make<box>( 10, 15, 110, 115 ); // [ left, top, right, bottom ]
   BOOST_CHECK( b.left()   == 10 );
-  BOOST_CHECK( b.top()    == 10 );
+  BOOST_CHECK( b.top()    == 15 );
   BOOST_CHECK( b.right()  == 110 );
-  BOOST_CHECK( b.bottom() == 110 );
+  BOOST_CHECK( b.bottom() == 115 );
   BOOST_CHECK( b.x()      == 10 );
-  BOOST_CHECK( b.y()      == 10 );
+  BOOST_CHECK( b.y()      == 15 );
   BOOST_CHECK( b.width()  == 100 );
   BOOST_CHECK( b.height() == 100 );
   b.left      ( 20 );
@@ -56,7 +61,19 @@ BOOST_AUTO_TEST_CASE( box_intersect )
 
 BOOST_AUTO_TEST_CASE( box_contains )
 {
-  box b1 = make<box>( 10, 10, 110, 110 );
-  box b2 = make<box>( 20, 20, 100, 100 );
-  BOOST_CHECK( b1.contains(b2) );
+  {
+    box b1 = make<box>( 10, 10, 110, 110 );
+    box b2 = make<box>( 20, 20, 100, 100 );
+    BOOST_CHECK( b1.contains(b2) );
+  }
+  {
+    box b1 = make<box>( 10, 20, 110, 120 );
+    box b2 = make<box>( 11, 21, 110, 120 );
+    BOOST_CHECK( b1.contains(b2) );
+  }
+  {
+    box b1 = make<box>( 10, 20, 110, 120 );
+    box b2 = make<box>( 11, 21, 111, 121 );
+    BOOST_CHECK( !b1.contains(b2) );
+  }
 }

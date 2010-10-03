@@ -229,7 +229,7 @@ namespace ds { namespace ui { namespace detail {
               dstH,     // source rectangle height
               srcX,     // x-coordinate of lower-left corner of 
               srcY,     // y-coordinate of lower-left corner of 
-              0,        // first scan line in array
+              srcY,     // first scan line in array
               srcH,     // number of scan lines
               _ptr,     // address of array with DIB bits
               _bmp,     // address of structure with bitmap info.
