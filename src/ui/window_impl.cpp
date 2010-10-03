@@ -52,7 +52,7 @@ namespace ds { namespace ui {
         return;
       }
 
-      const graphics::box wr( get_rect() ); // TODO: get_client_rect()
+      const graphics::box wr( get_client_rect() );
       if ( wr.empty() ) {
         dsE("empty window rect: "<<_native_win<<", "<<wr.x()<<","<<wr.y()<<","<<wr.width()<<","<<wr.height());
         return;
@@ -69,7 +69,6 @@ namespace ds { namespace ui {
       dsI( 0 < _image.height() );
 
       ds::graphics::canvas canvas( _image );
-      ds::graphics::box const bounds = _dirty_region.bounds();
       ds::graphics::region::const_iterator it = _dirty_region.begin();
       
       for ( ; it != _dirty_region.end(); ++it ) {
@@ -77,9 +76,8 @@ namespace ds { namespace ui {
 
         //TODO: dispatch drawing to widgets
 
-        //canvas.clip( *it );
+        canvas.clip( *it );    //!< reset the current clip
         win->on_render( canvas );
-        //canvas.restore_clip();
 
         pend_update( *it );
       }

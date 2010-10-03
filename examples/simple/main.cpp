@@ -47,15 +47,38 @@ protected:
       assign(inner, coor);
     }
 
-    ds::graphics::polygon g;
-    strategy::transform::map_transformer
-      <point_2d, ds::graphics::point> map(4,-1,10,7,800,600);
-    transform(poly, g, map);
+    canvas.render( ds::graphics::color::rgba(0.99, 0.1, 0.0, 1.0) );
 
-    canvas.render( ds::graphics::color(1.0, 0.99, 0.1, 0.0) );
-    canvas.render( g );
-    canvas.stroke( g );
-  }
+    {
+      ds::graphics::polygon g;
+      strategy::transform::map_transformer
+        <point_2d, ds::graphics::point> map(4,-1,10,7,800,600);
+      transform(poly, g, map);
+      canvas.render( g );
+      canvas.stroke( g );
+    }
+    {
+      ds::graphics::polygon g;
+      {
+        const ds::graphics::coordinate_t coords[][2] = {
+          {10.0, 10.0}, {110.0, 110.0}, {110.0, 210.0}, {10.0, 210.0},
+          {10.0, 10.0} // closing point is opening point
+        };
+        assign(g, coords);
+      }
+      {
+        g.inners().resize(1);
+        const double coords[][2] = {
+          {40, 20}, {50, 14}, {48, 50}, {44, 40},
+          {40, 20} // closing point is opening point
+        };
+        assign(g.inners().back(), coords);
+      }
+
+      canvas.clip( g );
+      ds::graphics::color::rgba(0.5, 0.8, 0.1, 1.0);
+    }
+  }//on_render
 };
 
 

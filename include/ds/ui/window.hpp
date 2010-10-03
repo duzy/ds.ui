@@ -13,19 +13,18 @@
 #       include <ds/ui/view.hpp>
 #       include <ds/dso_visibility.hpp>
 
-namespace ds { namespace graphics {
+namespace ds {
+  namespace graphics {
     struct box;
     class canvas;
   }//namespace graphics
-}//namespace ds
 
-namespace ds { namespace ui {
-
+  namespace ui {
     class display;
     class screen;
 
-    class DSO_PUBLIC window : public shared_object<window>
-                            , public view
+    class DSO_PUBLIC window
+      : public shared_object<window>, public view
     {
       struct IMPL;
 

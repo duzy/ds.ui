@@ -35,7 +35,7 @@ namespace boost { namespace geometry { namespace traits {
       template<>
       struct closure<ds::graphics::ring>
         : closure< linear_ring<ds::graphics::point> >
-      {}
+      {};
 
     }}} // namespace boost::geometry::traits
 

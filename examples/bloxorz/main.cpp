@@ -57,7 +57,7 @@ protected:
       <point_2d, ds::graphics::point> map(4,-1,10,7,800,600);
     transform(poly, g, map);
 
-    canvas.render( ds::graphics::color(1.0, 0.99, 0.1, 0.0) );
+    canvas.render( ds::graphics::color::argb(1.0, 0.99, 0.1, 0.0) );
     canvas.render( g );
     canvas.stroke( g );
   }

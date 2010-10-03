@@ -96,6 +96,17 @@ namespace ds { namespace ui {
       return boost::geometry::make<graphics::box>( r.left, r.top, r.right, r.bottom );
     }
 
+    ds::graphics::box window::IMPL::get_client_rect() const
+    {
+      dsI( _native_win );
+
+      RECT r;
+      BOOL ok = ::GetClientRect( _native_win, &r );
+      dsI( ok );
+
+      return boost::geometry::make<graphics::box>( r.left, r.top, r.right, r.bottom );
+    }
+
     bool window::IMPL::create_image_if_needed( int w, int h )
     {
       if ( w <= _image.width() && h <= _image.height() ) {

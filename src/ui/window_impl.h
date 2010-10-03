@@ -43,6 +43,7 @@ namespace ds { namespace ui {
       void select_input(long mask);
 
       ds::graphics::box get_rect() const;
+      ds::graphics::box get_client_rect() const;
 
       void set_dirty( const ds::graphics::box & );
       void redraw_dirties( const display::pointer &, const window::pointer & );

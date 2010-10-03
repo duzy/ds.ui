@@ -28,6 +28,8 @@ namespace ds { namespace graphics {
     struct brush;
     struct pen;
 
+    struct region; // bits/region.h
+
     class DSO_PUBLIC canvas : boost::noncopyable
     {
       struct IMPL;
@@ -36,36 +38,47 @@ namespace ds { namespace graphics {
       canvas( image & );
       ~canvas();
 
-      bool clip( const box & );
-      bool clip( const ring & );
-      bool clip( const polygon & );
+      // struct clip_t
+      // {
+      //   clip_t & operator  = ( const box & ); //!< replace
+      //   clip_t & operator -= ( const box & ); //!< subtract
+      //   //clip_t & operator += ( const box & ); //!< same as '|='
+      //   clip_t & operator |= ( const box & ); //!< inclusive-or
+      //   clip_t & operator ^= ( const box & ); //!< exclusive-or
+      //   clip_t & intersect( const box & ); //!< intersect
+      // };//struct clip_t
 
-      struct clip_t
-      {
-        clip_t & operator  = ( const box & ); //!< replace
-        clip_t & operator -= ( const box & ); //!< subtract
-        //clip_t & operator += ( const box & ); //!< same as '|='
-        clip_t & operator |= ( const box & ); //!< inclusive-or
-        clip_t & operator ^= ( const box & ); //!< exclusive-or
-        clip_t & intersect( const box & ); //!< intersect
-      };//struct clip_t
+      // /**
+      //    myCanvas.clip() |= box1;
+      //  */
+      // clip_t clip();
 
       /**
-         myCanvas.clip() |= box1;
+       *  Replace the current clip.
+       *  @{
        */
-      clip_t clip();
+      bool clip( const box & );
+      bool clip( const region & );
+      bool clip( const ring & );
+      bool clip( const polygon & );
+      /** @} */
+
+      //void save_clip();
+      //void restore_clip();
 
       void render( const color & );
       void render( const image & );
 
       void render( const point &,       const brush & = default_brush() );
       void render( const box &,         const brush & = default_brush() );
+      void render( const ring &,        const brush & = default_brush() );
       void render( const polygon &,     const brush & = default_brush() );
       //void render( const ds::ustring &, const brush & = default_brush() );
 
       void stroke( const point &,       const pen & = default_pen() );
       void stroke( const segment &,     const pen & = default_pen() );
       void stroke( const box &,         const pen & = default_pen() );
+      void stroke( const ring &,        const pen & = default_pen() );
       void stroke( const polygon &,     const pen & = default_pen() );
       //void stroke( const ds::ustring &, const pen & = default_pen() );
 
