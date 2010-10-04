@@ -40,6 +40,7 @@ ifeq ($(sm.os.name),win32)
   sm.this.libs += -lwsock32
 endif
 
+#sm.this.objects :=
 sm.this.sources := dsrc.cpp
 
 $(sm-build-this)

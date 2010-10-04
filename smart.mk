@@ -5,7 +5,11 @@ $(call sm-new-module, dsui, shared)
 
 ds.ui.dir := $(sm.this.dir)
 ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
+ds.ui.dir.bin := $(ds.ui.dir)/out/$V/bin
 ds.ui.qt_based := false
+ds.ge.dir := $(ds.ui.dir)/../graphics
+ds.ge.dir.lib := $(ds.ge.dir)/out/$V/lib
+ds.ge.dir.bin := $(ds.ge.dir)/out/$V/bin
 
 include $(ds.ui.dir)/check-deps.mk
 
@@ -25,12 +29,14 @@ sm.this.compile.options := \
 sm.this.link.options.infile := true
 sm.this.link.options := \
   -Wl,--no-undefined \
-  -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib))
+  -Wl,--rpath,$(ds.ui.dir)/$(strip $(ds.third.dir.lib)) \
+  -Wl,--rpath,$(ds.ge.dir.lib)
 
 #sm.this.out_implib := dsui
 
 sm.this.includes := \
   $(ds.ui.dir)/include \
+  $(ds.ge.dir)/include \
   $(ds.third.dir.inc) \
   $(ds.third.dir.inc)/zlib \
   $(ds.third.dir.inc)/libpng \
@@ -41,20 +47,20 @@ sm.this.includes := \
 sm.this.sources := \
   $(wildcard src/*.cpp) \
   $(wildcard src/resource/*.cpp) \
-  $(wildcard src/graphics/*.cpp) \
-  $(wildcard src/graphics/gil/*.cpp) \
-  $(wildcard src/graphics/skia/*.cpp) \
   $(wildcard src/ui/*.cpp) \
   $(wildcard src/ui/events/*.cpp)
 
+$(call sm-check-not-empty, ds.third.dir.lib)
+$(call sm-check-not-empty, ds.third.dir.bin)
 sm.this.libdirs := \
-  -L$(ds.third.dir.lib) \
-  -L$(ds.third.boost.dir.lib)
+  $(ds.ge.dir.lib) \
+  $(ds.third.dir.lib) \
+  $(ds.third.boost.dir.lib)
 
 $(call sm-check-not-empty, ds.third.skia.libname)
 $(call sm-check-not-empty, ds.third.libpng.libname)
 $(call sm-check-not-empty, ds.third.freetype.libname)
-sm.this.libs += \
+sm.this.libs += dsge \
   $(call ds.third.boost.use, thread) \
   $(ds.third.skia.libname) \
   $(ds.third.libpng.libname) \
@@ -110,6 +116,14 @@ ifeq ($(sm.os.name),win32)
     -Wl,--enable-auto-import
   sm.this.depends += $(sm.out.lib)/libdsui.a
   $(sm.out.lib)/libdsui.a : $(sm.out.lib) $(sm.this.targets)
+
+  sm.this.depends += \
+    $(ds.ui.dir.bin)/dsge.so \
+    $(ds.ui.dir.bin)/$(ds.third.libpng.libname).so \
+    $(ds.ui.dir.bin)/$(ds.third.libxml.libname).so
+  $(ds.ui.dir.bin)/dsge.so : $(ds.ge.dir.bin)/dsge.so ;	@cp -vf $< $@
+  $(ds.ui.dir.bin)/$(ds.third.libpng.libname).so: $(ds.third.dir.bin)/$(ds.third.libpng.libname).so ; @cp -vf $< $@
+  $(ds.ui.dir.bin)/$(ds.third.libxml.libname).so: $(ds.third.dir.bin)/$(ds.third.libxml.libname).so ; @cp -vf $< $@
 
   ifneq ($(sm.config.variant),debug)
     sm.this.link.options += -Wl,--subsystem,windows

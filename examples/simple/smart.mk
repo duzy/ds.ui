@@ -13,18 +13,20 @@ sm.this.compile.options := \
 
 sm.this.includes := \
   -I$(ds.ui.dir)/include \
+  -I$(ds.ge.dir)/include \
   -I$(ds.third.dir.inc) \
   -I$(ds.third.boost.dir) \
   $(ds.third.boost.geometry)
 
 sm.this.libdirs := \
   -L$(ds.ui.dir.lib) \
+  -L$(ds.ge.dir.lib) \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 
 sm.this.sources := main.cpp
 
-sm.this.libs := dsui
+sm.this.libs := dsui dsge
 
 sm.this.link.options.infile := true
 sm.this.link.options := \
