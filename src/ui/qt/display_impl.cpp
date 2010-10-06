@@ -64,7 +64,7 @@ namespace ds { namespace ui {
       delete _app;
     }
 
-    void display::IMPL::open( const display::pointer & disp, const char * name )
+    void display::IMPL::open_natively( const display::pointer & disp, const char * name )
     {
       dsI( _winmap.empty() );
       dsI( _app == NULL );

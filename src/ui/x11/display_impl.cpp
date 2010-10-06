@@ -47,7 +47,7 @@ namespace ds { namespace ui {
 #undef GET_ATOM
     }
 
-    void display::IMPL::open( const display::pointer & disp, const char * name )
+    void display::IMPL::open_natively( const display::pointer & disp, const char * name )
     {
       dsI( !_xdisplay );
       dsI( !_scrns );

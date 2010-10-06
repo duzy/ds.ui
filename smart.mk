@@ -21,7 +21,7 @@ sm.this.compile.options := \
   -DDS_TRACE_LEVEL=3 \
   -DDS_DEBUG_LEVEL=3 \
   -DDS_LOG_LEVEL=3 \
-  -DDS_BUILDING_DSO=1 \
+  -DDS_BUILDING_UI=1 \
   -DBOOST_THREAD_USE_LIB=1 \
 
 #  -DBOOST_THREAD_BUILD_LIB=1
@@ -130,7 +130,6 @@ ifeq ($(sm.os.name),win32)
   endif
 endif#win32
 endif#linux
-
 
 $(call sm-build-this)
 $(call sm-load-subdirs)

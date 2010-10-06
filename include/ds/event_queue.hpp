@@ -15,7 +15,7 @@
 #  else
 #       include <boost/function.hpp>
 #  endif
-#       include <ds/dso_visibility.hpp>
+#       include "visibility.h"
 
 namespace ds
 {
@@ -27,7 +27,7 @@ namespace ds
    *  TODO: enable two policies for threading(event_queue.cpp_mutex,
    *        event_queue.cpp_condition)
    */
-  class DSO_PUBLIC event_queue : boost::noncopyable // TODO: should be shared_object ??
+  class DS_UI_PUBLIC event_queue : boost::noncopyable // TODO: should be shared_object ??
   {
     struct IMPL;
 

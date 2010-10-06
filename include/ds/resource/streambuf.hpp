@@ -4,7 +4,7 @@
 #   include <streambuf>
 #   include <boost/noncopyable.hpp>
 #   include <iostream>
-#   include <ds/dso_visibility.hpp>
+#   include "../visibility.h"
 
 #   ifndef HAS_KEYWORD__nullptr
 //#	define nullptr ((void*)0)
@@ -21,7 +21,7 @@ namespace ds { namespace resource {
      *  image = load_image_from_istream( is );
      *  @endcode
      */
-    struct DSO_PUBLIC streambuf : std::streambuf, private boost::noncopyable
+    struct DS_UI_PUBLIC streambuf : std::streambuf, private boost::noncopyable
     {
       //explicit streambuf( const item * );
 

@@ -44,7 +44,7 @@ namespace ds { namespace ui {
       return s_WindowClassName;
     }
 
-    void display::IMPL::open( const display::pointer & disp, const char * name )
+    void display::IMPL::open_natively( const display::pointer & disp, const char * name )
     {
       dsI( !_scrns );
       dsI( _winmap.empty() );

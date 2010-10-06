@@ -42,7 +42,7 @@ namespace ds { namespace ui {
     display::pointer display::open( id i )
     {
       pointer d( new display );
-      d->_p->open( d, (const char *) i._p );
+      d->_p->open_natively( d, (const char *) i._p );
       return d;
     }
 

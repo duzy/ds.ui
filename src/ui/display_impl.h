@@ -25,7 +25,7 @@ namespace ds { namespace ui {
       IMPL();
       ~IMPL();
 
-      void open( const display::pointer & disp, const char * name );
+      void open_natively( const display::pointer & disp, const char * name );
       void pump_native_events( event_queue * );
       bool map_win_natively( const shared_object<window>::pointer & win );
       bool unmap_win_natively( const shared_object<window>::pointer & win );

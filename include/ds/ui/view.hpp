@@ -9,7 +9,7 @@
 
 #ifndef __DS_UI_VIEW__hpp____by_Duzy_Chan__
 #define __DS_UI_VIEW__hpp____by_Duzy_Chan__ 1
-#       include <ds/dso_visibility.hpp>
+#       include "../visibility.h"
 
 namespace ds {
   namespace graphics {
@@ -18,7 +18,7 @@ namespace ds {
 
   namespace ui {
 
-    struct DSO_PUBLIC view
+    struct DS_UI_PUBLIC view
     {
     protected:
       virtual void on_render( ds::graphics::canvas & ) = 0;

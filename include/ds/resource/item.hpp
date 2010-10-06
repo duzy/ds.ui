@@ -3,11 +3,11 @@
 #define __DS_RESOURCE_ITEM__HPP____by_Duzy_Chan__ 1
 #	include <string>
 //#	include <boost/scoped_ptr.hpp>
-#   include <ds/dso_visibility.hpp>
+#   include "../visibility.h"
 
 namespace ds { namespace resource {
 
-    struct DSO_PUBLIC item
+    struct DS_UI_PUBLIC item
     {
       typedef char byte_t;
 
@@ -40,7 +40,7 @@ namespace ds { namespace resource {
      *  @endcode
      */
 
-    DSO_PUBLIC
+    DS_UI_PUBLIC
     bool register_resource( const std::string & name, const item::byte_t * d, std::size_t sz );
 
     enum {
@@ -49,7 +49,7 @@ namespace ds { namespace resource {
       item_type_link    = 0xA2,
       item_type_alias   = 0xA3, //!< <ds:alias target="foo">a</ds:alias>
     };
-    DSO_PUBLIC
+    DS_UI_PUBLIC
     bool register_compiled_resource( const item::byte_t * const d, std::size_t sz );
 
   }//namespace resource

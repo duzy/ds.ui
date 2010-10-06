@@ -11,7 +11,7 @@
 #       include <boost/noncopyable.hpp>
 #       include <ds/shared_object.hpp>
 #       include <ds/event_pump.hpp>
-#       include <ds/dso_visibility.hpp>
+#       include "../visibility.h"
 
 namespace ds { namespace ui {
 
@@ -50,7 +50,7 @@ namespace ds { namespace ui {
      *    }
      *  @endcode
      */
-    class DSO_PUBLIC display
+    class DS_UI_PUBLIC display
       : boost::noncopyable
       , public shared_object<display>
       , public event_pump

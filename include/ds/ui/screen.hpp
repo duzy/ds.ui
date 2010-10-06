@@ -9,14 +9,14 @@
 #ifndef __DS_UI_SCREEN_HPP____by_Duzy_Chan__
 #define __DS_UI_SCREEN_HPP____by_Duzy_Chan__ 1
 #       include <ds/shared_object.hpp>
-#       include <ds/dso_visibility.hpp>
+#       include "../visibility.h"
 
 namespace ds { namespace ui {
 
     class display;
     class window;
     
-    class DSO_PUBLIC screen : public shared_object<screen>
+    class DS_UI_PUBLIC screen : public shared_object<screen>
     {
       screen();
       ~screen();

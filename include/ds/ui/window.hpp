@@ -11,7 +11,7 @@
 #       include <ds/shared_object.hpp>
 #       include <ds/ui/events.hpp>
 #       include <ds/ui/view.hpp>
-#       include <ds/dso_visibility.hpp>
+#       include "../visibility.h"
 
 namespace ds {
   namespace graphics {
@@ -23,7 +23,7 @@ namespace ds {
     class display;
     class screen;
 
-    class DSO_PUBLIC window
+    class DS_UI_PUBLIC window
       : public shared_object<window>, public view
     {
       struct IMPL;
