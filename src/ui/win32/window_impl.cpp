@@ -44,7 +44,7 @@ namespace ds { namespace ui {
 
       detail::window_creator wc;
       //wc.exStyle |= WS_EX_TRANSPARENT;
-      wc.style |= WS_VISIBLE;
+      //wc.style |= WS_VISIBLE;
       wc.param = reinterpret_cast<LPVOID>( disp.get() );
       HWND hwnd = wc.create( disp->_p );
 
@@ -75,6 +75,16 @@ namespace ds { namespace ui {
         ::DestroyWindow( _native_win );
         _native_win = NULL;
       }
+    }
+
+    void window::IMPL::show_natively()
+    {
+      ::ShowWindow( _native_win, SW_SHOW );
+    }
+
+    void window::IMPL::hide_natively()
+    {
+      ::ShowWindow( _native_win, SW_HIDE );
     }
 
     void window::IMPL::convert_pixels( int x, int y, int w, int h )

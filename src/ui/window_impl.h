@@ -38,6 +38,9 @@ namespace ds { namespace ui {
       bool create_natively( const display::pointer &, const window::pointer & );
       void destroy_natively( display::IMPL * disp );
 
+      void show_natively();
+      void hide_natively();
+
       void convert_pixels( int x, int y, int w, int h );
 
       void select_input(long mask);

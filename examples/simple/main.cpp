@@ -14,6 +14,11 @@
 #include <ds/graphics/canvas.hpp>
 #include <ds/graphics/color.hpp>
 #include <ds/graphics/polygon.hpp>
+#include <ds/graphics/segment.hpp>
+#include <ds/graphics/ring.hpp>
+#include <ds/graphics/region.hpp>
+#include <ds/graphics/drawing_tools.hpp>
+#include <boost/geometry/algorithms/make.hpp>
 #include <boost/geometry/algorithms/assign.hpp>
 #include <boost/geometry/algorithms/transform.hpp>
 #include <boost/geometry/strategies/transform/map_transformer.hpp>
@@ -47,15 +52,45 @@ protected:
       assign(inner, coor);
     }
 
-    canvas.render( ds::graphics::color::rgba(0.99, 0.1, 0.0, 1.0) );
+    canvas.render( ds::graphics::color::rgba(0.9, 0.1, 0.1, 1.0) );
 
+    ds::graphics::brush brush;
+    ds::graphics::pen pen;
     {
       ds::graphics::polygon g;
       strategy::transform::map_transformer
         <point_2d, ds::graphics::point> map(4,-1,10,7,800,600);
       transform(poly, g, map);
-      canvas.render( g );
-      canvas.stroke( g );
+      pen.color = ds::graphics::color::rgb(0.3, 0.3, 0.6);
+      brush.color = ds::graphics::color::rgba(0.6, 0.3, 0.3, 0.5);
+      canvas.render( g, brush );
+      canvas.stroke( g, pen );
+    }
+    {
+      pen.color = ds::graphics::color::rgb(0.8, 0.1, 0.1);
+      canvas.stroke( make<ds::graphics::box>( 100, 50, 150, 150 ), pen );
+      pen.color = ds::graphics::color::rgb(0.1, 0.8, 0.1);
+      canvas.stroke( make<ds::graphics::box>( 105, 55, 155, 155 ), pen );
+      pen.color = ds::graphics::color::rgb(0.1, 0.1, 0.8);
+      canvas.stroke( make<ds::graphics::box>( 110, 60, 160, 160 ), pen );
+    }
+    {
+      ds::graphics::point p1({32, 74}), p2({460, 227});
+      ds::graphics::segment s(p1, p2);
+      pen.color = ds::graphics::color::rgb(0.5, 0.8, 0.5);
+      canvas.stroke( s, pen );
+    }
+    {
+      ds::graphics::ring r;
+      {
+        const double coords[][2] = {
+          {40, 25}, {170, 34}, {260, 87}, {190, 230}, {52, 75},
+          {40, 25} // closing point is opening point
+        };
+        assign(r, coords);
+      }
+      pen.color = ds::graphics::color::rgb(0.1, 0.8, 0.1);
+      canvas.stroke( r, pen );
     }
     {
       ds::graphics::polygon g;
@@ -76,11 +111,11 @@ protected:
       }
 
       canvas.clip( g );
-      canvas.render( ds::graphics::color::rgba(0.5, 0.1, 0.1, 0.5) );
+      canvas.render( ds::graphics::color::rgba(0.1, 0.1, 0.5, 0.5) );
+      //canvas.restore();
     }
   }//on_render
 };
-
 
 int main(int argc, char** argv)
 {

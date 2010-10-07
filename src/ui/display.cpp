@@ -101,7 +101,8 @@ namespace ds { namespace ui {
        *  %map_win_natively is responsibly for creating the win
        */
       if ( _p->map_win_natively( win ) ) {
-        // ...
+        // FIXME: a mapped window should be hidden by default
+        //      dsI( !win->is_visible() );
       }
       else {
         dsE( "can't map window: "<<win->_p->_native_win );

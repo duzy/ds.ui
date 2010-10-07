@@ -24,7 +24,15 @@ sm.this.libdirs := \
   -L$(ds.third.dir.lib) \
   -L$(ds.third.boost.dir.lib)
 
-sm.this.sources := main.cpp
+sm.this.sources := main.cpp res.cc
+#sm.this.sources.external := $(sm.this.dir)/res.cc
+
+EXE := $(if $(sm.os.name.win32),.exe)
+#$(sm.this.dir)/res.cc:
+examples/simple/res.cc: \
+  $(sm.this.dir)/res.xml $(sm.this.dir)/eyes.png | $(sm.out.bin)/dsrc$(EXE)
+	@$(call sm-util-mkdir,$(@D))
+	@$(sm.out.bin)/dsrc$(EXE) -o $@ $<
 
 sm.this.libs := dsui dsge
 

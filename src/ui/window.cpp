@@ -62,12 +62,12 @@ namespace ds { namespace ui {
 
     void window::show()
     {
-      // TODO: ...
+      _p->show_natively();
     }
 
     void window::hide()
     {
-      // TODO: ...
+      _p->hide_natively();
     }
 
     void window::close()

@@ -20,16 +20,17 @@ sm.this.sources := \
   boost_test_stuff.cpp \
   shared_object.t \
   streambuf.t \
+  dsrc_test_stub.cc \
 
 #sm.this.sources.external := \
 #  $(sm.out.tmp)/dsrc_test_stub.cc
 
 EXE := $(if $(sm.os.name.win32),.exe)
-
-$(sm.out.tmp)/dsrc_test_stub.cc: \
+#$(sm.out.tmp)/dsrc_test_stub.cc:
+t/dsrc_test_stub.cc: \
   $(sm.this.dir)/dsrc_test.xml | $(sm.out.bin)/dsrc$(EXE)
 	@$(call sm-util-mkdir,$(@D))
-	@$(sm.out.bin)/dsrc -o $@ $<
+	@$(sm.out.bin)/dsrc$(EXE) -o $@ $<
 
 sm.this.link.options := \
   -Wl,--rpath,$(ds.ui.dir.lib) \

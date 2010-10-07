@@ -138,7 +138,7 @@ namespace ds { namespace ui { namespace detail {
         _bmp = (BITMAPINFO*) new uint8_t[fullSize];
         _bmp->bmiHeader.biSize   = sizeof(BITMAPINFOHEADER);
         _bmp->bmiHeader.biWidth  = w;
-        _bmp->bmiHeader.biHeight = -h; // up-side-down
+        _bmp->bmiHeader.biHeight = -h; // top-down
         _bmp->bmiHeader.biPlanes = 1;
         _bmp->bmiHeader.biBitCount = (unsigned short)bitsPerPixel;
         _bmp->bmiHeader.biCompression = BI_RGB;

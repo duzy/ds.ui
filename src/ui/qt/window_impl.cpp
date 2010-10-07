@@ -60,7 +60,7 @@ namespace ds { namespace ui {
         _screen = scrn; // save the reference of the screen
 
       _native_win = new QWidget( NULL, Qt::Window );
-      _native_win->show();
+      //_native_win->show();
       
       return _native_win != NULL;
     }
@@ -70,6 +70,16 @@ namespace ds { namespace ui {
       dsI( disp );
       delete _native_win;
       _native_win = NULL;
+    }
+
+    void window::IMPL::show_natively()
+    {
+      _native_win->show();
+    }
+
+    void window::IMPL::hide_natively()
+    {
+      _native_win->hide();
     }
 
     void window::IMPL::select_input(long mask)
