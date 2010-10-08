@@ -18,6 +18,8 @@
 #include <ds/graphics/ring.hpp>
 #include <ds/graphics/region.hpp>
 #include <ds/graphics/drawing_tools.hpp>
+#include <ds/graphics/image.hpp>
+#include <ds/resource/streambuf.hpp>
 #include <boost/geometry/algorithms/make.hpp>
 #include <boost/geometry/algorithms/assign.hpp>
 #include <boost/geometry/algorithms/transform.hpp>
@@ -30,6 +32,16 @@
 
 struct my_window : ds::ui::window
 {
+  my_window()
+  {
+    //ds::resource::item item("/eyes.png");
+    ds::resource::streambuf buf(":/eyes.png");
+    std::istream is( &buf );
+    //ds::graphics::png_reader rdr(is);
+    //rdr.read_image( image.any() );
+    image.load( is );
+  }
+
 protected:
   void on_render( ds::graphics::canvas & canvas )
   {
@@ -93,6 +105,9 @@ protected:
       canvas.stroke( r, pen );
     }
     {
+      canvas.render( image, 100, 100 );
+    }
+    {
       ds::graphics::polygon g;
       {
         const ds::graphics::coordinate_t coords[][2] = {
@@ -115,6 +130,9 @@ protected:
       //canvas.restore();
     }
   }//on_render
+
+private:
+  ds::graphics::image image;
 };
 
 int main(int argc, char** argv)
