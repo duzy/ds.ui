@@ -86,9 +86,6 @@ ifeq ($(sm.os.name),linux)
   sm.this.sources += $(wildcard src/ui/x11/*.cpp)
   sm.this.libs += X11 pthread
   sm.this.compile.options += -DX11=1
-  sm.this.depends += $(sm.out.lib)/libdsui.so
-  $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.var.dsui.targets)
-	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsui.targets),$@)
 else
 ifeq ($(sm.os.name),win32)
   sm.this.sources += $(wildcard src/ui/win32/*.cpp)
