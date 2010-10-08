@@ -151,10 +151,12 @@ namespace ds { namespace ui {
       return (win->_p->_native_win);
     }
 
+    /*
     Window display::IMPL::default_root() const
     {
       return XDefaultRootWindow( _xdisplay );
     }
+    */
 
     bool display::IMPL::is_default_root( const window::pointer & w ) const
     {

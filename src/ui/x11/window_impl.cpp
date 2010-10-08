@@ -258,6 +258,16 @@ namespace ds { namespace ui {
       }
     }
 
+    void window::IMPL::show_natively()
+    {
+      // TODO: ...
+    }
+
+    void window::IMPL::hide_natively()
+    {
+      // TODO: ...
+    }
+
     void window::IMPL::select_input(long mask)
     {
       Display * xdisp  = x_display();
@@ -266,6 +276,21 @@ namespace ds { namespace ui {
     }
 
     ds::graphics::box window::IMPL::get_rect() const
+    {
+      Display * xdisp = x_display();                         dsI( xdisp );
+      XWindowAttributes a;
+
+      //std::memset( &a, 0, sizeof(a) );
+
+      dsI( _native_win );
+      Status ok = XGetWindowAttributes( xdisp, _native_win, &a );
+      dsI( ok );
+      dsI( !(a.width == 0 && a.height == 0) );
+
+      return boost::geometry::make<graphics::box>( a.x, a.y, a.x+a.width, a.y+a.height );
+    }
+
+    ds::graphics::box window::IMPL::get_client_rect() const
     {
       Display * xdisp = x_display();                         dsI( xdisp );
       XWindowAttributes a;
