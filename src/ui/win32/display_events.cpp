@@ -47,7 +47,7 @@ namespace ds { namespace ui {
       case WM_DESTROY:
         dsL5("WM_DESTROY");
         // TODO: should notify the window of the destroy event
-        erase_destroyed_window( eq, win );
+        erase_destroyed_window( eq, hWnd, win );
         break;
 
       case WM_ERASEBKGND:

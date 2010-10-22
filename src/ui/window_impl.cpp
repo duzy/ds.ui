@@ -45,7 +45,7 @@ namespace ds { namespace ui {
      */
     void window::IMPL::redraw_dirties( const display::pointer &, const window::pointer & win )
     {
-      // TODO:(1) redraw the dirty rects, and mark each as _pended_updates
+      // (1) redraw the dirty rects, and mark each as _pended_updates
 
       if ( _dirty_region.empty() ) {
         dsL5("nothing dirty");
@@ -64,6 +64,7 @@ namespace ds { namespace ui {
       }
 
       dsI( _image.is_valid() );
+      dsI( _image.pixel_type() != _image.NO_PIXEL );
       dsI( _image.pixels() );
       dsI( 0 < _image.width() );
       dsI( 0 < _image.height() );
@@ -76,7 +77,7 @@ namespace ds { namespace ui {
 
         //TODO: dispatch drawing to widgets
 
-        canvas.clip( *it );    //!< reset the current clip
+        canvas.clip( *it );    //!< replace the current clip
         win->on_render( canvas );
 
         pend_update( *it );

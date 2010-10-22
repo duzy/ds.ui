@@ -30,7 +30,7 @@ namespace ds { namespace ui {
       bool map_win_natively( const shared_object<window>::pointer & win );
       bool unmap_win_natively( const shared_object<window>::pointer & win );
       bool is_win_mapped_natively( const shared_object<window>::pointer & win );
-      void erase_destroyed_window( event_queue *eq, const window::pointer & win );
+      void erase_destroyed_window( event_queue *eq, const native_window_t, const window::pointer & win );
 
       int screen_count() const;
       int default_screen_number() const;

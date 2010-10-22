@@ -1,2 +1,4 @@
 *~
 out
+examples/simple/res.cc
+t/dsrc_test_stub.cc

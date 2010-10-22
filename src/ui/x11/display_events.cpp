@@ -214,7 +214,7 @@ namespace ds { namespace ui {
 
       case DestroyNotify: {
         // TODO: should notify the window of the destroy event
-        erase_destroyed_window( eq, win );
+        erase_destroyed_window( eq, event->xany.window, win );
       } break;
 
       default:

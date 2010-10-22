@@ -34,12 +34,10 @@ struct my_window : ds::ui::window
 {
   my_window()
   {
-    //ds::resource::item item("/eyes.png");
     ds::resource::streambuf buf(":/eyes.png");
     std::istream is( &buf );
-    //ds::graphics::png_reader rdr(is);
-    //rdr.read_image( image.any() );
-    image.load( is );
+    bool ok = image.load( is );
+    dsEif( !ok, "cannot load ':/eyes.png'" );
   }
 
 protected:
