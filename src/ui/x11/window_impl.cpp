@@ -86,20 +86,23 @@ namespace ds { namespace ui {
         dsI( _image.height() == _ximage->height );
       }
 
-      dsL("image: bitmap_unit = "<<_ximage->bitmap_unit);
-      dsL("image: bitmap_pad = "<<_ximage->bitmap_pad);
-      dsL("image: depth = "<<_ximage->depth);
-      dsL("image: bytes_per_line = "<<_ximage->bytes_per_line);
-      dsL("image: bits_per_pixel = "<<_ximage->bits_per_pixel);
-      dsL("image: red_mask = "<<_ximage->red_mask);
-      dsL("image: green_mask = "<<_ximage->green_mask);
-      dsL("image: blue_mask = "<<_ximage->blue_mask);
+      dsL5("image: bitmap_unit = "<<_ximage->bitmap_unit);
+      dsL5("image: bitmap_pad = "<<_ximage->bitmap_pad);
+      dsL5("image: depth = "<<_ximage->depth);
+      dsL5("image: bytes_per_line = "<<_ximage->bytes_per_line);
+      dsL5("image: bits_per_pixel = "<<_ximage->bits_per_pixel);
+      dsL5("image: red_mask = "<<_ximage->red_mask);
+      dsL5("image: green_mask = "<<_ximage->green_mask);
+      dsL5("image: blue_mask = "<<_ximage->blue_mask);
 
       return ( _ximage != NULL );
     }
 
     void window::IMPL::convert_pixels( int x, int y, int w, int h )
     {
+      return; // TODO: ....
+      
+      
       if (_image.width() <= x) return;
       if (_image.height() <= y) return;
       if (_image.width() < (x+w)) w = _image.width() - x;
@@ -123,14 +126,17 @@ namespace ds { namespace ui {
       uint32_t ncolors = vi->colormap_size;
       uint32_t bpp = vi->depth / 8;
 
+      /*
       dsL("rmask: "<<rmask);
       dsL("gmask: "<<gmask);
       dsL("bmask: "<<bmask);
       dsL("rshift: "<<rshift);
       dsL("gshift: "<<gshift);
       dsL("bshift: "<<bshift);
+      */
       dsL("color-bits: "<<_ximage->bits_per_pixel);
       dsL("colormap-size: "<<ncolors<<", "<<vi->visual->map_entries);
+      dsEif(ncolors!=vi->visual->map_entries, "bad color map entries");
 
       s += y * _image.width() * _image.pixel_size();
       d += y * _image.width() * bpp;
