@@ -178,7 +178,6 @@ namespace ds { namespace ui {
     bool window::IMPL::create_natively( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
-      //dsI( !_screen );
 
       //screen::pointer scrn( _screen.lock() );           dsI( scrn );
       //display::pointer disp( scrn->get_display());           dsI( disp );
@@ -198,7 +197,7 @@ namespace ds { namespace ui {
       Window pr = root->_p->_native_win;
       register Display * const xdisp( disp->_p->_xdisplay );
 
-      //XCreateWindow(...);
+      //TODO: XCreateWindow(...);
       _native_win = XCreateSimpleWindow( xdisp, pr, x, y, w, h, bw, fc, bc );
       dsI( _native_win );
 

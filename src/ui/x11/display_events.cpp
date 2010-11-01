@@ -70,7 +70,7 @@ namespace ds { namespace ui {
       } break;
 
       case Expose: {
-        dsL("expose");
+        dsL5("expose");
 
         /**
          *  %_pended_updates holds a list of rects which has been drawn
