@@ -106,7 +106,9 @@ protected:
       canvas.stroke( r, pen );
     }
     {
-      image.convert_pixels( image.ABGR_8888_PIXEL );
+      //image.convert_pixels( image.ABGR_8888_PIXEL );
+      //image.convert_pixels( image.RGBA_8888_PIXEL );
+      image.convert_pixels( ds::graphics::image::PixelType(canvas.sys_pixel_type()) );
       canvas.render( image, 100, 200 );
     }
     {

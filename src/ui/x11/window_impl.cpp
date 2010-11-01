@@ -48,12 +48,12 @@ namespace ds { namespace ui {
       if ( w <= _image.width() && h <= _image.height() )
         return ( _ximage != NULL );
 
-      _image.create(w, h, ds::graphics::image::ARGB_8888_PIXEL);
+      _image.create(w, h, ds::graphics::image::PixelType(ds::graphics::canvas::sys_pixel_type()));
       dsI( _image.is_valid() );
       dsI( _image.width() == w );
       dsI( _image.height() == h );
       dsI( _image.pixels() != NULL );
-      dsI( _image.pixel_type() == ds::graphics::image::ARGB_8888_PIXEL );
+      dsI( _image.pixel_type() == ds::graphics::canvas::sys_pixel_type() );
       dsI( _image.pixel_size() == 4 );
       
       if ( _ximage != NULL ) {
