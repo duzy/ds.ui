@@ -28,7 +28,7 @@ namespace ds { namespace ui {
       , _native_win( NULL )
       , _native_gc( NULL )
       , _ximage( NULL )
-      , _ximage_pixels( NULL )
+        //, _ximage_pixels( NULL )
     {
     }
 
@@ -71,16 +71,19 @@ namespace ds { namespace ui {
       dsI( vi->visual != NULL );
       dsI( 0 < vi->depth );
 
-      _ximage_pixels = malloc( h * w * (vi->depth / 8) );
-      _ximage = XCreateImage( xdisp, vi->visual, vi->depth, ZPixmap, 0,
-                              reinterpret_cast<char*>(_ximage_pixels),//( _image.pixels() ),
+      //char * pixels = reinterpret_cast<char*>(_ximage_pixels);
+      char * pixels = reinterpret_cast<char*>( _image.pixels() );
+
+      //_ximage_pixels = malloc( h * w * (vi->depth / 8) );
+      _ximage = XCreateImage( xdisp, vi->visual, vi->depth, ZPixmap, 0, pixels,
                               _image.width(), _image.height(),
                               _image.pixel_size() * 8,/* bitmap pad */
                               _image.pixel_size() * w /* row bytes */ );
 
       if (_ximage==NULL) {
-        free(_ximage_pixels);
-        _ximage_pixels = NULL;
+        //free(_ximage_pixels);
+        //_ximage_pixels = NULL;
+        dsE("failed create X image");
       } else {
         dsI( _image.width() == _ximage->width );
         dsI( _image.height() == _ximage->height );
@@ -98,11 +101,9 @@ namespace ds { namespace ui {
       return ( _ximage != NULL );
     }
 
+    /*
     void window::IMPL::convert_pixels( int x, int y, int w, int h )
     {
-      return; // TODO: ....
-      
-      
       if (_image.width() <= x) return;
       if (_image.height() <= y) return;
       if (_image.width() < (x+w)) w = _image.width() - x;
@@ -126,26 +127,18 @@ namespace ds { namespace ui {
       uint32_t ncolors = vi->colormap_size;
       uint32_t bpp = vi->depth / 8;
 
-      /*
-      dsL("rmask: "<<rmask);
-      dsL("gmask: "<<gmask);
-      dsL("bmask: "<<bmask);
-      dsL("rshift: "<<rshift);
-      dsL("gshift: "<<gshift);
-      dsL("bshift: "<<bshift);
-      */
+      // dsL("rmask: "<<rmask);
+      // dsL("gmask: "<<gmask);
+      // dsL("bmask: "<<bmask);
+      // dsL("rshift: "<<rshift);
+      // dsL("gshift: "<<gshift);
+      // dsL("bshift: "<<bshift);
       dsL("color-bits: "<<_ximage->bits_per_pixel);
       dsL("colormap-size: "<<ncolors<<", "<<vi->visual->map_entries);
       dsEif(ncolors!=vi->visual->map_entries, "bad color map entries");
 
       s += y * _image.width() * _image.pixel_size();
       d += y * _image.width() * bpp;
-
-      /*
-      rmask = _ximage->red_mask;
-      gmask = _ximage->green_mask;
-      bmask = _ximage->blue_mask;
-      */
 
       int red, green, blue, pixel, n, c;
       for (n = 0; n < h; ++n) {
@@ -157,11 +150,6 @@ namespace ds { namespace ui {
           red   = (red   & rmask) << rshift;
           green = (green & gmask) << gshift;
           blue  = (blue  & bmask) << bshift;
-          /*
-          red   = (red   >> rshift) & rmask;
-          green = (green >> gshift) & gmask;
-          blue  = (blue  >> bshift) & bmask;
-          */
 
           pixel = red | green | blue;
 
@@ -174,13 +162,12 @@ namespace ds { namespace ui {
         d += (_image.width() - w) * bpp;
       }
     }
+    */
 
     bool window::IMPL::create_natively( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
 
-      //screen::pointer scrn( _screen.lock() );           dsI( scrn );
-      //display::pointer disp( scrn->get_display());           dsI( disp );
       screen::pointer scrn = disp->default_screen();            dsI( scrn );
       if ( !_screen.lock() /*!= scrn*/ )
         _screen = scrn; // save the reference of the screen
@@ -245,10 +232,10 @@ namespace ds { namespace ui {
       dsI( disp );
       dsI( disp->_xdisplay );
 
-      if (_ximage_pixels) {
-        free(_ximage_pixels);
-        _ximage_pixels = NULL;
-      }
+      // if (_ximage_pixels) {
+      //   free(_ximage_pixels);
+      //   _ximage_pixels = NULL;
+      // }
 
       if (_ximage) {
         _ximage->data = NULL;
@@ -315,7 +302,7 @@ namespace ds { namespace ui {
      */
     bool window::IMPL::commit_update_natively( const ds::graphics::box & b )
     {
-      convert_pixels( b.x(), b.y(), b.width(), b.height() );
+      //convert_pixels( b.x(), b.y(), b.width(), b.height() );
 
       Display * xdisp = x_display();
       {

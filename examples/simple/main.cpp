@@ -106,7 +106,8 @@ protected:
       canvas.stroke( r, pen );
     }
     {
-      canvas.render( image, 100, 10 );
+      image.convert_pixels( image.ABGR_8888_PIXEL );
+      canvas.render( image, 100, 200 );
     }
     {
       ds::graphics::polygon g;

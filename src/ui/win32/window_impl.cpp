@@ -87,10 +87,6 @@ namespace ds { namespace ui {
       ::ShowWindow( _native_win, SW_HIDE );
     }
 
-    void window::IMPL::convert_pixels( int x, int y, int w, int h )
-    {
-    }
-
     void window::IMPL::select_input(long mask)
     {
     }

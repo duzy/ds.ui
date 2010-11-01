@@ -41,8 +41,6 @@ namespace ds { namespace ui {
       void show_natively();
       void hide_natively();
 
-      void convert_pixels( int x, int y, int w, int h );
-
       void select_input(long mask);
 
       ds::graphics::box get_rect() const;
@@ -83,7 +81,7 @@ namespace ds { namespace ui {
 
       native_gc_t _native_gc;
       XImage * _ximage;
-      void * _ximage_pixels;
+      //void * _ximage_pixels;
 
       Display * x_display() const;
 
@@ -91,6 +89,6 @@ namespace ds { namespace ui {
 #   error unsupported platform
 #endif
     };//struct window::IMPL
-    
+
   }//namespace ui
 }//namespace ds
