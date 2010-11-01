@@ -34,10 +34,13 @@ struct my_window : ds::ui::window
 {
   my_window()
   {
-    ds::resource::streambuf buf(":/eyes.png");
+    ds::resource::streambuf buf("/eyes.png");
     std::istream is( &buf );
     bool ok = image.load( is );
-    dsEif( !ok, "cannot load ':/eyes.png'" );
+    dsEif( !ok, "cannot load '/eyes.png'" );
+    if (ok) {
+      dsL("test-image-size: "<<image.width()<<"x"<<image.height());
+    }
   }
 
 protected:
@@ -103,7 +106,7 @@ protected:
       canvas.stroke( r, pen );
     }
     {
-      canvas.render( image, 100, 100 );
+      canvas.render( image, 100, 10 );
     }
     {
       ds::graphics::polygon g;

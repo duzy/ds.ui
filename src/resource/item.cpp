@@ -1,5 +1,5 @@
-/**								-*- c++ -*-
- *
+/**	                                                             -*- c++ -*-
+ *  Copyright by Duzy Chan <code@duzy.info>
  */
 #include <ds/resource/item.hpp>
 #include <ds/resource/streambuf.hpp>
