@@ -100,16 +100,21 @@ namespace ds { namespace ui {
     bool window::IMPL::commit_update_natively( const ds::graphics::box & b )
     {
       QImage::Format fmt = QImage::Format_Invalid;
-      //switch (_image.pixel_type()) {
-      //}
+
+#     if 0
+      switch (_image.pixel_type()) {
+      }
+#     else
       fmt = QImage::Format_ARGB32;
+#     endif
+
+      // TODO: perform color format conversion here
 
       QImage m( _image.pixels(), _image.width(), _image.height(), fmt );
 
       QPainter painter( _native_win );
       painter.drawImage( b.x(), b.y(), m, b.x(), b.y(), b.width(), b.height() );
-
-      return false;
+      return true;
     }
 
     bool window::IMPL::sync_updates_natively()

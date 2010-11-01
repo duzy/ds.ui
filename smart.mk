@@ -6,7 +6,7 @@ $(call sm-new-module, dsui, shared)
 ds.ui.dir := $(sm.this.dir)
 ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 ds.ui.dir.bin := $(ds.ui.dir)/out/$V/bin
-ds.ui.qt_based := true
+ds.ui.qt_based := false
 ds.ge.dir := $(ds.ui.dir)/../graphics
 ds.ge.dir.lib := $(ds.ge.dir)/out/$V/lib
 ds.ge.dir.bin := $(ds.ge.dir)/out/$V/bin
