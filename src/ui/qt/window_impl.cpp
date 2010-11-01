@@ -18,6 +18,7 @@
 #include "../window_impl.h"
 #include "../screen_impl.h"
 #include "../display_impl.h"
+#include <QtGui/QPainter>
 
 namespace ds { namespace ui {
 
@@ -39,12 +40,12 @@ namespace ds { namespace ui {
       if ( w <= _image.width() && h <= _image.height() )
         return true; //( _ximage != NULL );
 
-      _image.create(w, h, ds::graphics::image::ARGB_8888_PIXEL);
+      _image.create(w, h, ds::graphics::image::PixelType(ds::graphics::canvas::sys_pixel_type()));
       dsI( _image.is_valid() );
       dsI( _image.width() == w );
       dsI( _image.height() == h );
       dsI( _image.pixels() != NULL );
-      dsI( _image.pixel_type() == ds::graphics::image::ARGB_8888_PIXEL );
+      dsI( _image.pixel_type() == ds::graphics::canvas::sys_pixel_type() );
       dsI( _image.pixel_size() == 4 );
       
       return false;
@@ -53,14 +54,12 @@ namespace ds { namespace ui {
     bool window::IMPL::create_natively( const display::pointer & disp, const window::pointer & win )
     {
       dsI( !_native_win );
-      //dsI( !_screen );
 
       screen::pointer scrn = disp->default_screen();            dsI( scrn );
       if ( !_screen.lock() /*!= scrn*/ )
         _screen = scrn; // save the reference of the screen
 
       _native_win = new QWidget( NULL, Qt::Window );
-      //_native_win->show();
       
       return _native_win != NULL;
     }
@@ -88,37 +87,33 @@ namespace ds { namespace ui {
 
     ds::graphics::box window::IMPL::get_rect() const
     {
+      QRect r = _native_win->frameGeometry(); //rect();
+      return boost::geometry::make<graphics::box>( r.x(), r.y(), r.x()+r.width(), r.y()+r.height() );
+    }
+
+    ds::graphics::box window::IMPL::get_client_rect() const
+    {
       QRect r = _native_win->rect();
       return boost::geometry::make<graphics::box>( r.x(), r.y(), r.x()+r.width(), r.y()+r.height() );
     }
 
-    bool window::IMPL::commit_updates()
+    bool window::IMPL::commit_update_natively( const ds::graphics::box & b )
     {
-      if ( _pended_updates.empty() ) {
-        dsL4("window is updated");
-        return false;
-      }
+      QImage::Format fmt = QImage::Format_Invalid;
+      //switch (_image.pixel_type()) {
+      //}
+      fmt = QImage::Format_ARGB32;
 
-      dsL("commit-updates: "<<_pended_updates.size()-1);
+      QImage m( _image.pixels(), _image.width(), _image.height(), fmt );
 
-      ds::graphics::box bound = _pended_updates.bounds();
+      QPainter painter( _native_win );
+      painter.drawImage( b.x(), b.y(), m, b.x(), b.y(), b.width(), b.height() );
 
-      if ( bound.empty() ) {
-        dsE("empty update bounds");
-        return false;
-      }
+      return false;
+    }
 
-      ds::graphics::region::const_iterator it = _pended_updates.begin();
-      ds::graphics::region::const_iterator const end = _pended_updates.end();
-      for (; it != end; ++it) {
-        // ...
-      }
-      
-      _pended_updates.clear();
-
-      //XFlushGC( xdisp, _p->_native_gc );
-      //XFlush( xdisp );
-      //XSync( xdisp, False );
+    bool window::IMPL::sync_updates_natively()
+    {
       return true;
     }
 

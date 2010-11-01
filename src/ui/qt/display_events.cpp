@@ -39,7 +39,7 @@ namespace ds { namespace ui {
 
       case QEvent::Destroy:
         dsL("destroy");
-        erase_destroyed_window( eq, win );
+        erase_destroyed_window( eq, wit->first, win );
         dsI( win->_p->_native_win == NULL );
         break;
       }

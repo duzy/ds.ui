@@ -72,6 +72,9 @@ namespace ds { namespace ui {
       native_window_t _native_win;
 
 #  if defined(QT)
+
+      //QImage _qimage;
+
 #elif defined(_WIN32)
 
       native_gc_t _native_gc; //!< win32: only availible within BeginPaint/EndPaint
