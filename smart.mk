@@ -101,9 +101,13 @@ endif#qt-based
 
 
 ifeq ($(sm.os.name),linux)
-  sm.this.depends += $(sm.out.lib)/libdsui.so
+  sm.this.depends += \
+    $(sm.out.lib)/libdsui.so \
+    $(sm.out.lib)/libdsge.so
   $(sm.out.lib)/libdsui.so : $(sm.out.lib) $(sm.var.dsui.targets)
 	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsui.targets),$@)
+  $(sm.out.lib)/libdsge.so : $(sm.out.lib) $(ds.ge.dir.bin)/dsge.so
+	$(call sm.tool.common.ln,$(ds.ge.dir.bin)/dsge.so,$@)
 else
 ifeq ($(sm.os.name),win32)
   sm.this.compile.options += -mwindows

@@ -1,8 +1,10 @@
+/**
+ *  Author: Duzy Chan <code@duzy.info>
+ */
 
 #ifndef __DS_RESOURCE_ITEM__HPP____by_Duzy_Chan__
 #define __DS_RESOURCE_ITEM__HPP____by_Duzy_Chan__ 1
 #	include <string>
-//#	include <boost/scoped_ptr.hpp>
 #   include "../visibility.h"
 
 namespace ds { namespace resource {
