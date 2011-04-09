@@ -35,6 +35,7 @@ sm.this.link.options := \
 #sm.this.out_implib := dsui
 
 sm.this.includes := \
+  $(ds.dir)/include \
   $(ds.ui.dir)/include \
   $(ds.ge.dir)/include \
   $(ds.third.dir.inc) \
