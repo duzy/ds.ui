@@ -47,7 +47,6 @@ sm.this.includes := \
 
 sm.this.sources := \
   $(wildcard src/*.cpp) \
-  $(wildcard src/resource/*.cpp) \
   $(wildcard src/ui/*.cpp) \
   $(wildcard src/ui/events/*.cpp)
 

@@ -1,8 +1,8 @@
 # -*- mode: makefile -*-
 #
 
-$(call sm-check-target-exists, ../../ds.mk)
+$(call sm-check-target-exists, ../config.mk)
 
-include ../../ds.mk
+include ../config.mk
 
 sm.global.compile.options += $(ds.compile.options)
